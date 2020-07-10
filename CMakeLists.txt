@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 add_subdirectory("third_party/kae")
 
 # list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-# include("cpp_compiler")
+include("kae/cpp_compiler")
 # include("cpp_flags")
 # include("cpp_warnings")
 

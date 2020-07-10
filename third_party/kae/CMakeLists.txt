@@ -3,7 +3,7 @@ include(FetchContent)
 
 FetchContent_Declare("kae"
     GIT_REPOSITORY "https://github.com/kiwixz/kae"
-    GIT_TAG "df11511ba77bdbc2f9892d4b61cbcc3ad3d3fc64"
+    GIT_TAG "55fde9b256cbdc423edd788284644ad96bb7569c"
 )
 
 FetchContent_GetProperties("kae")
@@ -14,3 +14,6 @@ endif()
 
 FetchContent_Populate("kae")
 add_subdirectory("${kae_SOURCE_DIR}" "${kae_BINARY_DIR}")
+
+list(APPEND CMAKE_MODULE_PATH "${kae_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" PARENT_SCOPE)
