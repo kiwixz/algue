@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
-add_subdirectory("third_party/kae")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+include("kae")
 
 include("kae/cpp_compiler")
 include("kae/cpp_flags")
@@ -20,7 +21,7 @@ option(ALGUE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LIST})
 
 
 if (IS_ROOT_LIST AND NOT CMAKE_BUILD_TYPE)
-    message(STATUS "Defaulting CMAKE_BUILD_TYPE to Debug")
+    message(STATUS "defaulting CMAKE_BUILD_TYPE to Debug")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 endif ()
 
@@ -55,5 +56,8 @@ if (ALGUE_TESTS)
         # )
     endif ()
 endif ()
+
+
+add_kae()
 
 add_subdirectory("lcu_api")
