@@ -3,7 +3,7 @@ include(FetchContent)
 
 FetchContent_Declare("kae"
     GIT_REPOSITORY "https://github.com/kiwixz/kae"
-    GIT_TAG "8d446b3d4c5b964406b99abdbea1d06157868a45"
+    GIT_TAG "0d21b35b08a4e80d1e97acba0dc0a87f4f44a6a7"
 )
 
 FetchContent_GetProperties("kae")
@@ -12,19 +12,22 @@ if (kae_POPULATED)
     set(add_this_kae OFF)
 else ()
     set(add_this_kae ON)
+    message(STATUS "fetching kae")
     FetchContent_Populate("kae")
 endif ()
 
 
 list(APPEND CMAKE_MODULE_PATH "${kae_SOURCE_DIR}/cmake")
 
-set(kae_root "${CMAKE_CURRENT_LIST_DIR}/..")
-file(CREATE_LINK "${kae_SOURCE_DIR}/.clang-format" "${kae_root}/.clang-format" SYMBOLIC)
-file(CREATE_LINK "${kae_SOURCE_DIR}/.clang-tidy" "${kae_root}/.clang-tidy" SYMBOLIC)
-
 
 function (add_kae)
+    file(CREATE_LINK "${kae_SOURCE_DIR}/.clang-format" "${PROJECT_SOURCE_DIR}/.clang-format" SYMBOLIC)
+    file(CREATE_LINK "${kae_SOURCE_DIR}/.clang-tidy" "${PROJECT_SOURCE_DIR}/.clang-tidy" SYMBOLIC)
+
     if (add_this_kae)
+        message(STATUS "adding kae")
+        list(APPEND CMAKE_MESSAGE_CONTEXT "kae")
         add_subdirectory("${kae_SOURCE_DIR}" "${kae_BINARY_DIR}")
+        list(POP_BACK CMAKE_MESSAGE_CONTEXT)
     endif ()
 endfunction ()
