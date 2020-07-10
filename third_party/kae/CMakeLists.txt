@@ -9,8 +9,8 @@ FetchContent_Declare("kae"
 FetchContent_GetProperties("kae")
 if (kae_POPULATED)
     message(STATUS "third party 'kae' already populated, skipping")
-    return()
-endif()
+    return ()
+endif ()
 
 FetchContent_Populate("kae")
 add_subdirectory("${kae_SOURCE_DIR}" "${kae_BINARY_DIR}")

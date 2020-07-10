@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 3.12)
 
 add_subdirectory("third_party/kae")
 
-# list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include("kae/cpp_compiler")
-# include("cpp_flags")
-# include("cpp_warnings")
+include("kae/cpp_flags")
+include("kae/cpp_warnings")
 
 
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -26,7 +25,7 @@ if (IS_ROOT_LISTS AND NOT CMAKE_BUILD_TYPE)
 endif ()
 
 if (ALGUE_AUTO_COMPILERS)
-    #cpp_compiler_auto()
+    cpp_compiler_auto()
 endif ()
 
 project("algue"
@@ -40,8 +39,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (ALGUE_AUTO_FLAGS)
-    #cpp_flags_auto()
-    #cpp_warnings_auto()
+    cpp_flags_auto()
+    cpp_warnings_auto()
 endif ()
 
 if (ALGUE_TESTS)
