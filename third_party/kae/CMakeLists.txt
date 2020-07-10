@@ -17,3 +17,7 @@ add_subdirectory("${kae_SOURCE_DIR}" "${kae_BINARY_DIR}")
 
 list(APPEND CMAKE_MODULE_PATH "${kae_SOURCE_DIR}/cmake")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" PARENT_SCOPE)
+
+set(kae_root "${CMAKE_CURRENT_LIST_DIR}/../..")
+file(CREATE_LINK "${kae_SOURCE_DIR}/.clang-format" "${kae_root}/.clang-format" SYMBOLIC)
+file(CREATE_LINK "${kae_SOURCE_DIR}/.clang-tidy" "${kae_root}/.clang-tidy" SYMBOLIC)
