@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-#include("cpp_test")
+include("kae/cpp_test")
 
 set(target "lcu_api")
 set(target_lib "${target}_lib")
@@ -12,10 +12,10 @@ target_include_directories("${target_lib}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/i
 add_executable("${target}" "src/main.cpp")
 target_link_libraries("${target}" PRIVATE "${target_lib}")
 
-#if (SCRABBLE_TESTS)
-#    file(GLOB_RECURSE test_src CONFIGURE_DEPENDS "test/*.cpp")
-#    cpp_test("${target_lib}" ${test_src})
-#endif ()
+if (ALGUE_TESTS)
+   file(GLOB_RECURSE test_src CONFIGURE_DEPENDS "test/*.cpp")
+   cpp_test("${target_lib}" ${test_src})
+endif ()
 
 
 target_link_libraries("${target_lib}" PUBLIC
