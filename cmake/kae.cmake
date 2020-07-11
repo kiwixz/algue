@@ -3,7 +3,7 @@ include(FetchContent)
 
 FetchContent_Declare("kae"
     GIT_REPOSITORY "https://github.com/kiwixz/kae"
-    GIT_TAG "0d21b35b08a4e80d1e97acba0dc0a87f4f44a6a7"
+    GIT_TAG "7a62967f36cecc3420c09e6ec008b6cda981d33e"
 )
 
 FetchContent_GetProperties("kae")
@@ -21,8 +21,14 @@ list(APPEND CMAKE_MODULE_PATH "${kae_SOURCE_DIR}/cmake")
 
 
 function (add_kae)
-    file(CREATE_LINK "${kae_SOURCE_DIR}/.clang-format" "${PROJECT_SOURCE_DIR}/.clang-format" SYMBOLIC)
-    file(CREATE_LINK "${kae_SOURCE_DIR}/.clang-tidy" "${PROJECT_SOURCE_DIR}/.clang-tidy" SYMBOLIC)
+    set(files_to_import
+        ".clang-format"
+        ".clang-tidy"
+        "format_all.py"
+    )
+    foreach (file ${files_to_import})
+        file(CREATE_LINK "${kae_SOURCE_DIR}/${file}" "${PROJECT_SOURCE_DIR}/${file}" SYMBOLIC)
+    endforeach ()
 
     if (add_this_kae)
         message(STATUS "adding kae")
