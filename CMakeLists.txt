@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 include("kae")
 
+include("kae/add_clang_tests")
 include("kae/cpp_compiler")
 include("kae/cpp_flags")
 include("kae/cpp_warnings")
@@ -48,13 +49,7 @@ endif ()
 if (ALGUE_TESTS)
     enable_testing()
     if (IS_ROOT_LIST)
-        # find_package("Python3" REQUIRED "Interpreter")
-        # add_test(NAME "check_clang_format"
-        #     COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_format.py"
-        # )
-        # add_test(NAME "check_clang_tidy"
-        #     COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/check_clang_tidy.py" "${CMAKE_BINARY_DIR}"
-        # )
+        add_clang_tests("${PROJECT_SOURCE_DIR}")
     endif ()
 endif ()
 
