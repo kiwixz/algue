@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.12)
+include("kae/third_party")
+
+third_party("asio" REPO "chriskohlhoff/asio" TAG "asio-1-16-1" DONT_RUN_CMAKE)
+FetchContent_GetProperties("asio")
+
+add_library("asio" EXCLUDE_FROM_ALL
+    "${asio_SOURCE_DIR}/asio/src/asio.cpp"
+    #"${asio_SOURCE_DIR}/asio/src/asio_ssl.cpp"
+)
+target_compile_definitions("asio" PUBLIC "ASIO_SEPARATE_COMPILATION")
+target_include_directories("asio" SYSTEM PUBLIC "${asio_SOURCE_DIR}/asio/include")

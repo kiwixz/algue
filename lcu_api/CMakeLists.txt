@@ -20,4 +20,5 @@ endif ()
 
 target_link_libraries("${target_lib}" PUBLIC
     "kae"
+    "asio"
 )
