@@ -1,0 +1,147 @@
+on: [pull_request, push]
+
+env:
+  LLVM_VERSION: "10"
+
+jobs:
+  build_debian:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+        cc: [clang, gcc]
+        include:
+          - cc: clang
+            cxx: clang++
+          - cc: gcc
+            cxx: g++
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bullseye-slim
+    steps:
+      - name: Install system dependencies
+        run: |
+          apt update
+          apt -y full-upgrade
+          apt -y --no-install-recommends install  \
+              git ca-certificates  \
+              cmake g++ nasm ninja-build python3  \
+              clang-$LLVM_VERSION clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION lld-$LLVM_VERSION
+          ln -s "clang-$LLVM_VERSION" "/usr/bin/clang"
+          ln -s "clang++-$LLVM_VERSION" "/usr/bin/clang++"
+          ln -s "clang-format-$LLVM_VERSION" "/usr/bin/clang-format"
+          ln -s "clang-tidy-$LLVM_VERSION" "/usr/bin/clang-tidy"
+          ln -s "ld.lld-$LLVM_VERSION" "/usr/bin/ld.lld"
+
+      - name: Dump packages versions
+        run: |
+          apt list --installed
+
+      - name: Checkout
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "./"
+          git checkout "${{ github.sha }}"
+
+      - name: Register problem matchers
+        run: |
+          echo "::add-matcher::.github/problem_matchers.json"
+
+      - name: Configure
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          CXXFLAGS: -fdiagnostics-color=always
+          LDFLAGS: -fdiagnostics-color=always
+        run: |
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
+
+      - name: Build
+        run: |
+          ninja -C "build"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: deb-${{ matrix.cc }}-${{ matrix.build_type }}
+          path: build/lcu_api/lcu_api
+
+      - name: Test
+        env:
+          ASAN_OPTIONS: check_initialization_order=1:detect_stack_use_after_return=1
+          UBSAN_OPTIONS: print_stacktrace=1
+        run: |
+          cd "build"
+          ctest --verbose
+
+  build_windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Debug, Release]
+        cc: [clang, cl]
+        include:
+          - cc: clang
+            cxx: clang++
+          - cc: cl
+            cxx: cl
+    runs-on: windows-latest
+    env:
+      VCVARS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvars64.bat"
+    steps:
+      - name: Install system dependencies
+        shell: cmd
+        run: |
+          choco install nasm
+          if "${{ matrix.cc }}"=="clang" (
+            choco install llvm --version=%LLVM_VERSION%.0.0
+          )
+
+      - name: Checkout
+        shell: cmd
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "."
+          git checkout "${{ github.sha }}"
+
+      - name: Register problem matchers
+        shell: cmd
+        run: |
+          echo ::add-matcher::.github/problem_matchers.json
+
+      - name: "Patch: disable LTO"  # cannot reproduce locally
+        if: matrix.cxx == 'clang++' && matrix.build_type == 'Release'
+        run: |
+          (Get-Content "cmake/kae/cpp_flags.cmake") -replace "-flto=thin", "" | Set-Content "cmake/kae/cpp_flags.cmake"
+
+      - name: Configure
+        shell: cmd
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          call "%VCVARS%"
+          set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
+          cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -S "." -B "build"
+
+      - name: Build
+        shell: cmd
+        run: |
+          call "%VCVARS%"
+          ninja -C "build"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: win-${{ matrix.cc }}-${{ matrix.build_type }}
+          path: build/lcu_api/lcu_api.exe
+
+      - name: Test
+        shell: cmd
+        run: |
+          call "%VCVARS%"
+          cd "build"
+          if "${{ matrix.cc }}"=="clang" (
+            set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
+            ctest --verbose
+          ) else (
+            ctest --verbose -E "clang_.*"
+          )
