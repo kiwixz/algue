@@ -8,6 +8,7 @@ add_library("asio" EXCLUDE_FROM_ALL
     "${asio_SOURCE_DIR}/asio/src/asio.cpp"
     "${asio_SOURCE_DIR}/asio/src/asio_ssl.cpp"
 )
+add_library("asio::asio" ALIAS "asio")
 target_compile_definitions("asio" PUBLIC "ASIO_SEPARATE_COMPILATION")
 target_include_directories("asio" SYSTEM PUBLIC "${asio_SOURCE_DIR}/asio/include")
 target_link_libraries("asio" PUBLIC "boringssl")
