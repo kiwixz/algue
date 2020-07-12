@@ -1,0 +1,19 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -113,7 +113,7 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+ endif()
+ 
+ if(WIN32)
+-       add_definitions(-Drestrict)
++       #add_definitions(-Drestrict)
+        add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+        add_definitions(-D_CRT_DEPRECATED_NO_WARNINGS)
+        add_definitions(-D_REENTRANT -D_POSIX_THREAD_SAFE_FUNCTIONS)
+@@ -322,6 +322,7 @@ if(HAVE_CLOCK_GETTIME)
+        add_definitions(-DHAVE_CLOCK_GETTIME)
+ endif()
+ 
++set(CMAKE_EXTRA_INCLUDE_FILES ${CMAKE_EXTRA_INCLUDE_FILES} "time.h")
+ check_type_size(time_t SIZEOF_TIME_T)
+ if(SIZEOF_TIME_T STREQUAL "4")
+        set(SMALL_TIME_T true)

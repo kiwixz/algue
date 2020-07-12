@@ -34,7 +34,7 @@ int main(int /*argc*/, char** /*argv*/)
     kae::set_thread_name("main_thread");
 
     asio::io_context io_context;
-    asio::ssl::context ssl_context{asio::ssl::context::tlsv13_client};
+    asio::ssl::context ssl_context{asio::ssl::context::tlsv12_client};
     ssl_context.load_verify_file("../example.pem");
 
     asio::ssl::stream<asio::ip::tcp::socket> s{io_context, ssl_context};

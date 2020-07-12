@@ -58,7 +58,7 @@ endif ()
 
 
 add_kae()
-add_subdirectory("third_party/boringssl")
+add_subdirectory("third_party/libressl")
 add_subdirectory("third_party/asio")
 
 add_subdirectory("lcu_api")
