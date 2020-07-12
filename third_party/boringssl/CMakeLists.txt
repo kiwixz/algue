@@ -16,7 +16,11 @@ if (WIN32)
 endif ()
 
 set(BORINGSSL_ALLOW_CXX_RUNTIME ON)
-third_party("boringssl" REPO "google/boringssl" TAG "8f88b27d6add3fc8f9ee548050e4958efa239f1f")
+third_party("boringssl"
+    REPO "google/boringssl"
+    TAG "8f88b27d6add3fc8f9ee548050e4958efa239f1f"
+    PATCHES "000-keep_flags.patch"
+)
 FetchContent_GetProperties("boringssl")
 
 add_library("boringssl" INTERFACE)
