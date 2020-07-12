@@ -1,5 +1,5 @@
---- a/include\openssl\opensslconf.h
-+++ b/include\openssl\opensslconf.h
+--- a/include/openssl/opensslconf.h
++++ b/include/openssl/opensslconf.h
 @@ -1,7 +1,7 @@
  #include <openssl/opensslfeatures.h>
  /* crypto/opensslconf.h.in */
