@@ -78,8 +78,9 @@ int main(int /*argc*/, char** /*argv*/)
     kae::set_thread_name("main_thread");
 
     // read lockfile
-    uint16_t port;
+    uint16_t port = 0;
     std::string token;
+
     {
         std::ifstream ifs{"C:/Riot Games/League of Legends/lockfile", std::ios::ate};
         if (!ifs)
@@ -93,7 +94,7 @@ int main(int /*argc*/, char** /*argv*/)
         fmt::print("{}\n", file);
 
         auto next = [&](size_t start) {
-            size_t r = file.find(":", start);
+            size_t r = file.find(':', start);
             if (r == std::string::npos)
                 throw std::runtime_error{"corrupt lockfile"};
             return r + 1;
