@@ -9,7 +9,6 @@
 #include "utils/base64.h"
 #include "utils/lockfile.h"
 
-namespace algue::lcu_api {
 namespace {
 
 void async_read(asio::ssl::stream<asio::ip::tcp::socket>& s)
@@ -31,13 +30,11 @@ void async_read(asio::ssl::stream<asio::ip::tcp::socket>& s)
 }
 
 }  // namespace
-}  // namespace algue::lcu_api
 
 
 int main(int /*argc*/, char** /*argv*/)
 {
     using namespace algue;
-    using namespace lcu_api;
 
     std::set_terminate(&kae::terminate);
     kae::set_thread_name("main_thread");
