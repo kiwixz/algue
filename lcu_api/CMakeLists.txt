@@ -7,5 +7,6 @@ target_link_libraries("${target}" PUBLIC
     "kae::kae"
     "asio::asio"
 
+    "http"
     "utils"
 )

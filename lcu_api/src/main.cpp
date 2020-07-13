@@ -1,11 +1,11 @@
 #include <asio/ip/tcp.hpp>
-#include <asio/read.hpp>
 #include <asio/ssl/stream.hpp>
 #include <asio/write.hpp>
 
 #include <kae/exception.h>
 #include <kae/os.h>
 
+#include "http/connection.h"
 #include "utils/base64.h"
 #include "utils/lockfile.h"
 
@@ -59,12 +59,18 @@ int main(int /*argc*/, char** /*argv*/)
     logger(kae::LogLevel::info, "tls handshake");
     s.handshake(asio::ssl::stream_base::client);
 
-    std::string req = std::string{"GET /lol-summoner/v1/current-summoner HTTP/1.1\r\n"}
-                      + "Host: 127.0.0.1:" + fmt::to_string(lockfile.port) + "\r\n"
-                      + "Authorization: Basic " + utils::base64("riot:" + lockfile.token) + "\r\n"
-                      + "\r\n";
+    http::Connection conn;
 
-    asio::write(s, asio::buffer(req));
+    http::Request req;
+    req.method = http::Method::get;
+    req.path = "/lol-summoner/v1/current-summoner";
+    req.headers.push_back({"Host", fmt::format("127.0.0.1:{}", lockfile.port)});
+    req.headers.push_back({"Authorization",
+                           fmt::format("Basic {}",
+                                       utils::base64(fmt::format("riot:{}", lockfile.token)))});
+
+    asio::write(s, asio::buffer(conn.make_request(std::move(req))));
     async_read(s);
+
     io_context.run();
 }
