@@ -20,7 +20,7 @@ std::string base64(std::string_view input)
     encoded.reserve(((input.size() / 3) + (input.size() % 3 > 0)) * 4);
 
     std::uint32_t temp{};
-    auto it = input.begin();
+    const char* it = input.data();
 
     for (std::size_t i = 0; i < input.size() / 3; ++i) {
         temp = (*it++) << 16;
