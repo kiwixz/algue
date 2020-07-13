@@ -21,4 +21,6 @@ endif ()
 target_link_libraries("${target_lib}" PUBLIC
     "kae::kae"
     "asio::asio"
+
+    "utils"
 )

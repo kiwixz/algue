@@ -63,4 +63,5 @@ add_subdirectory("third_party/asio")
 
 add_subdirectory("http")
 add_subdirectory("json")
+add_subdirectory("utils")
 add_subdirectory("lcu_api")
