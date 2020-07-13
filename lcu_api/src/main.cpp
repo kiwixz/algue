@@ -35,10 +35,14 @@ int main(int /*argc*/, char** /*argv*/)
 
     asio::io_context io_context;
     asio::ssl::context ssl_context{asio::ssl::context::tlsv12_client};
+    ssl_context.set_verify_mode(asio::ssl::verify_peer | asio::ssl::verify_fail_if_no_peer_cert);
     ssl_context.load_verify_file("../example.pem");
 
     asio::ssl::stream<asio::ip::tcp::socket> s{io_context, ssl_context};
-    s.lowest_layer().connect({asio::ip::make_address_v4("93.184.216.34"), 80});
+    if (!SSL_set_tlsext_host_name(s.native_handle(), const_cast<char*>("example.org")))
+        throw std::runtime_error{"no sni"};
+
+    s.lowest_layer().connect({asio::ip::make_address_v4("93.184.216.34"), 443});
     s.handshake(asio::ssl::stream_base::client);
 
     asio::write(s, asio::buffer("GET / HTTP/1.1\nHost: example.org\n\n"));
