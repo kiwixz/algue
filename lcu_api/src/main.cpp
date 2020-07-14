@@ -74,7 +74,7 @@ int main(int /*argc*/, char** /*argv*/)
                            fmt::format("Basic {}",
                                        utils::base64(fmt::format("riot:{}", lockfile.token)))});
 
-    //asio::write(s, asio::buffer(conn.request(std::move(req))));
+    asio::write(s, asio::buffer(conn.request(std::move(req))));
     async_read(s);
 
     io_context.run();
