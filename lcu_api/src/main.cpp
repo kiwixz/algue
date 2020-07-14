@@ -3,6 +3,7 @@
 #include <asio/write.hpp>
 
 #include <kae/exception.h>
+#include <kae/make_array.h>
 #include <kae/os.h>
 
 #include "http/connection.h"
@@ -13,7 +14,7 @@ namespace {
 
 void async_read(asio::ssl::stream<asio::ip::tcp::socket>& s)
 {
-    auto buf = std::make_unique<std::vector<char>>();
+    auto buf = std::make_unique<algue::utils::Bytes>();
     buf->resize(2000);
     asio::mutable_buffers_1 asio_buf = asio::buffer(*buf);
     s.async_read_some(asio_buf, [&s, buf = std::move(buf)](asio::error_code ec, size_t /*size*/) {
@@ -24,7 +25,7 @@ void async_read(asio::ssl::stream<asio::ip::tcp::socket>& s)
             fmt::print("error: {}\n", ec.message());
             exit(1);
         }
-        fmt::print("{}", buf->data());
+        kae::Logger{"response"}.hexdump(kae::LogLevel::debug, *buf, "response");
         async_read(s);
     });
 }
@@ -53,6 +54,9 @@ int main(int /*argc*/, char** /*argv*/)
     asio::ssl::stream<asio::ip::tcp::socket> s{io_context, ssl_context};
     // if (!SSL_set_tlsext_host_name(s.native_handle(), const_cast<char*>("example.org")))
     //     throw std::runtime_error{"no sni"};
+    std::array<unsigned char, 3> h2 = {{2, 'h', '2'}};
+    if (SSL_set_alpn_protos(s.native_handle(), h2.data(), h2.size()))
+        throw std::runtime_error{"cannot set alpn"};
 
     s.lowest_layer().connect({asio::ip::make_address_v4("127.0.0.1"), static_cast<uint16_t>(lockfile.port)});
 
@@ -60,6 +64,7 @@ int main(int /*argc*/, char** /*argv*/)
     s.handshake(asio::ssl::stream_base::client);
 
     http::Connection conn;
+    asio::write(s, asio::buffer(conn.preface()));
 
     http::Request req;
     req.method = http::Method::get;
@@ -69,7 +74,7 @@ int main(int /*argc*/, char** /*argv*/)
                            fmt::format("Basic {}",
                                        utils::base64(fmt::format("riot:{}", lockfile.token)))});
 
-    asio::write(s, asio::buffer(conn.make_request(std::move(req))));
+    //asio::write(s, asio::buffer(conn.request(std::move(req))));
     async_read(s);
 
     io_context.run();

@@ -1,50 +1,35 @@
 #include "http/connection.h"
 
-template <class... TBases>
-struct Overloaded : TBases... {
-    using TBases::operator()...;
-};
-template <class... TBases>
-Overloaded(TBases...) -> Overloaded<TBases...>;
+#include "utils/endian.h"
 
 namespace algue::http {
 
-std::vector<std::byte> Connection::make_request(Request request)
+utils::Bytes Connection::preface()
 {
-    std::vector<std::byte> data;
+    utils::Bytes data;
+    data.append("PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n");
+    append_frame_header(data, FrameType::settings, 0, 0, 0);
+    return data;
+}
 
-    auto append = Overloaded{[&](kae::Span<const std::byte> more) {
-                                 data.insert(data.end(), more.begin(), more.end());
-                             },
-                             [&](std::string_view more) {
-                                 const std::byte* ptr = reinterpret_cast<const std::byte*>(more.data());
-                                 data.insert(data.end(), ptr, ptr + more.size());
-                             },
-                             [&](const std::string& more) {
-                                 const std::byte* ptr = reinterpret_cast<const std::byte*>(more.data());
-                                 data.insert(data.end(), ptr, ptr + more.size());
-                             }};
-
-    std::string_view space = " ";
-    std::string_view version = "HTTP/1.1";
+utils::Bytes Connection::request(Request request)
+{
     std::string_view eol = "\r\n";
-    std::string_view header_def = ": ";
 
-    append(to_string(request.method));
-    append(space);
-    append(request.path);
-    append(space);
-    append(version);
-    append(eol);
-
+    utils::Bytes data;
+    data.append(to_string(request.method));
+    data.append(" ");
+    data.append(request.path);
+    data.append(" ");
+    data.append("HTTP/1.1");
+    data.append(eol);
     for (const Header& header : request.headers) {
-        append(header.name);
-        append(header_def);
-        append(header.value);
-        append(eol);
+        data.append(header.name);
+        data.append(": ");
+        data.append(header.value);
+        data.append(eol);
     }
-
-    append(eol);
+    data.append(eol);
 
     logger(kae::LogLevel::debug, "making http request:\n{}",
            std::string_view{reinterpret_cast<const char*>(data.data()), data.size()});
@@ -55,6 +40,15 @@ std::vector<std::byte> Connection::make_request(Request request)
 Response Connection::parse(kae::Span<const std::byte> data)
 {
     return {};
+}
+
+void Connection::append_frame_header(utils::Bytes& data, FrameType type, int stream, uint8_t flags, int payload_size)
+{
+    int payload_size_be = utils::host_to_big(payload_size);
+    data.append({reinterpret_cast<const std::byte*>(&payload_size_be), 3});
+    data.append(static_cast<uint8_t>(type));
+    data.append(flags);
+    data.append(utils::host_to_big(stream));
 }
 
 }  // namespace algue::http
