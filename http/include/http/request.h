@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "http/method.h"
 #include "http/header.h"
+#include "http/method.h"
 
 namespace algue::http {
 
