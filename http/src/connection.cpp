@@ -2,6 +2,12 @@
 
 #include "utils/endian.h"
 
+namespace {
+
+constexpr std::string_view eol = "\r\n";
+
+}
+
 namespace algue::http {
 
 utils::Bytes Connection::preface()
@@ -14,8 +20,6 @@ utils::Bytes Connection::preface()
 
 utils::Bytes Connection::request(Request request)
 {
-    std::string_view eol = "\r\n";
-
     utils::Bytes data;
     data.append(to_string(request.method));
     data.append(" ");
