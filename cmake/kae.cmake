@@ -27,7 +27,7 @@ function (add_kae)
         "format_all.py"
     )
     foreach (file ${files_to_import})
-        file(CREATE_LINK "${kae_SOURCE_DIR}/${file}" "${PROJECT_SOURCE_DIR}/${file}" SYMBOLIC)
+        file(CREATE_LINK "${kae_SOURCE_DIR}/${file}" "${PROJECT_SOURCE_DIR}/${file}")
     endforeach ()
 
     if (add_this_kae)
