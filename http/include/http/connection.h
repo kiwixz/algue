@@ -17,6 +17,8 @@ struct Connection {
 
 private:
     kae::Logger logger{"Connection"};
+
+    void append_header(utils::Bytes& data, std::string_view name, std::string_view value);
 };
 
 }  // namespace algue::http

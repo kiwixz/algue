@@ -2,6 +2,52 @@
 
 namespace algue::utils {
 
+BytesWriter::BytesWriter(kae::Span<std::byte> data) :
+    data_{data}
+{}
+
+bool BytesWriter::finished() const
+{
+    return index_ == data_.size();
+}
+
+void BytesWriter::put(kae::Span<const std::byte> data)
+{
+    std::copy(data.begin(), data.end(), data_.begin() + index_);
+    index_ += data.size();
+}
+
+void BytesWriter::put(kae::Span<const char> data)
+{
+    return put(data.as_bytes());
+}
+
+void BytesWriter::put(kae::Span<const unsigned char> data)
+{
+    return put(data.as_bytes());
+}
+
+void BytesWriter::put(std::string_view data)
+{
+    return put(kae::Span<const char>{data});
+}
+
+void BytesWriter::put(const std::string& data)
+{
+    return put(kae::Span<const char>{data});
+}
+
+void BytesWriter::put(const char* data)
+{
+    return put(std::string_view{data});
+}
+
+
+kae::Span<std::byte> Bytes::append_zero(size_t size)
+{
+    return {&*insert(end(), size, {}), size};
+}
+
 Bytes::iterator Bytes::append(kae::Span<const std::byte> data)
 {
     return insert(end(), data.begin(), data.end());

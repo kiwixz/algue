@@ -8,7 +8,33 @@
 
 namespace algue::utils {
 
+struct BytesWriter {
+    BytesWriter(kae::Span<std::byte> data);
+
+    bool finished() const;
+
+    void put(kae::Span<const std::byte> data);
+    void put(kae::Span<const char> data);
+    void put(kae::Span<const unsigned char> data);
+    void put(std::string_view data);
+    void put(const std::string& data);
+    void put(const char* data);
+
+    template <typename T, std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>, int> = 0>
+    void put(T data)
+    {
+        return put(kae::Span{reinterpret_cast<const std::byte*>(&data), sizeof(data)});
+    }
+
+private:
+    kae::Span<std::byte> data_;
+    size_t index_ = 0;
+};
+
+
 struct Bytes : std::vector<std::byte> {
+    kae::Span<std::byte> append_zero(size_t size);
+
     iterator append(kae::Span<const std::byte> data);
     iterator append(kae::Span<const char> data);
     iterator append(kae::Span<const unsigned char> data);

@@ -8,7 +8,8 @@ utils::Bytes Connection::preface()
 {
     utils::Bytes data;
     data.append("PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n");
-    append_settings_frame(data, {}, 0);
+    set_settings_frame(data.append_zero(settings_frame_size), {}, 0);
+    logger.hexdump(kae::LogLevel::debug, data, "preface");
     return data;
 }
 
@@ -31,7 +32,16 @@ utils::Bytes Connection::request(Request request)
     // }
     // data.append(eol);
 
-    append_headers_frame(data, 1, HeadersFrameFlags::end_stream | HeadersFrameFlags::end_headers, 0);
+    kae::Span<std::byte> header_frame = data.append_zero(headers_frame_size);
+    int header_size = static_cast<int>(data.size());
+    append_header(data, ":scheme", "http");
+    append_header(data, ":method", to_string(request.method));
+    append_header(data, ":path", request.path);
+    for (const Header& header : request.headers) {
+        append_header(data, header.name, header.value);
+    }
+    int payload_size = static_cast<int>(data.size()) - header_size;
+    set_headers_frame(header_frame, 1, HeadersFrameFlags::end_stream | HeadersFrameFlags::end_headers, payload_size);
 
     logger.hexdump(kae::LogLevel::debug, data, "request");
     return data;
@@ -40,6 +50,16 @@ utils::Bytes Connection::request(Request request)
 Response Connection::parse(kae::Span<const std::byte> data)
 {
     return {};
+}
+
+void Connection::append_header(utils::Bytes& data, std::string_view name, std::string_view value)
+{
+    // compression is not implemented yet
+    data.append(0u);
+    data.append(static_cast<unsigned int>(name.size()));
+    data.append(name);
+    data.append(static_cast<unsigned int>(value.size()));
+    data.append(value);
 }
 
 }  // namespace algue::http
