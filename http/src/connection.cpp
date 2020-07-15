@@ -16,7 +16,7 @@ utils::Bytes Connection::preface()
     return data;
 }
 
-utils::Bytes Connection::request(Request request)
+utils::Bytes Connection::request(Request request, kae::UniqueFunction<void(Response)> callback)
 {
     utils::Bytes data;
 
@@ -31,6 +31,7 @@ utils::Bytes Connection::request(Request request)
     int payload_size = static_cast<int>(data.size()) - header_size;
     set_headers_frame(header_header, 1, HeadersFrameFlags::end_stream | HeadersFrameFlags::end_headers, payload_size);
 
+    pending_[1] = {std::move(request), std::move(callback)};
     logger.hexdump(kae::LogLevel::debug, data, "request");
     return data;
 }

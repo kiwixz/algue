@@ -18,9 +18,11 @@ enum class HeadersFrameFlags {
     // priority = 0x20,
 };
 
+
 constexpr int frame_size = 9;
 constexpr int headers_frame_size = frame_size;
 constexpr int settings_frame_size = frame_size;
+
 
 void set_settings_frame(kae::Span<std::byte> data, SettingsFrameFlags flags, int payload_size);
 void set_headers_frame(kae::Span<std::byte> data, int stream, HeadersFrameFlags flags, int payload_size);
