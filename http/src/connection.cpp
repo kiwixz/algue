@@ -1,6 +1,9 @@
 #include "http/connection.h"
 
+#include <cassert>
+
 #include "http/frame.h"
+#include "utils/endian.h"
 
 namespace algue::http {
 
@@ -8,7 +11,8 @@ utils::Bytes Connection::preface()
 {
     utils::Bytes data;
     data.append("PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n");
-    set_settings_frame(data.append_zero(settings_frame_size), {}, 0);
+    size_t settings_idx = data.append_zero(settings_frame_size);
+    set_settings_frame({data.data() + settings_idx, settings_frame_size}, {}, 0);
     logger.hexdump(kae::LogLevel::debug, data, "preface");
     return data;
 }
@@ -32,10 +36,10 @@ utils::Bytes Connection::request(Request request)
     // }
     // data.append(eol);
 
-    set_settings_frame(data.append_zero(settings_frame_size), SettingsFrameFlags::ack, 0);
+    size_t settings_idx = data.append_zero(settings_frame_size);
+    set_settings_frame({data.data() + settings_idx, settings_frame_size}, SettingsFrameFlags::ack, 0);
 
-    size_t header_index = data.size();
-    data.append_zero(headers_frame_size);
+    size_t header_index = data.append_zero(headers_frame_size);
     int header_size = static_cast<int>(data.size());
     append_header(data, ":scheme", "http");
     append_header(data, ":method", to_string(request.method));
@@ -58,10 +62,14 @@ Response Connection::parse(kae::Span<const std::byte> data)
 void Connection::append_header(utils::Bytes& data, std::string_view name, std::string_view value)
 {
     // compression is not implemented yet
-    data.append(0u);
-    data.append(static_cast<unsigned int>(name.size()));
+    // neither is integer encoding
+    assert(name.size() < 128);
+    assert(value.size() < 128);
+
+    data.append(uint8_t{0});
+    data.append(utils::host_to_big(static_cast<uint8_t>(name.size())));
     data.append(name);
-    data.append(static_cast<unsigned int>(value.size()));
+    data.append(utils::host_to_big(static_cast<uint8_t>(value.size())));
     data.append(value);
 }
 

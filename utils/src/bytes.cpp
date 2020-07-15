@@ -43,9 +43,11 @@ void BytesWriter::put(const char* data)
 }
 
 
-kae::Span<std::byte> Bytes::append_zero(size_t size)
+size_t Bytes::append_zero(size_t n)
 {
-    return {&*insert(end(), size, {}), size};
+    size_t idx = size();
+    insert(end(), n, {});
+    return idx;
 }
 
 Bytes::iterator Bytes::append(kae::Span<const std::byte> data)

@@ -33,7 +33,7 @@ private:
 
 
 struct Bytes : std::vector<std::byte> {
-    kae::Span<std::byte> append_zero(size_t size);
+    size_t append_zero(size_t n);
 
     iterator append(kae::Span<const std::byte> data);
     iterator append(kae::Span<const char> data);

@@ -17,7 +17,7 @@ void async_read(asio::ssl::stream<asio::ip::tcp::socket>& s)
     auto buf = std::make_unique<algue::utils::Bytes>();
     buf->resize(2000);
     asio::mutable_buffers_1 asio_buf = asio::buffer(*buf);
-    s.async_read_some(asio_buf, [&s, buf = std::move(buf)](asio::error_code ec, size_t /*size*/) {
+    s.async_read_some(asio_buf, [&s, buf = std::move(buf)](asio::error_code ec, size_t size) {
         if (ec == asio::error::eof) {
             exit(0);
         }
@@ -25,6 +25,8 @@ void async_read(asio::ssl::stream<asio::ip::tcp::socket>& s)
             fmt::print("error: {}\n", ec.message());
             exit(1);
         }
+
+        buf->resize(size);
         kae::Logger{"response"}.hexdump(kae::LogLevel::debug, *buf, "response");
         async_read(s);
     });
