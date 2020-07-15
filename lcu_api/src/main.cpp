@@ -71,8 +71,8 @@ int main(int /*argc*/, char** /*argv*/)
     http::Request req;
     req.method = http::Method::get;
     req.path = "/lol-summoner/v1/current-summoner";
-    req.headers.push_back({"Host", fmt::format("127.0.0.1:{}", lockfile.port)});
-    req.headers.push_back({"Authorization",
+    req.headers.push_back({"host", fmt::format("127.0.0.1:{}", lockfile.port)});
+    req.headers.push_back({"authorization",
                            fmt::format("Basic {}",
                                        utils::base64(fmt::format("riot:{}", lockfile.token)))});
 

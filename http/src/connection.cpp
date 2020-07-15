@@ -41,7 +41,7 @@ utils::Bytes Connection::request(Request request)
 
     size_t header_index = data.append_zero(headers_frame_size);
     int header_size = static_cast<int>(data.size());
-    append_header(data, ":scheme", "http");
+    append_header(data, ":scheme", "https");
     append_header(data, ":method", to_string(request.method));
     append_header(data, ":path", request.path);
     for (const Header& header : request.headers) {
@@ -65,6 +65,8 @@ void Connection::append_header(utils::Bytes& data, std::string_view name, std::s
     // neither is integer encoding
     assert(name.size() < 128);
     assert(value.size() < 128);
+
+    assert(!std::any_of(name.begin(), name.end(), [&](char c) { return c >= 'A' && c <= 'Z'; }));
 
     data.append(uint8_t{0});
     data.append(utils::host_to_big(static_cast<uint8_t>(name.size())));
