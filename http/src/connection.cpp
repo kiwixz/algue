@@ -21,24 +21,6 @@ utils::Bytes Connection::request(Request request)
 {
     utils::Bytes data;
 
-    // constexpr std::string_view eol = "\r\n";
-    // data.append(to_string(request.method));
-    // data.append(" ");
-    // data.append(request.path);
-    // data.append(" ");
-    // data.append("HTTP/1.1");
-    // data.append(eol);
-    // for (const Header& header : request.headers) {
-    //     data.append(header.name);
-    //     data.append(": ");
-    //     data.append(header.value);
-    //     data.append(eol);
-    // }
-    // data.append(eol);
-
-    size_t settings_idx = data.append_zero(settings_frame_size);
-    set_settings_frame({data.data() + settings_idx, settings_frame_size}, SettingsFrameFlags::ack, 0);
-
     size_t header_index = data.append_zero(headers_frame_size);
     int header_size = static_cast<int>(data.size());
     append_header(data, ":scheme", "https");
