@@ -11,8 +11,7 @@ utils::Bytes Connection::preface()
 {
     utils::Bytes data;
     data.append("PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n");
-    size_t settings_idx = data.append_zero(settings_frame_size);
-    set_settings_frame({data.data() + settings_idx, settings_frame_size}, {}, 0);
+    set_settings_frame(data.append_zero(settings_frame_size), {}, 0);
     logger.hexdump(kae::LogLevel::debug, data, "preface");
     return data;
 }
@@ -21,7 +20,7 @@ utils::Bytes Connection::request(Request request)
 {
     utils::Bytes data;
 
-    size_t header_index = data.append_zero(headers_frame_size);
+    utils::IndexSpan header_header = data.append_zero(headers_frame_size);
     int header_size = static_cast<int>(data.size());
     append_header(data, ":scheme", "https");
     append_header(data, ":method", to_string(request.method));
@@ -30,7 +29,7 @@ utils::Bytes Connection::request(Request request)
         append_header(data, header.name, header.value);
     }
     int payload_size = static_cast<int>(data.size()) - header_size;
-    set_headers_frame({data.data() + header_index, headers_frame_size}, 1, HeadersFrameFlags::end_stream | HeadersFrameFlags::end_headers, payload_size);
+    set_headers_frame(header_header, 1, HeadersFrameFlags::end_stream | HeadersFrameFlags::end_headers, payload_size);
 
     logger.hexdump(kae::LogLevel::debug, data, "request");
     return data;

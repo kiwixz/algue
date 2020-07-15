@@ -6,6 +6,8 @@
 
 #include <kae/span.h>
 
+#include "utils/index_span.h"
+
 namespace algue::utils {
 
 struct BytesWriter {
@@ -33,7 +35,7 @@ private:
 
 
 struct Bytes : std::vector<std::byte> {
-    size_t append_zero(size_t n);
+    IndexSpan<Bytes> append_zero(size_t n);
 
     iterator append(kae::Span<const std::byte> data);
     iterator append(kae::Span<const char> data);
