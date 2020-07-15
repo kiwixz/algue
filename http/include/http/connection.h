@@ -27,6 +27,7 @@ private:
     };
 
     kae::Logger logger{"Connection"};
+    Stream next_stream_ = 1;
     std::unordered_map<Stream, Pending> pending_;
 
     void append_header(utils::Bytes& data, std::string_view name, std::string_view value);

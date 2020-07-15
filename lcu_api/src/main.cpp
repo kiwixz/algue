@@ -12,23 +12,22 @@
 
 namespace {
 
-void async_read(asio::ssl::stream<asio::ip::tcp::socket>& s)
+void async_read(asio::ssl::stream<asio::ip::tcp::socket>& socket, algue::http::Connection& connection)
 {
     auto buf = std::make_unique<algue::utils::Bytes>();
     buf->resize(2000);
     asio::mutable_buffers_1 asio_buf = asio::buffer(*buf);
-    s.async_read_some(asio_buf, [&s, buf = std::move(buf)](asio::error_code ec, size_t size) {
+    socket.async_read_some(asio_buf, [&socket, &connection, buf = std::move(buf)](asio::error_code ec, size_t size) {
         if (ec == asio::error::eof) {
             exit(0);
         }
         else if (ec) {
-            fmt::print("error: {}\n", ec.message());
+            fmt::print("socket error: {}\n", ec.message());
             exit(1);
         }
 
-        buf->resize(size);
-        kae::Logger{"response"}.hexdump(kae::LogLevel::debug, *buf, "response");
-        async_read(s);
+        connection.parse({buf->data(), size});
+        async_read(socket, connection);
     });
 }
 
@@ -79,7 +78,7 @@ int main(int /*argc*/, char** /*argv*/)
     asio::write(s, asio::buffer(conn.request(std::move(req), [&](http::Response response) {
                     fmt::print("response!\n");
                 })));
-    async_read(s);
+    async_read(s, conn);
 
     io_context.run();
 }
