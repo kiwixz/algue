@@ -32,7 +32,10 @@ utils::Bytes Connection::request(Request request)
     // }
     // data.append(eol);
 
-    kae::Span<std::byte> header_frame = data.append_zero(headers_frame_size);
+    set_settings_frame(data.append_zero(settings_frame_size), SettingsFrameFlags::ack, 0);
+
+    size_t header_index = data.size();
+    data.append_zero(headers_frame_size);
     int header_size = static_cast<int>(data.size());
     append_header(data, ":scheme", "http");
     append_header(data, ":method", to_string(request.method));
@@ -41,7 +44,7 @@ utils::Bytes Connection::request(Request request)
         append_header(data, header.name, header.value);
     }
     int payload_size = static_cast<int>(data.size()) - header_size;
-    set_headers_frame(header_frame, 1, HeadersFrameFlags::end_stream | HeadersFrameFlags::end_headers, payload_size);
+    set_headers_frame({data.data() + header_index, headers_frame_size}, 1, HeadersFrameFlags::end_stream | HeadersFrameFlags::end_headers, payload_size);
 
     logger.hexdump(kae::LogLevel::debug, data, "request");
     return data;

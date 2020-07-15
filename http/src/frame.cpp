@@ -19,7 +19,7 @@ void set_frame(kae::Span<std::byte> data, FrameType type, int stream, uint8_t fl
     utils::BytesWriter writer{data};
 
     int payload_size_be = utils::host_to_big(payload_size);
-    writer.put({reinterpret_cast<const std::byte*>(&payload_size_be), 3});
+    writer.put({reinterpret_cast<const std::byte*>(&payload_size_be) + 1, 3});
     writer.put(static_cast<uint8_t>(type));
     writer.put(flags);
     writer.put(utils::host_to_big(stream));
