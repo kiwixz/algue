@@ -19,8 +19,8 @@ constexpr auto lower_bound(C& container, const T& value)
     return utils::lower_bound(container.begin(), container.end(), value);
 }
 
-template <typename I>
-constexpr I lower_bound_if(I first, I last, kae::FunctionRef<bool(const decltype(*first)&)> predicate)
+template <typename I, typename F>
+constexpr I lower_bound_if(I first, I last, F&& predicate)
 {
     size_t count = last - first;
     while (count > 0) {
@@ -37,8 +37,8 @@ constexpr I lower_bound_if(I first, I last, kae::FunctionRef<bool(const decltype
     return first;
 }
 
-template <typename C>
-constexpr auto lower_bound_if(C& container, kae::FunctionRef<bool(const decltype(*container.begin())&)> predicate)
+template <typename C, typename F>
+constexpr auto lower_bound_if(C& container, F&& predicate)
 {
     // namespace to not get std version
     return lower_bound_if(container.begin(), container.end(), predicate);
