@@ -16,13 +16,13 @@ struct Connection {
     utils::Bytes preface();
     utils::Bytes request(Request request, kae::UniqueFunction<void(Response)> callback);
 
-    Response parse(kae::Span<const std::byte> data);
+    void parse(kae::Span<const std::byte> data);
 
 private:
     using Stream = int;
 
     struct Pending {
-        Request request;
+        Response response;
         kae::UniqueFunction<void(Response)> callback;
     };
 

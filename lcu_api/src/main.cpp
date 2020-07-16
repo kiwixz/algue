@@ -77,6 +77,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     asio::write(s, asio::buffer(conn.request(std::move(req), [&](http::Response response) {
                     fmt::print("response!\n");
+                    (void)response;
                 })));
     async_read(s, conn);
 

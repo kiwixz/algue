@@ -5,6 +5,11 @@
 namespace algue::http {
 
 struct Response {
+    Response() = default;
+    Response(Request _request) :
+        request{_request}
+    {}
+
     Request request;
     std::vector<Header> headers;
 };

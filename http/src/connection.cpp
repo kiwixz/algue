@@ -30,18 +30,16 @@ utils::Bytes Connection::request(Request request, kae::UniqueFunction<void(Respo
     int payload_size = static_cast<int>(data.size()) - headers_frame_size;
     set_headers_frame(header_header, next_stream_, HeadersFrameFlags::end_stream | HeadersFrameFlags::end_headers, payload_size);
 
-    pending_[next_stream_] = {std::move(request), std::move(callback)};
+    pending_[next_stream_] = {{std::move(request)}, std::move(callback)};
     ++next_stream_;
 
     logger.hexdump(kae::LogLevel::debug, data, "request");
     return data;
 }
 
-Response Connection::parse(kae::Span<const std::byte> data)
+void Connection::parse(kae::Span<const std::byte> data)
 {
     logger.hexdump(kae::LogLevel::debug, data, "parse");
-
-    return {};
 }
 
 void Connection::append_header(utils::Bytes& data, std::string_view name, std::string_view value)
