@@ -1,6 +1,8 @@
 #include "http/frame.h"
 
-#include <algorithm>
+#include <cassert>
+
+#include <kae/bit_cast.h>
 
 #include "utils/bytes.h"
 #include "utils/endian.h"
@@ -8,15 +10,9 @@
 namespace algue::http {
 namespace {
 
-enum class FrameType : uint8_t {
-    data = 0x0,
-    headers = 0x1,
-    settings = 0x4,
-};
-
-void set_frame(kae::Span<std::byte> data, FrameType type, int stream, uint8_t flags, int payload_size)
+void set_frame_header(kae::Span<std::byte> dest, FrameType type, int stream, uint8_t flags, int payload_size)
 {
-    utils::BytesWriter writer{data};
+    utils::BytesWriter writer{dest};
 
     int payload_size_be = utils::host_to_big(payload_size);
     writer.put({reinterpret_cast<const std::byte*>(&payload_size_be) + 1, 3});
@@ -28,14 +24,40 @@ void set_frame(kae::Span<std::byte> data, FrameType type, int stream, uint8_t fl
 }  // namespace
 
 
-void set_settings_frame(kae::Span<std::byte> data, SettingsFrameFlags flags, int payload_size)
+int decode_frame_size(kae::Span<const std::byte> src)
 {
-    set_frame(data, FrameType::settings, 0, static_cast<uint8_t>(flags), payload_size);
+    assert(src.size() >= frame_header_size);
+    int payload_size_be = 0;
+    std::copy(src.data(), src.data() + 3, reinterpret_cast<std::byte*>(&payload_size_be) + 1);
+    return frame_header_size + utils::big_to_host(payload_size_be);
 }
 
-void set_headers_frame(kae::Span<std::byte> data, int stream, HeadersFrameFlags flags, int payload_size)
+int decode_frame_type(kae::Span<const std::byte> src)
 {
-    set_frame(data, FrameType::headers, stream, static_cast<uint8_t>(flags), payload_size);
+    assert(src.size() >= frame_header_size);
+    return utils::big_to_host(kae::bit_cast<uint8_t>(src[4]));
 }
+
+
+void SettingsFrameHeader::encode(kae::Span<std::byte> dest)
+{
+    assert(dest.size() == size);
+    set_frame_header(dest, FrameType::settings,
+                     0, static_cast<uint8_t>(flags), payload_size);
+}
+
+void SettingsFrameHeader::decode(kae::Span<const std::byte> src)
+{}
+
+
+void HeadersFrameHeader::encode(kae::Span<std::byte> dest)
+{
+    assert(dest.size() == size);
+    set_frame_header(dest, FrameType::headers,
+                     stream, static_cast<uint8_t>(flags), payload_size);
+}
+
+void HeadersFrameHeader::decode(kae::Span<const std::byte> src)
+{}
 
 }  // namespace algue::http

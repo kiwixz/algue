@@ -6,6 +6,7 @@
 #include <kae/logger.h>
 #include <kae/span.h>
 
+#include "http/frame.h"
 #include "http/request.h"
 #include "http/response.h"
 #include "utils/bytes.h"
@@ -19,8 +20,6 @@ struct Connection {
     void parse(kae::Span<const std::byte> data);
 
 private:
-    using Stream = int;
-
     struct Pending {
         Response response;
         kae::UniqueFunction<void(Response)> callback;
@@ -29,8 +28,10 @@ private:
     kae::Logger logger{"Connection"};
     Stream next_stream_ = 1;
     std::unordered_map<Stream, Pending> pending_;
+    utils::Bytes in_buffer_;
 
     void append_header(utils::Bytes& data, std::string_view name, std::string_view value);
+    bool consume_frame(kae::Span<const std::byte>& src);
 };
 
 }  // namespace algue::http
