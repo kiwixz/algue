@@ -30,7 +30,6 @@ private:
     std::unordered_map<Stream, Pending> pending_;
     utils::Bytes in_buffer_;
 
-    void append_header(utils::Bytes& data, std::string_view name, std::string_view value);
     bool consume_frame(kae::Span<const std::byte>& src);
 };
 

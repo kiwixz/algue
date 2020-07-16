@@ -20,12 +20,13 @@ utils::Bytes Connection::preface()
 utils::Bytes Connection::request(Request request, kae::UniqueFunction<void(Response)> callback)
 {
     utils::Bytes data;
+
     utils::IndexSpan headers_frame_header = data.append_zero(HeadersFrameHeader::size);
-    append_header(data, ":scheme", "https");
-    append_header(data, ":method", to_string(request.method));
-    append_header(data, ":path", request.path);
-    for (const Header& header : request.headers) {
-        append_header(data, header.name, header.value);
+    request.headers.insert(request.headers.begin(), {{":scheme", "https"},
+                                                     {":method", std::string{to_string(request.method)}},
+                                                     {":path", request.path}});
+    for (const Header& hdr : request.headers) {
+        hdr.encode(data.append_zero(hdr.encoded_size()));
     }
     int payload_size = static_cast<int>(data.size()) - HeadersFrameHeader::size;
     HeadersFrameHeader{next_stream_,
@@ -52,22 +53,6 @@ void Connection::parse(kae::Span<const std::byte> data)
     kae::Span<const std::byte> rem = data;
     while (consume_frame(rem)) {
     }
-}
-
-void Connection::append_header(utils::Bytes& data, std::string_view name, std::string_view value)
-{
-    // compression is not implemented yet
-    // neither is integer encoding
-    assert(name.size() < 128);
-    assert(value.size() < 128);
-
-    assert(!std::any_of(name.begin(), name.end(), [&](char c) { return c >= 'A' && c <= 'Z'; }));
-
-    data.append(uint8_t{0});
-    data.append(utils::host_to_big(static_cast<uint8_t>(name.size())));
-    data.append(name);
-    data.append(utils::host_to_big(static_cast<uint8_t>(value.size())));
-    data.append(value);
 }
 
 bool Connection::consume_frame(kae::Span<const std::byte>& src)

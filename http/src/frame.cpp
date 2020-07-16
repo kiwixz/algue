@@ -35,7 +35,7 @@ int decode_frame_size(kae::Span<const std::byte> src)
 int decode_frame_type(kae::Span<const std::byte> src)
 {
     assert(src.size() >= frame_header_size);
-    return utils::big_to_host(kae::bit_cast<uint8_t>(src[4]));
+    return utils::big_to_host(kae::bit_cast<uint8_t>(src[3]));
 }
 
 
