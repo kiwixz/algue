@@ -4,6 +4,9 @@
 #include <string>
 #include <string_view>
 
+#include <kae/bit_cast.h>
+#include <kae/logger.h>
+
 #include "utils/bytes.h"
 #include "utils/endian.h"
 
@@ -57,6 +60,15 @@ void Header::encode(kae::Span<std::byte> dest) const
 
 kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
 {
+    kae::Logger logger{"header_decode"};
+
+    auto idx = utils::big_to_host(kae::bit_cast<uint8_t>(src[0]));
+
+    if (idx & 0x80)  // fully indexed
+    {
+        logger(kae::LogLevel::debug, "fully indexed");
+        return src.subspan(1, src.size() - 1);
+    }
 }
 
 
