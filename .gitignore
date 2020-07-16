@@ -4,6 +4,6 @@ format_all.py
 
 /build/
 
-.clangd/
+.cache/
 .vscode/
 __pycache__/
