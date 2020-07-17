@@ -64,7 +64,8 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
     if (static_cast<int>(src.size()) < frame_size)
         return false;
 
-    logger.hexdump(kae::LogLevel::debug, src.subspan(0, frame_size), "frame");
+    kae::Span<const std::byte> src_frame = src.subspan(0, frame_size);
+    logger.hexdump(kae::LogLevel::debug, src_frame, "frame");
 
     int frame_type_n = decode_frame_type(src);
     FrameType frame_type = static_cast<FrameType>(frame_type_n);
@@ -74,6 +75,9 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
         break;
     case FrameType::headers:
         logger(kae::LogLevel::warning, "received headers, this is unimplemented");
+        src_frame = src_frame.subspan(frame_header_size, src_frame.size() - frame_header_size);
+        while (src_frame.size())
+            src_frame = Header{}.decode(src_frame);
         break;
     case FrameType::settings:
         logger(kae::LogLevel::warning, "received settings, this is unimplemented");

@@ -114,6 +114,9 @@ private:
     std::variant<StaticTableIndex, std::string> name_;
     std::string value_;
     ShouldIndex should_index_;
+
+    uint64_t consume_int(kae::Span<const std::byte>& src, int prefix);
+    std::string consume_str(kae::Span<const std::byte>& src);
 };
 
 
