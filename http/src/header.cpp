@@ -153,8 +153,6 @@ std::string Header::consume_str(kae::Span<const std::byte>& src)
     bool huffman = kae::bit_cast<uint8_t>(src[0]) & 0x80;
     uint64_t length = consume_int(src, 7);
 
-    fmt::print("{} >= {}\n", src.size(), length);
-
     assert(src.size() >= length);
     std::string r;
     if (huffman) {
@@ -168,6 +166,5 @@ std::string Header::consume_str(kae::Span<const std::byte>& src)
     src = src.subspan(length, src.size() - length);
     return r;
 }
-
 
 }  // namespace algue::http
