@@ -75,71 +75,70 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
     if ((first & 0xc0) == 0x40)  // literal with indexing
     {
         logger.hexdump(kae::LogLevel::debug, src, "literal with indexing");
-
-        uint64_t idx = consume_int(src, 6);
-        if (idx) {  // indexed name
-            std::string value = consume_str(src);
-            logger(kae::LogLevel::debug, "{} = '{}'", idx, value);
-        }
-        else {
-            std::string name = consume_str(src);
-            std::string value = consume_str(src);
-            logger(kae::LogLevel::debug, "'{}' = '{}'", name, value);
-        }
+        uint64_t name_index = consume_int(src, 6);
+        src = decode_name_value(src, name_index);
+        logger(kae::LogLevel::debug, "'{}' = '{}' ({})", name(), value(), value_.size());
         return src;
     }
 
     if ((first & 0xf0) == 0)  // literal without indexing
     {
         logger(kae::LogLevel::debug, "literal without indexing");
-        uint64_t idx = consume_int(src, 4);
-        if (idx) {  // indexed name
-            std::string value = consume_str(src);
-            logger(kae::LogLevel::debug, "{} = '{}'", idx, value);
-        }
-        else {
-            std::string name = consume_str(src);
-            std::string value = consume_str(src);
-            logger(kae::LogLevel::debug, "'{}' = '{}'", name, value);
-        }
+        uint64_t name_index = consume_int(src, 4);
+        src = decode_name_value(src, name_index);
+        logger(kae::LogLevel::debug, "'{}' = '{}' ({})", name(), value(), value_.size());
         return src;
     }
 
     if ((first & 0xf0) == 0x10)  // literal never indexed
     {
         logger(kae::LogLevel::debug, "literal never indexed");
-        uint64_t idx = consume_int(src, 4);
-        if (idx) {  // indexed name
-            std::string value = consume_str(src);
-            logger(kae::LogLevel::debug, "{} = '{}'", idx, value);
-        }
-        else {
-            std::string name = consume_str(src);
-            std::string value = consume_str(src);
-            logger(kae::LogLevel::debug, "'{}' = '{}'", name, value);
-        }
+        uint64_t name_index = consume_int(src, 4);
+        src = decode_name_value(src, name_index);
+        logger(kae::LogLevel::debug, "'{}' = '{}' ({})", name(), value(), value_.size());
+        return src;
+    }
+
+    if ((first & 0x20) == 0x20)  // table size update
+    {
+        logger(kae::LogLevel::debug, "table size update");
+        uint64_t max_size = consume_int(src, 5);
+        logger(kae::LogLevel::debug, "new max size = {}", max_size);
         return src;
     }
 
     abort();
 }
 
+kae::Span<const std::byte> Header::decode_name_value(kae::Span<const std::byte> src, uint64_t name_index)
+{
+    if (name_index == 0) {  // name not indexed
+        name_ = consume_str(src);
+    }
+    else {
+        assert(name_index < static_header_table.size());  // dynamic table not yet implemented
+        name_ = name_index - 1;
+    }
+    value_ = consume_str(src);
+    return src;
+}
+
 uint64_t Header::consume_int(kae::Span<const std::byte>& src, int prefix)
 {
     assert(src.size() >= 1);
-    uint8_t max_prefix = ~static_cast<uint8_t>(0xff << prefix);
+    uint8_t max_prefix = static_cast<uint8_t>(0xff >> (8 - prefix));
     uint64_t value = utils::big_to_host(kae::bit_cast<uint8_t>(src[0])) & max_prefix;
     if (value != max_prefix) {
         src = src.subspan(1, src.size() - 1);
         return value;
     }
 
-    size_t idx = 0;
+    size_t idx = 1;
     while (true) {
-        ++idx;
         assert(src.size() > idx);
         auto next_byte = utils::big_to_host(kae::bit_cast<uint8_t>(src[idx]));
         value = value + (next_byte & 0x7f) * static_cast<uint64_t>(std::pow(2, (idx - 1) * 7));
+        ++idx;
         if ((next_byte & 0x80) != 0x80)
             break;
     }
@@ -152,10 +151,15 @@ std::string Header::consume_str(kae::Span<const std::byte>& src)
 {
     bool huffman = utils::big_to_host(kae::bit_cast<uint8_t>(src[0])) & 0x80;
     uint64_t length = consume_int(src, 7);
+
+    fmt::print("{} >= {}\n", src.size(), length);
+
     assert(src.size() >= length);
     std::string r;
     r.resize(length);
     std::transform(src.begin(), src.begin() + length, r.begin(), [&](std::byte b) { return static_cast<char>(b); });
+
+    src = src.subspan(length, src.size() - length);
     return r;
 }
 

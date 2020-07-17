@@ -115,6 +115,7 @@ private:
     std::string value_;
     ShouldIndex should_index_;
 
+    kae::Span<const std::byte> decode_name_value(kae::Span<const std::byte> src, uint64_t name_index);
     uint64_t consume_int(kae::Span<const std::byte>& src, int prefix);
     std::string consume_str(kae::Span<const std::byte>& src);
 };
