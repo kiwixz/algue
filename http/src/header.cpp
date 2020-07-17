@@ -66,7 +66,7 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
 
     if (first & 0x80)  // fully indexed
     {
-        logger(kae::LogLevel::debug, "fully indexed");
+        logger.hexdump(kae::LogLevel::debug, src, "fully indexed");
         uint64_t idx = consume_int(src, 7);
         logger(kae::LogLevel::debug, "{}", idx);
         return src;
@@ -83,7 +83,7 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
 
     if ((first & 0xf0) == 0)  // literal without indexing
     {
-        logger(kae::LogLevel::debug, "literal without indexing");
+        logger.hexdump(kae::LogLevel::debug, src, "literal without indexing");
         uint64_t name_index = consume_int(src, 4);
         src = decode_name_value(src, name_index);
         logger(kae::LogLevel::debug, "'{}' = '{}' ({})", name(), value(), value_.size());
@@ -92,7 +92,7 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
 
     if ((first & 0xf0) == 0x10)  // literal never indexed
     {
-        logger(kae::LogLevel::debug, "literal never indexed");
+        logger.hexdump(kae::LogLevel::debug, src, "literal never indexed");
         uint64_t name_index = consume_int(src, 4);
         src = decode_name_value(src, name_index);
         logger(kae::LogLevel::debug, "'{}' = '{}' ({})", name(), value(), value_.size());
@@ -101,7 +101,7 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
 
     if ((first & 0x20) == 0x20)  // table size update
     {
-        logger(kae::LogLevel::debug, "table size update");
+        logger.hexdump(kae::LogLevel::debug, src, "table size update");
         uint64_t max_size = consume_int(src, 5);
         logger(kae::LogLevel::debug, "new max size = {}", max_size);
         return src;

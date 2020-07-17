@@ -64,8 +64,8 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
     if (static_cast<int>(src.size()) < frame_size)
         return false;
 
-    logger.hexdump(kae::LogLevel::debug, src.subspan(0, frame_header_size + frame_size), "frame");
-    kae::Span<const std::byte> frame_payload = src.subspan(frame_header_size, frame_size);
+    kae::Span<const std::byte> frame_payload = src.subspan(frame_header_size, frame_size - frame_header_size);
+    logger.hexdump(kae::LogLevel::debug, src.subspan(0, frame_size), "frame");
 
     int frame_type_n = decode_frame_type(src);
     FrameType frame_type = static_cast<FrameType>(frame_type_n);
