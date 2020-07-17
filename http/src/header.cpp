@@ -68,8 +68,10 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
     if (first & 0x80)  // fully indexed
     {
         logger.hexdump(kae::LogLevel::debug, src, "fully indexed");
-        uint64_t idx = consume_int(src, 7);
-        logger(kae::LogLevel::debug, "{}", idx);
+        uint64_t idx = consume_int(src, 7) - 1;
+        assert(idx < static_header_table.size());  // dynamic table not yet implemented
+        name_ = idx;
+        value_ = static_header_table[idx].value;
         return src;
     }
 
@@ -78,7 +80,6 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
         logger.hexdump(kae::LogLevel::debug, src, "literal with indexing");
         uint64_t name_index = consume_int(src, 6);
         src = decode_name_value(src, name_index);
-        logger(kae::LogLevel::debug, "'{}' = '{}' ({})", name(), value(), value_.size());
         return src;
     }
 
@@ -87,7 +88,6 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
         logger.hexdump(kae::LogLevel::debug, src, "literal without indexing");
         uint64_t name_index = consume_int(src, 4);
         src = decode_name_value(src, name_index);
-        logger(kae::LogLevel::debug, "'{}' = '{}' ({})", name(), value(), value_.size());
         return src;
     }
 
@@ -96,7 +96,6 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
         logger.hexdump(kae::LogLevel::debug, src, "literal never indexed");
         uint64_t name_index = consume_int(src, 4);
         src = decode_name_value(src, name_index);
-        logger(kae::LogLevel::debug, "'{}' = '{}' ({})", name(), value(), value_.size());
         return src;
     }
 
@@ -117,8 +116,9 @@ kae::Span<const std::byte> Header::decode_name_value(kae::Span<const std::byte> 
         name_ = consume_str(src);
     }
     else {
+        --name_index;
         assert(name_index < static_header_table.size());  // dynamic table not yet implemented
-        name_ = name_index - 1;
+        name_ = name_index;
     }
     value_ = consume_str(src);
     return src;

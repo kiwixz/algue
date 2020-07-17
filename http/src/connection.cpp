@@ -70,9 +70,23 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
     int frame_type_n = decode_frame_type(src);
     FrameType frame_type = static_cast<FrameType>(frame_type_n);
     switch (frame_type) {
-    case FrameType::data:
-        logger(kae::LogLevel::warning, "received data, this is unimplemented");
+    case FrameType::data: {
+        logger(kae::LogLevel::info, "received data");
+        DataFrameHeader header;
+        header.decode(src.subspan(0, DataFrameHeader::size));
+
+        auto it = pending_.find(header.stream);
+        if (it == pending_.end())
+            throw std::runtime_error{fmt::format("invalid stream {} in header frame", header.stream)};
+        Pending& p = it->second;
+        p.response.data.insert(p.response.data.end(), frame_payload.begin(), frame_payload.end());
+
+        if (header.flags & DataFrameHeader::Flags::end_stream) {
+            p.callback(p.response);
+            pending_.erase(it);
+        }
         break;
+    }
     case FrameType::headers: {
         logger(kae::LogLevel::info, "received headers");
         HeadersFrameHeader header;

@@ -76,8 +76,10 @@ int main(int /*argc*/, char** /*argv*/)
                                        utils::base64(fmt::format("riot:{}", lockfile.token)))});
 
     asio::write(s, asio::buffer(conn.request(std::move(req), [&](http::Response response) {
-                    fmt::print("response!\n");
-                    (void)response;
+                    for (const http::Header& hdr : response.headers){
+                        logger(kae::LogLevel::none, "{}: {}", hdr.name(), hdr.value());
+                    }
+                    logger.hexdump(kae::LogLevel::none, response.data, "response data");
                 })));
     async_read(s, conn);
 

@@ -52,17 +52,18 @@ int decode_frame_type(kae::Span<const std::byte> src)
 }
 
 
-void SettingsFrameHeader::encode(kae::Span<std::byte> dest)
+void DataFrameHeader::encode(kae::Span<std::byte> dest)
 {
     assert(dest.size() == size);
-    set_frame_header(dest, FrameType::settings,
-                     0, static_cast<uint8_t>(flags), payload_size);
+    set_frame_header(dest, FrameType::headers,
+                     stream, static_cast<uint8_t>(flags), payload_size);
 }
 
-void SettingsFrameHeader::decode(kae::Span<const std::byte> src)
+void DataFrameHeader::decode(kae::Span<const std::byte> src)
 {
     assert(src.size() == size);
-    flags = static_cast<SettingsFrameHeader::Flags>(decode_frame_flags(src));
+    stream = decode_frame_stream(src);
+    flags = static_cast<DataFrameHeader::Flags>(decode_frame_flags(src));
     payload_size = decode_frame_size(src);
 }
 
@@ -79,6 +80,21 @@ void HeadersFrameHeader::decode(kae::Span<const std::byte> src)
     assert(src.size() == size);
     stream = decode_frame_stream(src);
     flags = static_cast<HeadersFrameHeader::Flags>(decode_frame_flags(src));
+    payload_size = decode_frame_size(src);
+}
+
+
+void SettingsFrameHeader::encode(kae::Span<std::byte> dest)
+{
+    assert(dest.size() == size);
+    set_frame_header(dest, FrameType::settings,
+                     0, static_cast<uint8_t>(flags), payload_size);
+}
+
+void SettingsFrameHeader::decode(kae::Span<const std::byte> src)
+{
+    assert(src.size() == size);
+    flags = static_cast<SettingsFrameHeader::Flags>(decode_frame_flags(src));
     payload_size = decode_frame_size(src);
 }
 
