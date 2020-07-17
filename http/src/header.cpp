@@ -7,6 +7,7 @@
 #include <kae/bit_cast.h>
 #include <kae/logger.h>
 
+#include "http/huffman.h"
 #include "utils/bytes.h"
 #include "utils/endian.h"
 
@@ -50,9 +51,9 @@ void Header::encode(kae::Span<std::byte> dest) const
 
     utils::BytesWriter writer{dest};
     writer.put(uint8_t{0});
-    writer.put(utils::host_to_big(static_cast<uint8_t>(name().size())));
+    writer.put(static_cast<uint8_t>(name().size()));
     writer.put(name());
-    writer.put(utils::host_to_big(static_cast<uint8_t>(value().size())));
+    writer.put(static_cast<uint8_t>(value().size()));
     writer.put(value());
 
     assert(writer.finished());
@@ -62,7 +63,7 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
 {
     kae::Logger logger{"header_decode"};
 
-    auto first = utils::big_to_host(kae::bit_cast<uint8_t>(src[0]));
+    auto first = kae::bit_cast<uint8_t>(src[0]);
 
     if (first & 0x80)  // fully indexed
     {
@@ -127,7 +128,7 @@ uint64_t Header::consume_int(kae::Span<const std::byte>& src, int prefix)
 {
     assert(src.size() >= 1);
     uint8_t max_prefix = static_cast<uint8_t>(0xff >> (8 - prefix));
-    uint64_t value = utils::big_to_host(kae::bit_cast<uint8_t>(src[0])) & max_prefix;
+    uint64_t value = kae::bit_cast<uint8_t>(src[0]) & max_prefix;
     if (value != max_prefix) {
         src = src.subspan(1, src.size() - 1);
         return value;
@@ -136,7 +137,7 @@ uint64_t Header::consume_int(kae::Span<const std::byte>& src, int prefix)
     size_t idx = 1;
     while (true) {
         assert(src.size() > idx);
-        auto next_byte = utils::big_to_host(kae::bit_cast<uint8_t>(src[idx]));
+        auto next_byte = kae::bit_cast<uint8_t>(src[idx]);
         value = value + (next_byte & 0x7f) * static_cast<uint64_t>(std::pow(2, (idx - 1) * 7));
         ++idx;
         if ((next_byte & 0x80) != 0x80)
@@ -149,15 +150,20 @@ uint64_t Header::consume_int(kae::Span<const std::byte>& src, int prefix)
 
 std::string Header::consume_str(kae::Span<const std::byte>& src)
 {
-    bool huffman = utils::big_to_host(kae::bit_cast<uint8_t>(src[0])) & 0x80;
+    bool huffman = kae::bit_cast<uint8_t>(src[0]) & 0x80;
     uint64_t length = consume_int(src, 7);
 
     fmt::print("{} >= {}\n", src.size(), length);
 
     assert(src.size() >= length);
     std::string r;
-    r.resize(length);
-    std::transform(src.begin(), src.begin() + length, r.begin(), [&](std::byte b) { return static_cast<char>(b); });
+    if (huffman) {
+        r = huffman_decode(src.subspan(0, length));
+    }
+    else {
+        r.resize(length);
+        std::transform(src.begin(), src.begin() + length, r.begin(), [&](std::byte b) { return static_cast<char>(b); });
+    }
 
     src = src.subspan(length, src.size() - length);
     return r;
