@@ -40,8 +40,8 @@ struct HeadersFrameHeader {
     enum class Flags {
         end_stream = 0x1,
         end_headers = 0x4,
-        // padded = 0x8,
-        // priority = 0x20,
+        padded = 0x8,
+        priority = 0x20,
     };
 
     static constexpr int size = frame_header_size;

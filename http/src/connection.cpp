@@ -73,11 +73,29 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
     case FrameType::data:
         logger(kae::LogLevel::warning, "received data, this is unimplemented");
         break;
-    case FrameType::headers:
-        logger(kae::LogLevel::warning, "received headers, this is unimplemented");
-        while (frame_payload.size())
-            frame_payload = Header{}.decode(frame_payload);
+    case FrameType::headers: {
+        logger(kae::LogLevel::info, "received headers");
+        HeadersFrameHeader header;
+        header.decode(src.subspan(0, HeadersFrameHeader::size));
+        assert(header.flags & HeadersFrameHeader::Flags::end_headers);  // not implemented
+        assert(!(header.flags & HeadersFrameHeader::Flags::padded));    // not implemented
+        assert(!(header.flags & HeadersFrameHeader::Flags::priority));  // not implemented
+
+        auto it = pending_.find(header.stream);
+        if (it == pending_.end())
+            throw std::runtime_error{fmt::format("invalid stream {} in header frame", header.stream)};
+        Pending& p = it->second;
+
+        while (frame_payload.size()) {
+            frame_payload = p.response.headers.emplace_back().decode(frame_payload);
+        }
+
+        if (header.flags & HeadersFrameHeader::Flags::end_stream) {
+            p.callback(p.response);
+            pending_.erase(it);
+        }
         break;
+    }
     case FrameType::settings:
         logger(kae::LogLevel::warning, "received settings, this is unimplemented");
         break;
