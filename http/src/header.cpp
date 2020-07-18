@@ -14,17 +14,17 @@
 namespace algue::http {
 
 Header::Header(StaticTableIndex name_index, std::string value, ShouldIndex should_index) :
-    name_{name_index}, value_{value}, should_index_{should_index}
+    name_{name_index}, value_{std::move(value)}, should_index_{should_index}
 {}
 
 Header::Header(std::string name, std::string value, ShouldIndex should_index) :
-    name_{name}, value_{value}, should_index_{should_index}
+    name_{std::move(name)}, value_{std::move(value)}, should_index_{should_index}
 {}
 
 
 std::string_view Header::name() const
 {
-    if (auto* idx = std::get_if<StaticTableIndex>(&name_))
+    if (const auto* idx = std::get_if<StaticTableIndex>(&name_))
         return static_header_table[*idx].name;
     else
         return std::get<std::string>(name_);
@@ -114,7 +114,7 @@ kae::Span<const std::byte> Header::decode_name_value(kae::Span<const std::byte> 
 uint64_t Header::consume_int(kae::Span<const std::byte>& src, int prefix)
 {
     assert(src.size() >= 1);
-    uint8_t max_prefix = static_cast<uint8_t>(0xff >> (8 - prefix));
+    auto max_prefix = static_cast<uint8_t>(0xff >> (8 - prefix));
     uint64_t value = kae::bit_cast<uint8_t>(src[0]) & max_prefix;
     if (value != max_prefix) {
         src = src.subspan(1, src.size() - 1);

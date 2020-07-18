@@ -29,8 +29,7 @@ uint8_t decode_frame_flags(kae::Span<const std::byte> src)
 Stream decode_frame_stream(kae::Span<const std::byte> src)
 {
     Stream r;
-    std::copy(src.begin() + 5, src.begin() + 5 + sizeof(Stream),
-              reinterpret_cast<std::byte*>(&r));
+    std::memcpy(&r, src.data() + 5, sizeof(Stream));
     return utils::big_to_host(r);
 }
 
@@ -52,7 +51,7 @@ int decode_frame_type(kae::Span<const std::byte> src)
 }
 
 
-void DataFrameHeader::encode(kae::Span<std::byte> dest)
+void DataFrameHeader::encode(kae::Span<std::byte> dest) const
 {
     assert(dest.size() == size);
     set_frame_header(dest, FrameType::headers,
@@ -68,7 +67,7 @@ void DataFrameHeader::decode(kae::Span<const std::byte> src)
 }
 
 
-void HeadersFrameHeader::encode(kae::Span<std::byte> dest)
+void HeadersFrameHeader::encode(kae::Span<std::byte> dest) const
 {
     assert(dest.size() == size);
     set_frame_header(dest, FrameType::headers,
@@ -84,7 +83,7 @@ void HeadersFrameHeader::decode(kae::Span<const std::byte> src)
 }
 
 
-void SettingsFrameHeader::encode(kae::Span<std::byte> dest)
+void SettingsFrameHeader::encode(kae::Span<std::byte> dest) const
 {
     assert(dest.size() == size);
     set_frame_header(dest, FrameType::settings,

@@ -70,13 +70,13 @@ int main(int /*argc*/, char** /*argv*/)
     http::Request req;
     req.method = http::Method::get;
     req.path = "/lol-summoner/v1/current-summoner";
-    req.headers.push_back({"host", fmt::format("127.0.0.1:{}", lockfile.port)});
-    req.headers.push_back({"authorization",
-                           fmt::format("Basic {}",
-                                       utils::base64(fmt::format("riot:{}", lockfile.token)))});
+    req.headers.emplace_back("host", fmt::format("127.0.0.1:{}", lockfile.port));
+    req.headers.emplace_back("authorization",
+                             fmt::format("Basic {}",
+                                         utils::base64(fmt::format("riot:{}", lockfile.token))));
 
     asio::write(s, asio::buffer(conn.request(std::move(req), [&](http::Response response) {
-                    for (const http::Header& hdr : response.headers){
+                    for (const http::Header& hdr : response.headers) {
                         logger(kae::LogLevel::none, "{}: {}", hdr.name(), hdr.value());
                     }
                     logger.hexdump(kae::LogLevel::none, response.data, "response data");

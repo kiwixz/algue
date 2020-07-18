@@ -68,7 +68,7 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
     logger.hexdump(kae::LogLevel::debug, src.subspan(0, frame_size), "frame");
 
     int frame_type_n = decode_frame_type(src);
-    FrameType frame_type = static_cast<FrameType>(frame_type_n);
+    auto frame_type = static_cast<FrameType>(frame_type_n);
     switch (frame_type) {
     case FrameType::data: {
         logger(kae::LogLevel::info, "received data");

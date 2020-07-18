@@ -33,7 +33,7 @@ struct DataFrameHeader {
     Flags flags;
     int payload_size;
 
-    void encode(kae::Span<std::byte> dest);
+    void encode(kae::Span<std::byte> dest) const;
     void decode(kae::Span<const std::byte> src);
 };
 
@@ -51,7 +51,7 @@ struct HeadersFrameHeader {
     Flags flags;
     int payload_size;
 
-    void encode(kae::Span<std::byte> dest);
+    void encode(kae::Span<std::byte> dest) const;
     void decode(kae::Span<const std::byte> src);
 };
 
@@ -65,7 +65,7 @@ struct SettingsFrameHeader {
     Flags flags;
     int payload_size;
 
-    void encode(kae::Span<std::byte> dest);
+    void encode(kae::Span<std::byte> dest) const;
     void decode(kae::Span<const std::byte> src);
 };
 
