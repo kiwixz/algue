@@ -1,7 +1,6 @@
 #include <asio/ip/tcp.hpp>
 #include <asio/ssl/stream.hpp>
 #include <asio/write.hpp>
-
 #include <kae/exception.h>
 #include <kae/make_array.h>
 #include <kae/os.h>
