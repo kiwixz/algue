@@ -312,7 +312,7 @@ size_t huffman_size(std::string_view src)
     for (char c : src) {
         r += huffman_codes[c].nr_bits;
     }
-    return kae::div_ceil(r, 8ull);
+    return kae::div_ceil(r, size_t{8});
 }
 
 void huffman_encode(std::string_view src, kae::Span<std::byte> dest)
