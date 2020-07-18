@@ -284,7 +284,6 @@ unsigned peek_bits(kae::Span<const std::byte> src, size_t offset, size_t nr_bits
     r &= (0xff >> offset_inside_byte);
     if (nr_bits < nr_bits_in_first_byte) {
         r >>= nr_bits_in_first_byte - nr_bits;
-        r &= 0xff >> (8 - nr_bits);
         return r;
     }
 
@@ -301,7 +300,6 @@ unsigned peek_bits(kae::Span<const std::byte> src, size_t offset, size_t nr_bits
 
     auto r_end = kae::bit_cast<uint8_t>(src[offset_byte]);
     r_end >>= 8 - rem_bits;
-    r_end &= 0xff >> (8 - rem_bits);
     return (r << rem_bits) + r_end;
 }
 
@@ -318,7 +316,52 @@ size_t huffman_size(std::string_view src)
 }
 
 void huffman_encode(std::string_view src, kae::Span<std::byte> dest)
-{}
+{
+    size_t offset = 0;
+    uint8_t current_byte = 0;
+    for (char c : src) {
+        const HuffmanCode& code = huffman_codes[c];
+
+        size_t rem_bits_current = 8 - offset % 8;
+        if (code.nr_bits == rem_bits_current) {
+            current_byte |= code.encoded;
+            dest[offset / 8] = static_cast<std::byte>(current_byte);
+            current_byte = 0;
+            offset += code.nr_bits;
+            continue;
+        }
+
+        if (code.nr_bits < rem_bits_current) {
+            current_byte |= code.encoded << (rem_bits_current - code.nr_bits);
+            offset += code.nr_bits;
+            continue;
+        }
+
+        size_t rem_bits = code.nr_bits - rem_bits_current;
+        current_byte |= code.encoded >> rem_bits;
+        dest[offset / 8] = static_cast<std::byte>(current_byte);
+        current_byte = 0;
+        offset += rem_bits_current;
+
+        while (rem_bits >= 8) {
+            rem_bits -= 8;
+            dest[offset / 8] = static_cast<std::byte>(code.encoded >> rem_bits);
+            offset += 8;
+        }
+
+        if (rem_bits == 0)
+            continue;
+
+        current_byte = static_cast<uint8_t>(code.encoded << (8 - rem_bits));
+        offset += rem_bits;
+    }
+
+    int rem_bits = 8 - offset % 8;
+    if (rem_bits != 8) {
+        current_byte |= 0xff >> (8 - rem_bits);
+        dest[offset / 8] = static_cast<std::byte>(current_byte);
+    }
+}
 
 std::string huffman_decode(kae::Span<const std::byte> src)
 {

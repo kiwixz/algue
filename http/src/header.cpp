@@ -175,12 +175,12 @@ void Header::put_int(utils::BytesWriter& writer, uint8_t first_byte, int prefix,
 void Header::put_str(utils::BytesWriter& writer, std::string_view str) const
 {
     size_t encoded_size = huffman_size(str);
-    bool huffman = huffman_size(str) < str.size();
-    put_int(writer, static_cast<uint8_t>(huffman << 7), 7, str.size());
-    if (huffman) {
+    if (huffman_size(str) < str.size()) {
+        put_int(writer, 0x80, 7, encoded_size);
         huffman_encode(str, writer.put_zero(encoded_size));
     }
     else {
+        put_int(writer, 0, 7, str.size());
         writer.put(str);
     }
 }
