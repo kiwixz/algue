@@ -3,6 +3,10 @@
 #include <charconv>
 #include <fstream>
 
+#include <fmt/format.h>
+
+#include "utils/base64.h"
+
 namespace algue::utils {
 
 Lockfile read_lockfile()
@@ -28,11 +32,22 @@ Lockfile read_lockfile()
     size_t end_token = next(idx_token);
 
     Lockfile lockfile;
-    if (std::from_chars(file.data() + idx_port, file.data() + idx_token - 1, lockfile.port).ptr != file.data() + idx_token - 1)
+    const char* port_end = file.data() + idx_token - 1;
+    if (std::from_chars(file.data() + idx_port, port_end, lockfile.port).ptr != port_end)
         throw std::runtime_error{"could not parse lockfile port"};
 
     lockfile.token = file.substr(idx_token, end_token - idx_token - 1);
     return lockfile;
+}
+
+std::vector<http::Header> lockfile_to_headers(const Lockfile& lockfile)
+{
+    return {
+            {"host", fmt::format("127.0.0.1:{}", lockfile.port)},
+            {"authorization",
+             fmt::format("Basic {}",
+                         utils::base64(fmt::format("riot:{}", lockfile.token)))},
+    };
 }
 
 }  // namespace algue::utils

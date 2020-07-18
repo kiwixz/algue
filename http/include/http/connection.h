@@ -25,7 +25,7 @@ private:
         kae::UniqueFunction<void(Response)> callback;
     };
 
-    kae::Logger logger{"Connection"};
+    kae::Logger logger{"connection"};
     Stream next_stream_ = 1;
     std::unordered_map<Stream, Pending> pending_;
     utils::Bytes in_buffer_;

@@ -12,8 +12,6 @@ utils::Bytes Connection::preface()
     utils::Bytes data;
     data.append("PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n");
     SettingsFrameHeader{}.encode(data.append_zero(SettingsFrameHeader::size));
-
-    logger.hexdump(kae::LogLevel::debug, data, "preface");
     return data;
 }
 
@@ -36,15 +34,11 @@ utils::Bytes Connection::request(Request request, kae::UniqueFunction<void(Respo
 
     pending_[next_stream_] = {{std::move(request)}, std::move(callback)};
     ++next_stream_;
-
-    logger.hexdump(kae::LogLevel::debug, data, "request");
     return data;
 }
 
 void Connection::parse(kae::Span<const std::byte> data)
 {
-    logger.hexdump(kae::LogLevel::debug, data, "parse");
-
     if (!in_buffer_.empty()) {
         in_buffer_.append(data);
         data = in_buffer_;
@@ -65,7 +59,6 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
         return false;
 
     kae::Span<const std::byte> frame_payload = src.subspan(frame_header_size, frame_size - frame_header_size);
-    logger.hexdump(kae::LogLevel::debug, src.subspan(0, frame_size), "frame");
 
     int frame_type_n = decode_frame_type(src);
     auto frame_type = static_cast<FrameType>(frame_type_n);
@@ -112,6 +105,9 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
     }
     case FrameType::settings:
         logger(kae::LogLevel::warning, "received settings, this is unimplemented");
+        break;
+    case FrameType::window_update:
+        logger(kae::LogLevel::warning, "received window_update, this is unimplemented");
         break;
     default:
         logger(kae::LogLevel::warning, "received frame of unknown type {}", frame_type_n);

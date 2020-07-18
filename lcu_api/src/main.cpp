@@ -2,11 +2,9 @@
 #include <asio/ssl/stream.hpp>
 #include <asio/write.hpp>
 #include <kae/exception.h>
-#include <kae/make_array.h>
 #include <kae/os.h>
 
 #include "http/connection.h"
-#include "utils/base64.h"
 #include "utils/lockfile.h"
 
 namespace {
@@ -52,8 +50,6 @@ int main(int /*argc*/, char** /*argv*/)
     ssl_context.load_verify_file("riotgames.pem");
 
     asio::ssl::stream<asio::ip::tcp::socket> s{io_context, ssl_context};
-    // if (!SSL_set_tlsext_host_name(s.native_handle(), const_cast<char*>("example.org")))
-    //     throw std::runtime_error{"no sni"};
     std::array<unsigned char, 3> h2 = {{2, 'h', '2'}};
     if (SSL_set_alpn_protos(s.native_handle(), h2.data(), h2.size()))
         throw std::runtime_error{"cannot set alpn"};
@@ -69,10 +65,7 @@ int main(int /*argc*/, char** /*argv*/)
     http::Request req;
     req.method = http::Method::get;
     req.path = "/lol-summoner/v1/current-summoner";
-    req.headers.emplace_back("host", fmt::format("127.0.0.1:{}", lockfile.port));
-    req.headers.emplace_back("authorization",
-                             fmt::format("Basic {}",
-                                         utils::base64(fmt::format("riot:{}", lockfile.token))));
+    req.headers = lockfile_to_headers(lockfile);
 
     asio::write(s, asio::buffer(conn.request(std::move(req), [&](http::Response response) {
                     for (const http::Header& hdr : response.headers) {

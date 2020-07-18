@@ -13,6 +13,7 @@ enum class FrameType {
     data = 0x0,
     headers = 0x1,
     settings = 0x4,
+    window_update = 0x8,
 };
 
 constexpr int frame_header_size = 9;

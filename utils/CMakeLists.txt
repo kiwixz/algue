@@ -15,4 +15,6 @@ endif ()
 
 target_link_libraries("${target}" PUBLIC
     "kae::kae"
+
+    "http"
 )
