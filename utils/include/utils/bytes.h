@@ -14,7 +14,9 @@ struct BytesWriter {
     BytesWriter(kae::Span<std::byte> data);
 
     bool finished() const;
+    size_t written() const;
 
+    kae::Span<std::byte> put_zero(size_t n);
     void put(kae::Span<const std::byte> data);
     void put(kae::Span<const char> data);
     void put(kae::Span<const unsigned char> data);
@@ -36,7 +38,6 @@ private:
 
 struct Bytes : std::vector<std::byte> {
     IndexSpan<Bytes> append_zero(size_t n);
-
     iterator append(kae::Span<const std::byte> data);
     iterator append(kae::Span<const char> data);
     iterator append(kae::Span<const unsigned char> data);

@@ -11,6 +11,17 @@ bool BytesWriter::finished() const
     return index_ == data_.size();
 }
 
+size_t BytesWriter::written() const
+{
+    return index_;
+}
+
+kae::Span<std::byte> BytesWriter::put_zero(size_t n)
+{
+    index_ += n;
+    return data_.subspan(index_ - n, n);
+}
+
 void BytesWriter::put(kae::Span<const std::byte> data)
 {
     std::copy(data.begin(), data.end(), data_.begin() + index_);

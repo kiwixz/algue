@@ -4,9 +4,7 @@
 #include <cassert>
 
 #include <kae/bit_cast.h>
-
-
-#include <fmt/printf.h>
+#include <kae/math.h>
 
 namespace algue::http {
 namespace {
@@ -311,7 +309,13 @@ unsigned peek_bits(kae::Span<const std::byte> src, size_t offset, size_t nr_bits
 
 
 size_t huffman_size(std::string_view src)
-{}
+{
+    size_t r = 0;
+    for (char c : src) {
+        r += huffman_codes[c].nr_bits;
+    }
+    return kae::div_ceil(r, 8ull);
+}
 
 void huffman_encode(std::string_view src, kae::Span<std::byte> dest)
 {}

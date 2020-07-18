@@ -8,6 +8,7 @@
 
 #include <kae/span.h>
 
+#include "utils/bytes.h"
 #include "utils/lower_bound.h"
 
 namespace algue::http {
@@ -118,6 +119,8 @@ private:
     kae::Span<const std::byte> decode_name_value(kae::Span<const std::byte> src, uint64_t name_index);
     uint64_t consume_int(kae::Span<const std::byte>& src, int prefix);
     std::string consume_str(kae::Span<const std::byte>& src);
+    void put_int(utils::BytesWriter& writer, uint8_t first_byte, int prefix, uint64_t n) const;
+    void put_str(utils::BytesWriter& writer, std::string_view str) const;
 };
 
 
