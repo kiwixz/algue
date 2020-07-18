@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include <kae/bit_cast.h>
+#include <kae/exception.h>
 #include <kae/logger.h>
 
 #include "http/huffman.h"
@@ -92,7 +93,7 @@ kae::Span<const std::byte> Header::decode(kae::Span<const std::byte> src)
         assert(false);
     }
     else
-        throw std::runtime_error{"bad header block"};
+        throw MAKE_EXCEPTION("bad header block");
 
     return src;
 }

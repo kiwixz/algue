@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include <fmt/format.h>
+#include <kae/exception.h>
 
 #include "utils/base64.h"
 
@@ -13,7 +14,7 @@ Lockfile read_lockfile()
 {
     std::ifstream ifs{"C:/Riot Games/League of Legends/lockfile", std::ios::ate};
     if (!ifs)
-        throw std::runtime_error{"no lockfile, is league launched?"};
+        throw MAKE_EXCEPTION("no lockfile, is league launched?");
 
     std::string file;
     file.resize(ifs.tellg());
@@ -23,7 +24,7 @@ Lockfile read_lockfile()
     auto next = [&](size_t start) {
         size_t r = file.find(':', start);
         if (r == std::string::npos)
-            throw std::runtime_error{"corrupt lockfile"};
+            throw MAKE_EXCEPTION("corrupt lockfile");
         return r + 1;
     };
 
@@ -34,7 +35,7 @@ Lockfile read_lockfile()
     Lockfile lockfile;
     const char* port_end = file.data() + idx_token - 1;
     if (std::from_chars(file.data() + idx_port, port_end, lockfile.port).ptr != port_end)
-        throw std::runtime_error{"could not parse lockfile port"};
+        throw MAKE_EXCEPTION("could not parse lockfile port");
 
     lockfile.token = file.substr(idx_token, end_token - idx_token - 1);
     return lockfile;

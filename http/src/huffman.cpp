@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include <kae/bit_cast.h>
+#include <kae/exception.h>
 #include <kae/math.h>
 
 namespace algue::http {
@@ -384,7 +385,7 @@ std::string huffman_decode(kae::Span<const std::byte> src)
                 && peek_bits(src, offset, rem_bits) == (0xffffffff >> (sizeof(unsigned) * 8 - rem_bits)))
                 return r;  // ignore padding
 
-            throw std::runtime_error{"invalid huffman code"};
+            throw MAKE_EXCEPTION("invalid huffman code");
         }
 
         offset += it->nr_bits;

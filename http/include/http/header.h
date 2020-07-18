@@ -6,6 +6,7 @@
 #include <string_view>
 #include <variant>
 
+#include <kae/exception.h>
 #include <kae/span.h>
 
 #include "utils/bytes.h"
@@ -96,7 +97,7 @@ struct Header {
     {
         auto it = utils::lower_bound_if(static_header_table, [&](const StaticHeader& hdr) { return hdr.name < name; });
         if (it == static_header_table.end() || it->name != name)
-            throw std::runtime_error{"header name not found in static table"};
+            throw MAKE_EXCEPTION("header name not found in static table");
         return it - static_header_table.begin();
     }
 

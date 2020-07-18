@@ -2,6 +2,8 @@
 
 #include <cassert>
 
+#include <kae/exception.h>
+
 #include "http/frame.h"
 #include "utils/endian.h"
 
@@ -70,7 +72,7 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
 
         auto it = pending_.find(header.stream);
         if (it == pending_.end())
-            throw std::runtime_error{fmt::format("invalid stream {} in header frame", header.stream)};
+            throw MAKE_EXCEPTION("invalid stream {} in header frame", header.stream);
         Pending& p = it->second;
         p.response.data.insert(p.response.data.end(), frame_payload.begin(), frame_payload.end());
 
@@ -90,7 +92,7 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
 
         auto it = pending_.find(header.stream);
         if (it == pending_.end())
-            throw std::runtime_error{fmt::format("invalid stream {} in header frame", header.stream)};
+            throw MAKE_EXCEPTION("invalid stream {} in header frame", header.stream);
         Pending& p = it->second;
 
         while (frame_payload.size()) {
