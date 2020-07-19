@@ -1,6 +1,7 @@
 #include <asio/ip/tcp.hpp>
 #include <asio/ssl/stream.hpp>
 #include <asio/write.hpp>
+#include <kae/config.h>
 #include <kae/exception.h>
 #include <kae/os.h>
 
@@ -31,7 +32,7 @@ void async_read(asio::ssl::stream<asio::ip::tcp::socket>& socket, algue::http::C
 }  // namespace
 
 
-int main(int /*argc*/, char** /*argv*/)
+int main(int argc, char** argv)
 {
     using namespace algue;
 
@@ -39,6 +40,16 @@ int main(int /*argc*/, char** /*argv*/)
     kae::set_thread_name("main_thread");
 
     kae::Logger logger{"lcu_api"};
+
+    kae::Config cfg;
+    cfg.set("data", "");
+    cfg.set("method", "GET");
+
+    if (cfg.parse_args(argc, argv) || argc != 2) {
+        cfg.show_help(argv[0], "url");
+        return 1;
+    }
+    std::string url = argv[1];
 
     logger(kae::LogLevel::info, "reading lockfile");
     utils::Lockfile lockfile = utils::read_lockfile();
