@@ -23,7 +23,7 @@ utils::Bytes Connection::request(Request request, kae::UniqueFunction<void(Respo
 
     utils::IndexSpan headers_frame_header = data.append_zero(HeadersFrameHeader::size);
     request.headers.insert(request.headers.begin(), {{Header::name_index(":scheme"), "https"},
-                                                     {Header::name_index(":method"), std::string{to_string(request.method)}},
+                                                     {Header::name_index(":method"), request.method},
                                                      {Header::name_index(":path"), request.path}});
     for (const Header& hdr : request.headers) {
         hdr.encode(data.append_zero(hdr.encoded_size()));

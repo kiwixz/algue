@@ -6,6 +6,7 @@
 #include <kae/os.h>
 
 #include "http/connection.h"
+#include "http/method.h"
 #include "utils/lockfile.h"
 
 namespace {
@@ -16,10 +17,7 @@ void async_read(asio::ssl::stream<asio::ip::tcp::socket>& socket, algue::http::C
     buf->resize(2000);
     asio::mutable_buffers_1 asio_buf = asio::buffer(*buf);
     socket.async_read_some(asio_buf, [&socket, &connection, buf = std::move(buf)](asio::error_code ec, size_t size) {
-        if (ec == asio::error::eof) {
-            exit(0);
-        }
-        else if (ec) {
+        if (ec) {
             fmt::print("socket error: {}\n", ec.message());
             exit(1);
         }
@@ -43,13 +41,13 @@ int main(int argc, char** argv)
 
     kae::Config cfg;
     cfg.set("data", "");
-    cfg.set("method", "GET");
+    cfg.set("method", http::method::get);
 
     if (cfg.parse_args(argc, argv) || argc != 2) {
-        cfg.show_help(argv[0], "url");
+        cfg.show_help(argv[0], "path");
         return 1;
     }
-    std::string url = argv[1];
+    std::string path = argv[1];
 
     logger(kae::LogLevel::info, "reading lockfile");
     utils::Lockfile lockfile = utils::read_lockfile();
@@ -74,17 +72,22 @@ int main(int argc, char** argv)
     asio::write(s, asio::buffer(conn.preface()));
 
     http::Request req;
-    req.method = http::Method::get;
-    req.path = "/lol-summoner/v1/current-summoner";
+    cfg.get_to("method", req.method);
+    req.path = path;
     req.headers = lockfile_to_headers(lockfile);
-
     asio::write(s, asio::buffer(conn.request(std::move(req), [&](http::Response response) {
-                    for (const http::Header& hdr : response.headers) {
-                        logger(kae::LogLevel::none, "{}: {}", hdr.name(), hdr.value());
+                    io_context.stop();
+                    for (const http::Header& hdr : response.request.headers) {
+                        fmt::print(" > {}: {}\n", hdr.name(), hdr.value());
                     }
-                    logger.hexdump(kae::LogLevel::none, response.data, "response data");
+                    fmt::print("\n");
+                    for (const http::Header& hdr : response.headers) {
+                        fmt::print(" < {}: {}\n", hdr.name(), hdr.value());
+                    }
+                    std::string_view data{reinterpret_cast<const char*>(response.data.data()), response.data.size()};
+                    fmt::print("\n{}\n", data);
                 })));
-    async_read(s, conn);
 
+    async_read(s, conn);
     io_context.run();
 }

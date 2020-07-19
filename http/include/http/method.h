@@ -2,18 +2,16 @@
 
 #include <string_view>
 
-namespace algue::http {
+namespace algue::http::method {
 
-enum class Method {
-    get
-};
+constexpr std::string_view connect = "CONNECT";
+constexpr std::string_view delete_ = "DELETE";
+constexpr std::string_view get = "GET";
+constexpr std::string_view head = "HEAD";
+constexpr std::string_view options = "OPTIONS";
+constexpr std::string_view patch = "PATCH";
+constexpr std::string_view post = "POST";
+constexpr std::string_view put = "PUT";
+constexpr std::string_view trace = "TRACE";
 
-constexpr std::string_view to_string(Method method)
-{
-    switch (method) {
-    case Method::get:
-        return "GET";
-    }
-}
-
-}  // namespace algue::http
+}  // namespace algue::http::method
