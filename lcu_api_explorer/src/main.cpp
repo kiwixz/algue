@@ -35,9 +35,9 @@ int main(int argc, char** argv)
     using namespace algue;
 
     std::set_terminate(&kae::terminate);
-    kae::set_thread_name("main_thread");
+    kae::set_thread_name("MainThread");
 
-    kae::Logger logger{"lcu_api"};
+    kae::Logger logger{"Explorer"};
 
     kae::Config cfg;
     cfg.set("data", "");
