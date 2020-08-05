@@ -61,11 +61,11 @@ int main(int argc, char** argv)
     asio::ssl::stream<asio::ip::tcp::socket> s{io_context, ssl_context};
     std::array<unsigned char, 3> h2 = {{2, 'h', '2'}};
     if (SSL_set_alpn_protos(s.native_handle(), h2.data(), h2.size()))
-        throw MAKE_EXCEPTION("cannot set alpn");
+        throw MAKE_EXCEPTION("cannot set ALPN");
 
     s.lowest_layer().connect({asio::ip::make_address_v4("127.0.0.1"), static_cast<uint16_t>(lockfile.port)});
 
-    logger(kae::LogLevel::info, "tls handshake");
+    logger(kae::LogLevel::info, "TLS handshake");
     s.handshake(asio::ssl::stream_base::client);
 
     http::Connection conn;

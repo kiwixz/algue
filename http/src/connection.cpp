@@ -106,13 +106,13 @@ bool Connection::consume_frame(kae::Span<const std::byte>& src)
         break;
     }
     case FrameType::settings:
-        logger(kae::LogLevel::warning, "received settings, this is unimplemented");
+        logger(kae::LogLevel::warning, "received unimplemented frame settings");
         break;
     case FrameType::window_update:
-        logger(kae::LogLevel::warning, "received window_update, this is unimplemented");
+        logger(kae::LogLevel::warning, "received unimplemented frame window_update");
         break;
     default:
-        logger(kae::LogLevel::warning, "received frame of unknown type {}", frame_type_n);
+        logger(kae::LogLevel::warning, "received unimplemented frame of unknown type {}", frame_type_n);
     }
 
     src = src.subspan(frame_size, src.size() - frame_size);
