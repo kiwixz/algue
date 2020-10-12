@@ -31,13 +31,14 @@ void Response::deserialize(kae::FunctionRef<size_t(kae::Span<std::byte> buffer)>
             available_size = buffer.size() - total_read_size;
         }
         last_read_size = read({buffer.data() + total_read_size, available_size});
+        ASSERT(last_read_size > 0);
         total_read_size += last_read_size;
 
         auto it = std::search(buffer.begin() + total_read_size - last_read_size,
                               buffer.begin() + total_read_size,
                               reinterpret_cast<const std::byte*>(header_sentinel.data()),
                               reinterpret_cast<const std::byte*>(header_sentinel.data()) + header_sentinel.size());
-        if (it != buffer.end()) {
+        if (it != buffer.begin() + total_read_size) {
             header = {reinterpret_cast<const char*>(buffer.data()),
                       (it - buffer.begin()) + header_sentinel.size()};
             break;
