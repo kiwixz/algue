@@ -5,26 +5,26 @@
 namespace algue::utils {
 
 template <typename TObject>
-struct Ptr {
+struct ValuePtr {
     using Object = TObject;
 
-    Ptr() = default;
+    ValuePtr() = default;
     template <typename... Args>
-    Ptr(Args&&... args) :
+    ValuePtr(Args&&... args) :
         ptr_{std::make_unique<Object>(std::forward<Args>(args)...)}
     {}
 
-    ~Ptr() = default;
-    Ptr(const Ptr& other) :
+    ~ValuePtr() = default;
+    ValuePtr(const ValuePtr& other) :
         ptr_{std::make_unique<Object>(*other)}
     {}
-    Ptr(Ptr&& other) noexcept = default;
-    Ptr& operator=(const Ptr& other)
+    ValuePtr(ValuePtr&& other) noexcept = default;
+    ValuePtr& operator=(const ValuePtr& other)
     {
         ptr_ = std::make_unique<Object>(*other);
         return *this;
     }
-    Ptr& operator=(Ptr&& other) noexcept = default;
+    ValuePtr& operator=(ValuePtr&& other) noexcept = default;
 
     const Object& operator*() const
     {

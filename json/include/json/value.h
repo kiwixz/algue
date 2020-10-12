@@ -3,7 +3,7 @@
 #include <variant>
 
 #include "json/types.h"
-#include "utils/ptr.h"
+#include "utils/value_ptr.h"
 
 namespace algue::json {
 
@@ -41,8 +41,8 @@ private:
                  Boolean,
                  Number,
                  String,
-                 utils::Ptr<Array>,
-                 utils::Ptr<Object>>
+                 utils::ValuePtr<Array>,
+                 utils::ValuePtr<Object>>
             data_;
 };
 

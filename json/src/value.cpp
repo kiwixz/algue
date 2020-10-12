@@ -22,11 +22,11 @@ Value::Value(String string) :
 {}
 
 Value::Value(Array array) :
-    data_{utils::Ptr<Array>{std::move(array)}}
+    data_{utils::ValuePtr<Array>{std::move(array)}}
 {}
 
 Value::Value(Object object) :
-    data_{utils::Ptr<Object>{std::move(object)}}
+    data_{utils::ValuePtr<Object>{std::move(object)}}
 {}
 
 
@@ -56,13 +56,13 @@ Value& Value::operator=(String string)
 
 Value& Value::operator=(Array array)
 {
-    data_ = utils::Ptr<Array>{std::move(array)};
+    data_ = utils::ValuePtr<Array>{std::move(array)};
     return *this;
 }
 
 Value& Value::operator=(Object object)
 {
-    data_ = utils::Ptr<Object>{std::move(object)};
+    data_ = utils::ValuePtr<Object>{std::move(object)};
     return *this;
 }
 
@@ -77,9 +77,9 @@ Type Value::type() const
         return Type::number;
     else if (std::holds_alternative<String>(data_))
         return Type::string;
-    else if (std::holds_alternative<utils::Ptr<Array>>(data_))
+    else if (std::holds_alternative<utils::ValuePtr<Array>>(data_))
         return Type::array;
-    else if (std::holds_alternative<utils::Ptr<Object>>(data_))
+    else if (std::holds_alternative<utils::ValuePtr<Object>>(data_))
         return Type::object;
 
     throw MAKE_EXCEPTION("unknown value type");
@@ -114,20 +114,20 @@ String& Value::as_string()
 
 const Array& Value::as_array() const
 {
-    return *std::get<utils::Ptr<Array>>(data_);
+    return *std::get<utils::ValuePtr<Array>>(data_);
 }
 Array& Value::as_array()
 {
-    return *std::get<utils::Ptr<Array>>(data_);
+    return *std::get<utils::ValuePtr<Array>>(data_);
 }
 
 const Object& Value::as_object() const
 {
-    return *std::get<utils::Ptr<Object>>(data_);
+    return *std::get<utils::ValuePtr<Object>>(data_);
 }
 Object& Value::as_object()
 {
-    return *std::get<utils::Ptr<Object>>(data_);
+    return *std::get<utils::ValuePtr<Object>>(data_);
 }
 
 }  // namespace algue::json
