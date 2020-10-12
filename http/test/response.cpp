@@ -32,7 +32,7 @@ TEST_SUITE("response")
         res.deserialize([&](kae::Span<std::byte> buffer) {
             if (total_read == src.size())
                 throw MAKE_EXCEPTION("reading too much");
-            size_t read_size = std::min(std::min(buffer.size(), 30ull), src.size() - total_read);
+            size_t read_size = std::min<size_t>({buffer.size(), 30, src.size() - total_read});
             std::transform(src.begin() + total_read, src.begin() + total_read + read_size, buffer.begin(),
                            [](char c) { return static_cast<std::byte>(c); });
             total_read += read_size;
