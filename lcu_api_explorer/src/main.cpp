@@ -78,4 +78,6 @@ int main(int argc, char** argv)
     static_assert(std::is_nothrow_move_constructible_v<json::Value>);
     static_assert(std::is_move_assignable_v<json::Value>);
     static_assert(std::is_nothrow_move_assignable_v<json::Value>);
+    static_assert(std::is_copy_constructible_v<json::Value>);
+    static_assert(std::is_copy_assignable_v<json::Value>);
 }

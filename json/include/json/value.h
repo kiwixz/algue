@@ -1,9 +1,9 @@
 #pragma once
 
-#include <memory>
 #include <variant>
 
 #include "json/types.h"
+#include "utils/ptr.h"
 
 namespace algue::json {
 
@@ -41,8 +41,8 @@ private:
                  Boolean,
                  Number,
                  String,
-                 std::unique_ptr<Array>,
-                 std::unique_ptr<Object>>
+                 utils::Ptr<Array>,
+                 utils::Ptr<Object>>
             data_;
 };
 
