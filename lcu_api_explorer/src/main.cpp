@@ -9,6 +9,7 @@
 #include "http/methods.h"
 #include "http/request.h"
 #include "http/response.h"
+#include "json/value.h"
 #include "utils/lockfile.h"
 
 int main(int argc, char** argv)
@@ -69,4 +70,7 @@ int main(int argc, char** argv)
     }
     std::string_view data{reinterpret_cast<const char*>(res.body.data()), res.body.size()};
     fmt::print("\n{}\n", data);
+
+    json::Value v = json::Object{};
+    v.as_object()["key"] = true;
 }

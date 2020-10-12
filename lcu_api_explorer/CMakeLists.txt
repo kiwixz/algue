@@ -8,5 +8,6 @@ target_link_libraries("${target}" PUBLIC
     "asio::asio"
 
     "http"
+    "json"
     "utils"
 )
