@@ -8,19 +8,19 @@
 namespace algue::json {
 
 struct Value {
-    Value() = default;
+    Value(Null _ = {});
+    Value(Boolean boolean);
+    Value(Number number);
+    Value(String string);
+    Value(Array array);
+    Value(Object object);
 
-    template <typename T>
-    Value(T&& data) :
-        data_{std::forward<T>(data)}
-    {}
-
-    template <typename T>
-    Value& operator=(T&& data)
-    {
-        data_ = std::forward<T>(data);
-        return *this;
-    }
+    Value& operator=(Null _);
+    Value& operator=(Boolean boolean);
+    Value& operator=(Number number);
+    Value& operator=(String string);
+    Value& operator=(Array array);
+    Value& operator=(Object object);
 
     Type type() const;
 
@@ -36,7 +36,14 @@ struct Value {
     Object& as_object();
 
 private:
-    std::variant<Null, Boolean, Number, String, Array, Object> data_;
+    // containers of incomplete types are implementation-defined, so we add an indirection
+    std::variant<Null,
+                 Boolean,
+                 Number,
+                 String,
+                 std::unique_ptr<Array>,
+                 std::unique_ptr<Object>>
+            data_;
 };
 
 }  // namespace algue::json

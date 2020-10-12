@@ -5,6 +5,68 @@
 
 namespace algue::json {
 
+Value::Value(Null /*_*/) :
+    data_{null}
+{}
+
+Value::Value(Boolean boolean) :
+    data_{boolean}
+{}
+
+Value::Value(Number number) :
+    data_{number}
+{}
+
+Value::Value(String string) :
+    data_{std::move(string)}
+{}
+
+Value::Value(Array array) :
+    data_{std::make_unique<Array>(std::move(array))}
+{}
+
+Value::Value(Object object) :
+    data_{std::make_unique<Object>(std::move(object))}
+{}
+
+
+Value& Value::operator=(Null /*_*/)
+{
+    data_ = null;
+    return *this;
+}
+
+Value& Value::operator=(Boolean boolean)
+{
+    data_ = boolean;
+    return *this;
+}
+
+Value& Value::operator=(Number number)
+{
+    data_ = number;
+    return *this;
+}
+
+Value& Value::operator=(String string)
+{
+    data_ = std::move(string);
+    return *this;
+}
+
+Value& Value::operator=(Array array)
+{
+    data_ = std::make_unique<Array>(std::move(array));
+    return *this;
+}
+
+Value& Value::operator=(Object object)
+{
+    data_ = std::make_unique<Object>(std::move(object));
+    return *this;
+}
+
+
 Type Value::type() const
 {
     if (std::holds_alternative<Null>(data_))
@@ -15,9 +77,9 @@ Type Value::type() const
         return Type::number;
     else if (std::holds_alternative<String>(data_))
         return Type::string;
-    else if (std::holds_alternative<Array>(data_))
+    else if (std::holds_alternative<std::unique_ptr<Array>>(data_))
         return Type::array;
-    else if (std::holds_alternative<Object>(data_))
+    else if (std::holds_alternative<std::unique_ptr<Object>>(data_))
         return Type::object;
 
     throw MAKE_EXCEPTION("unknown value type");
@@ -52,20 +114,20 @@ String& Value::as_string()
 
 const Array& Value::as_array() const
 {
-    return std::get<Array>(data_);
+    return *std::get<std::unique_ptr<Array>>(data_);
 }
 Array& Value::as_array()
 {
-    return std::get<Array>(data_);
+    return *std::get<std::unique_ptr<Array>>(data_);
 }
 
 const Object& Value::as_object() const
 {
-    return std::get<Object>(data_);
+    return *std::get<std::unique_ptr<Object>>(data_);
 }
 Object& Value::as_object()
 {
-    return std::get<Object>(data_);
+    return *std::get<std::unique_ptr<Object>>(data_);
 }
 
 }  // namespace algue::json
