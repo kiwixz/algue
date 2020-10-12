@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-namespace algue::http::method {
+namespace algue::http::methods {
 
 constexpr std::string_view connect = "CONNECT";
 constexpr std::string_view delete_ = "DELETE";
@@ -14,4 +14,4 @@ constexpr std::string_view post = "POST";
 constexpr std::string_view put = "PUT";
 constexpr std::string_view trace = "TRACE";
 
-}  // namespace algue::http::method
+}  // namespace algue::http::methods
