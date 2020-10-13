@@ -31,7 +31,9 @@ std::string dump(Value value)
         append(std::to_string(value.as_number()));
         break;
     case Type::string:
+        append("\"");
         append(value.as_string());
+        append("\"");
         break;
     case Type::array:
         for (const Value& v : value.as_array()) {
