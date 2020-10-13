@@ -36,18 +36,26 @@ std::string dump(Value value)
         append("\"");
         break;
     case Type::array:
+        append("[");
         for (const Value& v : value.as_array()) {
             append(dump(v));
+            append(",");
         }
+        r.pop_back();  // pop trailing comma
+        append("]");
         break;
     case Type::object:
+        append("{");
         for (const auto& [key, v] : value.as_object()) {
             append("\"");
             append(key);
             append("\"");
             append(":");
             append(dump(v));
+            append(",");
         }
+        r.pop_back();  // pop trailing comma
+        append("}");
         break;
     }
 

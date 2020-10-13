@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <string_view>
 
 #include <kae/function_ref.h>
@@ -24,8 +25,13 @@ enum class ParseOperation {
 
 Value parse(std::string_view src);
 
+/// Will call the callback during JSON parsing.
+/// Arguments will only match one of the following:
+///     value, key if any, value
+///     begin_*, key, empty array/object
+///     end_*, undefined, undefined
 void parse(std::string_view src,
-           kae::FunctionRef<ParseOperation(ParseEvent event, std::string_view key, Value value)>
+           kae::FunctionRef<ParseOperation(ParseEvent event, std::string key, Value value)>
                    callback);
 
 }  // namespace algue::json

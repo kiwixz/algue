@@ -25,8 +25,6 @@ TEST_SUITE("response")
                                "\r\n"
                                "hello world!";
 
-        printf("s %zu\n", src.size());
-
         Response res;
         size_t total_read = 0;
         res.deserialize([&](kae::Span<std::byte> buffer) {

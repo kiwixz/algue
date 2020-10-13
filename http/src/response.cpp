@@ -49,7 +49,7 @@ void Response::deserialize(kae::FunctionRef<size_t(kae::Span<std::byte> buffer)>
     auto consume = [&](std::string_view sentinel) {
         size_t i = rem.find(sentinel);
         if (i == std::string_view::npos)
-            throw MAKE_EXCEPTION("could not find sentinel");
+            throw MAKE_EXCEPTION("could not find expected '{}'", sentinel);
 
         std::string_view r = rem.substr(0, i);
         rem = rem.substr(i + sentinel.size());
