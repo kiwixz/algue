@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-#include <kae/span.h>
-
 #include "http/header.h"
 
 namespace algue::http {

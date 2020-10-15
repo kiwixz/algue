@@ -1,9 +1,9 @@
 #pragma once
 
+#include <span>
 #include <vector>
 
 #include <kae/function_ref.h>
-#include <kae/span.h>
 
 #include "http/header.h"
 #include "http/request.h"
@@ -18,7 +18,7 @@ struct Response {
     std::vector<Header> headers;
     std::vector<std::byte> body;
 
-    void deserialize(kae::FunctionRef<size_t(kae::Span<std::byte> buffer)> read);
+    void deserialize(kae::FunctionRef<size_t(std::span<std::byte> buffer)> read);
 };
 
 }  // namespace algue::http

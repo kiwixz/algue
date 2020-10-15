@@ -27,7 +27,7 @@ TEST_SUITE("response")
 
         Response res;
         size_t total_read = 0;
-        res.deserialize([&](kae::Span<std::byte> buffer) {
+        res.deserialize([&](std::span<std::byte> buffer) {
             if (total_read == src.size())
                 throw MAKE_EXCEPTION("reading too much");
             size_t read_size = std::min<size_t>({buffer.size(), 30, src.size() - total_read});

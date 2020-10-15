@@ -10,7 +10,7 @@
 
 namespace algue::http {
 
-void Response::deserialize(kae::FunctionRef<size_t(kae::Span<std::byte> buffer)> read)
+void Response::deserialize(kae::FunctionRef<size_t(std::span<std::byte> buffer)> read)
 {
     size_t block_size = 4096;
     std::string_view header_sentinel = "\r\n\r\n";

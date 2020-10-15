@@ -4,7 +4,6 @@
 #include <kae/config.h>
 #include <kae/exception.h>
 #include <kae/os.h>
-#include <kae/span.h>
 
 #include "http/methods.h"
 #include "http/request.h"
@@ -58,7 +57,7 @@ int main(int argc, char** argv)
 
     http::Response res;
     res.request = std::move(req);
-    res.deserialize([&](kae::Span<std::byte> buffer) {
+    res.deserialize([&](std::span<std::byte> buffer) {
         return s.read_some(asio::buffer(buffer.data(), buffer.size()));
     });
 
