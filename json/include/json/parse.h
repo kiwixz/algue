@@ -30,8 +30,8 @@ Value parse(std::string_view input);
 ///     value, key if any, value
 ///     begin_*, key, empty array/object
 ///     end_*, undefined, undefined
-void parse(std::string_view input,
-           kae::FunctionRef<ParseOperation(ParseEvent event, std::string key, Value value)>
-                   callback);
+void sax_parse(std::string_view input,
+               kae::FunctionRef<ParseOperation(ParseEvent event, std::string key, Value value)>
+                       callback);
 
 }  // namespace algue::json

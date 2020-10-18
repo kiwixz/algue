@@ -138,7 +138,7 @@ Value parse(std::string_view input)
     Value root;
     std::vector<Value*> path;
 
-    parse(input, [&](ParseEvent event, std::string key, Value value) {
+    sax_parse(input, [&](ParseEvent event, std::string key, Value value) {
         if (event == ParseEvent::end_object || event == ParseEvent::end_array) {
             path.pop_back();
             return ParseOperation::parse;
@@ -172,7 +172,7 @@ Value parse(std::string_view input)
     return root;
 }
 
-void parse(std::string_view input,
+void sax_parse(std::string_view input,
            kae::FunctionRef<ParseOperation(ParseEvent event, std::string key, Value value)>
                    callback)
 {

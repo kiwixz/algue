@@ -37,6 +37,20 @@ TEST_SUITE("dump")
         o["b"] = "hello";
         CHECK((dump(o) == R"({"a":12,"b":"hello"})" || dump(o) == R"({"b":"hello","a":12})"));
     }
+
+    TEST_CASE("indent")
+    {
+        Object o;
+        o["a"] = 12;
+        o["b"] = "hello";
+        CHECK((dump(o, 0) == R"({"a": 12, "b": "hello"})" || dump(o, 0) == R"({"b": "hello", "a": 12})"));
+
+        Array a;
+        a.push_back(12);
+        a.push_back("hello");
+        a.push_back(a);
+        CHECK(dump(a, 2) == "[\n  12,\n  \"hello\",\n  [\n    12,\n    \"hello\"\n  ]\n]\n");
+    }
 }
 
 }  // namespace algue::json::test
