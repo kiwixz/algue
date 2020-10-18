@@ -22,34 +22,37 @@ std::string parse_string(utils::ParsingContext& ctx)
             if (ctx.ended())
                 throw MAKE_EXCEPTION("end of input after a backslash");
 
-            if (ctx.try_consume("\"")) {
-                r.push_back('\"');
-            }
-            else if (ctx.try_consume("\\")) {
+            char c = ctx.consume();
+            switch (c) {
+            case '"':
+                r.push_back('"');
+                break;
+            case '\\':
                 r.push_back('\\');
-            }
-            else if (ctx.try_consume("/")) {
+                break;
+            case '/':
                 r.push_back('/');
-            }
-            else if (ctx.try_consume("b")) {
+                break;
+            case 'b':
                 r.push_back('\b');
-            }
-            else if (ctx.try_consume("f")) {
+                break;
+            case 'f':
                 r.push_back('\f');
-            }
-            else if (ctx.try_consume("n")) {
+                break;
+            case 'n':
                 r.push_back('\n');
-            }
-            else if (ctx.try_consume("r")) {
+                break;
+            case 'r':
                 r.push_back('\r');
-            }
-            else if (ctx.try_consume("t")) {
+                break;
+            case 't':
                 r.push_back('\t');
-            }
-            else if (ctx.try_consume("u"))
+                break;
+            case 'u':
                 throw MAKE_EXCEPTION("unicode-escaping is not implemented");
-            else
-                throw MAKE_EXCEPTION("blackslash followed by invalid escape char '{}'", ctx.peek());
+            default:
+                throw MAKE_EXCEPTION("blackslash followed by invalid escape char '{}'", c);
+            }
 
             continue;
         }
