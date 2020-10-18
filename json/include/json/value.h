@@ -2,6 +2,8 @@
 
 #include <variant>
 
+#include <kae/exception.h>
+
 #include "json/types.h"
 #include "utils/always_false.h"
 #include "utils/value_ptr.h"
@@ -67,10 +69,19 @@ struct Value {
         else if constexpr (std::is_same_v<T, bool>)
             return std::get<bool>(data_);
         else if constexpr (std::is_integral_v<T>) {
-            if constexpr (std::is_signed_v<T>)
-                return static_cast<T>(std::get<long long>(data_));
-            else
-                return static_cast<T>(std::get<unsigned long long>(data_));
+            if (std::holds_alternative<long long>(data_)) {
+                long long r = std::get<long long>(data_);
+                if (r < static_cast<long long>(std::numeric_limits<T>::min())
+                    || (r > 0 && static_cast<unsigned long long>(r) > static_cast<unsigned long long>(std::numeric_limits<T>::max())))
+                    throw MAKE_EXCEPTION("current signed value cannot be represented with the given type");
+                return static_cast<T>(r);
+            }
+            else {
+                unsigned long long r = std::get<unsigned long long>(data_);
+                if (r > static_cast<unsigned long long>(std::numeric_limits<T>::max()))
+                    throw MAKE_EXCEPTION("current unsigned value cannot be represented with the given type");
+                return static_cast<T>(r);
+            }
         }
         else if constexpr (std::is_floating_point_v<T>)
             return static_cast<T>(std::get<double>(data_));
