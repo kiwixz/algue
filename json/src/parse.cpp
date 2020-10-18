@@ -138,7 +138,9 @@ Value parse(std::string_view input)
     Value root;
     std::vector<Value*> path;
 
-    sax_parse(input, [&](ParseEvent event, std::string key, Value value) {
+    sax_parse(input, [&](ParseEvent event,
+                         std::optional<std::string> key,
+                         Value value) {
         if (event == ParseEvent::end_object || event == ParseEvent::end_array) {
             path.pop_back();
             return ParseOperation::parse;
@@ -152,9 +154,9 @@ Value parse(std::string_view input)
 
         Value& parent = *path.back();
         if (parent.type() == Type::object) {
-            auto r = parent.as<Object>().try_emplace(key, std::move(value));
+            auto r = parent.as<Object>().try_emplace(*key, std::move(value));
             if (!r.second)
-                throw MAKE_EXCEPTION("duplicate key '{}' in object", key);
+                throw MAKE_EXCEPTION("duplicate key '{}' in object", *key);
             if (event == ParseEvent::begin_object || event == ParseEvent::begin_array) {
                 path.push_back(&r.first->second);
             }
@@ -173,8 +175,10 @@ Value parse(std::string_view input)
 }
 
 void sax_parse(std::string_view input,
-           kae::FunctionRef<ParseOperation(ParseEvent event, std::string key, Value value)>
-                   callback)
+               kae::FunctionRef<ParseOperation(ParseEvent event,
+                                               std::optional<std::string> key,
+                                               Value value)>
+                       callback)
 {
     utils::ParsingContext ctx{input};
 
@@ -202,7 +206,7 @@ void sax_parse(std::string_view input,
             callback(ParseEvent::end_object, {}, {});
         }
         else {
-            std::string key;
+            std::optional<std::string> key;
             if (!stack.empty() && stack.back() == Type::object) {
                 skip_ws();
                 if (ctx.ended())
@@ -221,27 +225,27 @@ void sax_parse(std::string_view input,
                 throw MAKE_EXCEPTION("expected value but input ended");
 
             if (ctx.try_consume('[')) {
-                callback(ParseEvent::begin_array, key, Array{});
+                callback(ParseEvent::begin_array, std::move(key), Array{});
                 stack.push_back(Type::array);
             }
             else if (ctx.try_consume('{')) {
-                callback(ParseEvent::begin_object, key, Object{});
+                callback(ParseEvent::begin_object, std::move(key), Object{});
                 stack.push_back(Type::object);
             }
             else if (ctx.try_consume("null")) {
-                callback(ParseEvent::value, key, null);
+                callback(ParseEvent::value, std::move(key), null);
             }
             else if (ctx.try_consume("true")) {
-                callback(ParseEvent::value, key, true);
+                callback(ParseEvent::value, std::move(key), true);
             }
             else if (ctx.try_consume("false")) {
-                callback(ParseEvent::value, key, false);
+                callback(ParseEvent::value, std::move(key), false);
             }
             else if (ctx.peek() == '-' || (ctx.peek() >= '0' && ctx.peek() <= '9')) {
-                callback(ParseEvent::value, key, parse_number(ctx));
+                callback(ParseEvent::value, std::move(key), parse_number(ctx));
             }
             else if (ctx.peek() == '"') {
-                callback(ParseEvent::value, key, parse_string(ctx));
+                callback(ParseEvent::value, std::move(key), parse_string(ctx));
             }
             else
                 throw MAKE_EXCEPTION("could not parse value");

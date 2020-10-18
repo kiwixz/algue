@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -31,7 +32,9 @@ Value parse(std::string_view input);
 ///     begin_*, key, empty array/object
 ///     end_*, undefined, undefined
 void sax_parse(std::string_view input,
-               kae::FunctionRef<ParseOperation(ParseEvent event, std::string key, Value value)>
+               kae::FunctionRef<ParseOperation(ParseEvent event,
+                                               std::optional<std::string> key,
+                                               Value value)>
                        callback);
 
 }  // namespace algue::json

@@ -169,4 +169,29 @@ std::string sax_dump(kae::FunctionRef<DumpIteration()> callback, int spacing)
     return r;
 }
 
+std::string format(std::string_view input, int spacing)
+{
+    struct ParseIteration {
+        ParseEvent event;
+        std::optional<std::string> key;
+        Value value;
+    };
+    std::vector<ParseIteration> stack;
+
+    sax_parse(input, [&](ParseEvent event,
+                         std::optional<std::string> key,
+                         Value value) {
+        stack.push_back({event, std::move(key), std::move(value)});
+        return ParseOperation::parse;
+    });
+
+    auto it = stack.begin();
+    return sax_dump([&]() {
+        DumpIteration r{it->event, it->key, &it->value};
+        ++it;
+        return r;
+    },
+                    spacing);
+}
+
 }  // namespace algue::json

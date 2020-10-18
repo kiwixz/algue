@@ -51,6 +51,12 @@ TEST_SUITE("dump")
         a.push_back(a);
         CHECK(dump(a, 2) == "[\n  12,\n  \"hello\",\n  [\n    12,\n    \"hello\"\n  ]\n]\n");
     }
+
+    TEST_CASE("format")
+    {
+        CHECK(format(R"([12,"hello",[12,"hello"]])", 2)
+              == "[\n  12,\n  \"hello\",\n  [\n    12,\n    \"hello\"\n  ]\n]\n");
+    }
 }
 
 }  // namespace algue::json::test
