@@ -67,21 +67,48 @@ void parse(std::string_view src,
             throw MAKE_EXCEPTION("expected quote for string, got '{}'", rem[0]);
 
         std::string r;
-        for (size_t i = 0; i < rem.size(); ++i) {
-            char c = rem[i];
+        while (!rem.empty()) {
+            if (try_consume("\""))
+                return r;
 
-            if (c == '"') {
-                int backslashes = 0;
-                for (size_t j = 1; j <= i; ++j) {
-                    if (rem[i - j] != '\\')
-                        break;
-                    ++backslashes;
+            if (try_consume("\\")) {
+                if (rem.empty())
+                    throw MAKE_EXCEPTION("end of input after a backslash");
+
+                if (try_consume("\"")) {
+                    r.push_back('\"');
                 }
-                if (backslashes % 2 == 0) {  // this ensures its not an escaped quote (\", \\\", \\\\\", ...)
-                    rem.remove_prefix(i + 1);
-                    return r;
+                else if (try_consume("\\")) {
+                    r.push_back('\\');
                 }
+                else if (try_consume("/")) {
+                    r.push_back('/');
+                }
+                else if (try_consume("b")) {
+                    r.push_back('\b');
+                }
+                else if (try_consume("f")) {
+                    r.push_back('\f');
+                }
+                else if (try_consume("n")) {
+                    r.push_back('\n');
+                }
+                else if (try_consume("r")) {
+                    r.push_back('\r');
+                }
+                else if (try_consume("t")) {
+                    r.push_back('\t');
+                }
+                else if (try_consume("u"))
+                    throw MAKE_EXCEPTION("unicode-escaping is not implemented");
+                else
+                    throw MAKE_EXCEPTION("blackslash followed by invalid escape char '{}'", rem[0]);
+
+                continue;
             }
+
+            char c = rem[0];
+            rem.remove_prefix(1);
 
             if (c < ' ')
                 throw MAKE_EXCEPTION("got control char {:#x} during parsing of string", c);
