@@ -142,7 +142,7 @@ void parse(std::string_view src,
             else if (try_consume("false"))
                 callback(ParseEvent::value, key, false);
             else if (rem[0] == '-' || (rem[0] >= '0' && rem[0] <= '9')) {
-                while (rem[0] == '-' || (rem[0] >= '0' && rem[0] <= '9')) {
+                while (!rem.empty() && (rem[0] == '-' || (rem[0] >= '0' && rem[0] <= '9'))) {
                     rem.remove_prefix(1);
                 }
                 callback(ParseEvent::value, key, 0);
