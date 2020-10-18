@@ -9,7 +9,9 @@ namespace algue::json {
 enum class Type {
     null,
     boolean,
-    number,
+    signed_number,
+    unsigned_number,
+    floating_point,
     string,
     array,
     object,
@@ -18,11 +20,8 @@ enum class Type {
 struct Value;
 
 struct Null {};
-using Boolean = bool;
-using Number = unsigned long long;
-using String = std::string;
 using Array = std::vector<Value>;
-using Object = std::unordered_map<String, Value>;
+using Object = std::unordered_map<std::string, Value>;
 
 inline constexpr Null null;
 

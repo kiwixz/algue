@@ -23,7 +23,7 @@ Value parse(std::string_view src)
 
         Value& parent = *path.back();
         if (parent.type() == Type::object) {
-            auto r = parent.as_object().try_emplace(key, std::move(value));
+            auto r = parent.as<Object>().try_emplace(key, std::move(value));
             if (!r.second) {
                 throw MAKE_EXCEPTION("duplicate key '{}' in object", key);
             }
@@ -32,9 +32,9 @@ Value parse(std::string_view src)
             }
         }
         else {
-            parent.as_array().push_back(std::move(value));
+            parent.as<Array>().push_back(std::move(value));
             if (event == ParseEvent::begin_object || event == ParseEvent::begin_array) {
-                path.push_back(&parent.as_array().back());
+                path.push_back(&parent.as<Array>().back());
             }
         }
 
@@ -145,7 +145,7 @@ void parse(std::string_view src,
                 while (rem[0] == '-' || (rem[0] >= '0' && rem[0] <= '9')) {
                     rem.remove_prefix(1);
                 }
-                callback(ParseEvent::value, key, 0ull);
+                callback(ParseEvent::value, key, 0);
             }
             else if (rem[0] == '"') {
                 callback(ParseEvent::value, key, parse_string());

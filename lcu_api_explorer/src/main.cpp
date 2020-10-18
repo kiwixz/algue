@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 
 
     json::Value v = json::Object{};
-    v.as_object()["key"] = true;
+    v.as<json::Object>()["key"] = true;
 
     static_assert(std::is_move_constructible_v<json::Value>);
     static_assert(std::is_nothrow_move_constructible_v<json::Value>);

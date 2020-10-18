@@ -1,7 +1,11 @@
 #include "json/dump.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
+
+#include <fmt/format.h>
+#include <kae/exception.h>
 
 namespace algue::json {
 
@@ -25,19 +29,29 @@ std::string dump(Value value)
         append("null");
         break;
     case Type::boolean:
-        append(value.as_boolean() ? "true" : "false");
+        append(value.get<bool>() ? "true" : "false");
         break;
-    case Type::number:
-        append(std::to_string(value.as_number()));
+    case Type::signed_number:
+        append(std::to_string(value.get<long long>()));
         break;
+    case Type::unsigned_number:
+        append(std::to_string(value.get<unsigned long long>()));
+        break;
+    case Type::floating_point: {
+        double d = value.get<double>();
+        if (std::isnan(d) || std::isinf(d))
+            throw MAKE_EXCEPTION("json does not support NaN nor infinite floating-point values");
+        // floating point to_chars is not yet implemented in libstdc++
+        append(fmt::format("{}", d));
+    } break;
     case Type::string:
         append("\"");
-        append(value.as_string());
+        append(value.as<std::string>());
         append("\"");
         break;
     case Type::array:
         append("[");
-        for (const Value& v : value.as_array()) {
+        for (const Value& v : value.as<Array>()) {
             append(dump(v));
             append(",");
         }
@@ -46,7 +60,7 @@ std::string dump(Value value)
         break;
     case Type::object:
         append("{");
-        for (const auto& [key, v] : value.as_object()) {
+        for (const auto& [key, v] : value.as<Object>()) {
             append("\"");
             append(key);
             append("\"");
