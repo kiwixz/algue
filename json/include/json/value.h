@@ -40,6 +40,8 @@ struct Value {
             static_assert(utils::always_false<T>, "unrecognized json type");
     }
 
+    bool operator==(const Value&) const = default;
+
     Type type() const;
 
     template <typename T>

@@ -190,13 +190,13 @@ void parse(std::string_view input,
             throw MAKE_EXCEPTION("input ended unexpectedly");
 
         if (ctx.try_consume(']')) {
-            if (stack.back() != Type::array)
+            if (stack.empty() || stack.back() != Type::array)
                 throw MAKE_EXCEPTION("mismatched '[' and ']'");
             stack.pop_back();
             callback(ParseEvent::end_array, {}, {});
         }
         else if (ctx.try_consume('}')) {
-            if (stack.back() != Type::object)
+            if (stack.empty() || stack.back() != Type::object)
                 throw MAKE_EXCEPTION("mismatched '[' and ']'");
             stack.pop_back();
             callback(ParseEvent::end_object, {}, {});

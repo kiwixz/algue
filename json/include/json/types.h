@@ -17,12 +17,13 @@ enum class Type {
     object,
 };
 
-struct Value;
+struct Null {
+    bool operator==(const Null&) const = default;
+};
+inline constexpr Null null;
 
-struct Null {};
+struct Value;
 using Array = std::vector<Value>;
 using Object = std::unordered_map<std::string, Value>;
-
-inline constexpr Null null;
 
 }  // namespace algue::json

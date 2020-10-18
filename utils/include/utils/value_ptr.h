@@ -26,6 +26,11 @@ struct ValuePtr {
     }
     ValuePtr& operator=(ValuePtr&& other) noexcept = default;
 
+    bool operator==(const ValuePtr& other) const
+    {
+        return *ptr_ == *other.ptr_;
+    }
+
     const Object& operator*() const
     {
         return *ptr_;

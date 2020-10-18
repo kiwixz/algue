@@ -104,10 +104,30 @@ TEST_SUITE("parse")
 
     TEST_CASE("array")
     {
+        CHECK_THROWS(parse("["));
+        CHECK_THROWS(parse("]"));
+        CHECK_THROWS(parse("[0,1,2,3"));
+        CHECK(parse("[1,2,3,null,true,]").as<Array>() == Array{{1u, 2u, 3u, null, true}});
+        CHECK(parse("[1,2,3,[null,false,],]").as<Array>() == Array{{1u, 2u, 3u, Array{{null, false}}}});
     }
 
     TEST_CASE("object")
     {
+        CHECK_THROWS(parse("{"));
+        CHECK_THROWS(parse("}"));
+        CHECK_THROWS(parse(R"({"a":0,"b})"));
+        CHECK_THROWS(parse(R"({"a":0,"b"})"));
+        CHECK_THROWS(parse(R"({"a":0,"b":})"));
+        CHECK_THROWS(parse(R"({"a":0,"b":1)"));
+
+        Object o;
+        o["a"] = 0u;
+        o["b"] = "hello";
+        CHECK(parse(R"({"a":0,"b":"hello"})").as<Object>() == o);
+        o["c"] = o;
+        CHECK(parse(R"({"a":0,"b":"hello","c":{"a":0,"b":"hello"}})").as<Object>() == o);
+        CHECK(parse(R"({"a":0,"b":"hello","c":{"a":0,"b":"hello"},},)").as<Object>() == o);
+        CHECK(parse(R"(  {  "a"  :  0  ,  "b"  :  "hello"  ,  "c"  :  {  "a"  :  0,  "b"  :  "hello"  ,  }  ,  }  ,  )").as<Object>() == o);
     }
 }
 
