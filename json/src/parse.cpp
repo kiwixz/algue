@@ -92,21 +92,34 @@ Value parse_number(utils::ParsingContext& ctx)
         integral = parse_digits();
     }
 
-    if (ctx.try_consume('.')) {
-        return 0.0;
+    if (ctx.try_consume('.')) {  // floating point
+        if (ctx.ended())
+            throw MAKE_EXCEPTION("end of input when expecting fractional part of a number");
+
+        size_t fractional_digits = ctx.remaining().size();
+        auto fractional = parse_digits();
+        fractional_digits -= ctx.remaining().size();
+
+        if (ctx.try_consume('e') || ctx.try_consume('E')) {  // floating point with exponent
+            return 0;
+        }
+
+        return (static_cast<double>(integral)
+                + static_cast<double>(fractional) / std::pow(10, fractional_digits))
+               * (negative ? -1 : 1);
     }
-    else if (ctx.try_consume('e') || ctx.try_consume('E')) {
+
+    if (ctx.try_consume('e') || ctx.try_consume('E')) {  // integer with exponent
         return 0;
     }
-    else {
-        if (negative) {
-            if (integral > static_cast<unsigned long long>(-std::numeric_limits<long long>::min()))
-                throw MAKE_EXCEPTION("overflow triggered when applying sign to number");
-            return static_cast<long long>(-integral);
-        }
-        else
-            return integral;
+
+    if (negative) {
+        if (integral > static_cast<unsigned long long>(-std::numeric_limits<long long>::min()))
+            throw MAKE_EXCEPTION("overflow triggered when applying sign to number");
+        return static_cast<long long>(-integral);
     }
+    else
+        return integral;
 }
 
 }  // namespace
