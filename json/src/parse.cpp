@@ -69,6 +69,9 @@ std::string parse_string(utils::ParsingContext& ctx)
 Value parse_number(utils::ParsingContext& ctx)
 {
     auto parse_digits = [&] {
+        if (ctx.ended())
+            throw MAKE_EXCEPTION("end of input during parsing of digits");
+
         if (!(ctx.peek() >= '0' && ctx.peek() <= '9'))
             throw MAKE_EXCEPTION("expected a digit, got '{}'", ctx.peek());
 
@@ -84,33 +87,39 @@ Value parse_number(utils::ParsingContext& ctx)
     };
 
     bool negative = ctx.try_consume('-');
-    if (ctx.ended())
-        throw MAKE_EXCEPTION("end of input after a dash");
-
     unsigned long long integral = 0;
     if (!ctx.try_consume('0')) {
         integral = parse_digits();
     }
 
     if (ctx.try_consume('.')) {  // floating point
-        if (ctx.ended())
-            throw MAKE_EXCEPTION("end of input when expecting fractional part of a number");
-
         size_t fractional_digits = ctx.remaining().size();
-        auto fractional = parse_digits();
+        unsigned long long fractional = parse_digits();
         fractional_digits -= ctx.remaining().size();
 
-        if (ctx.try_consume('e') || ctx.try_consume('E')) {  // floating point with exponent
-            return 0;
+        double r = (static_cast<double>(integral)
+                    + static_cast<double>(fractional) / std::pow(10, fractional_digits))
+                   * (negative ? -1 : 1);
+
+        if (ctx.try_consume('e') || ctx.try_consume('E')) {
+            bool exponent_negative = ctx.try_consume('-');
+            if (!exponent_negative) {
+                ctx.try_consume('+');
+            }
+            int exponent = static_cast<int>(parse_digits());
+            r *= std::pow(10, exponent_negative ? -exponent : exponent);
         }
 
-        return (static_cast<double>(integral)
-                + static_cast<double>(fractional) / std::pow(10, fractional_digits))
-               * (negative ? -1 : 1);
+        return r;
     }
 
-    if (ctx.try_consume('e') || ctx.try_consume('E')) {  // integer with exponent
-        return 0;
+    if (ctx.try_consume('e') || ctx.try_consume('E')) {
+        bool exponent_negative = ctx.try_consume('-');
+        if (!exponent_negative) {
+            ctx.try_consume('+');
+        }
+        int exponent = static_cast<int>(parse_digits());
+        integral *= static_cast<unsigned long long>(std::pow(10, exponent_negative ? -exponent : exponent));
     }
 
     if (negative) {
@@ -144,9 +153,8 @@ Value parse(std::string_view input)
         Value& parent = *path.back();
         if (parent.type() == Type::object) {
             auto r = parent.as<Object>().try_emplace(key, std::move(value));
-            if (!r.second) {
+            if (!r.second)
                 throw MAKE_EXCEPTION("duplicate key '{}' in object", key);
-            }
             if (event == ParseEvent::begin_object || event == ParseEvent::begin_array) {
                 path.push_back(&r.first->second);
             }

@@ -25,10 +25,16 @@ TEST_SUITE("parse")
 
     TEST_CASE("number")
     {
-        CHECK_THROWS(parse("+1"));
+        CHECK_THROWS(parse("+"));
+        CHECK_THROWS(parse("-"));
+        CHECK_THROWS(parse("-+1"));
+        CHECK_THROWS(parse("--1"));
         CHECK_THROWS(parse("01"));
         CHECK_THROWS(parse("0."));
         CHECK_THROWS(parse("1e"));
+        CHECK_THROWS(parse("1e+-1"));
+        CHECK_THROWS(parse("1e--1"));
+        CHECK_THROWS(parse("1e-+1"));
         CHECK_THROWS(parse("1z"));
         CHECK_THROWS(parse("1.z"));
         CHECK_THROWS(parse("1ez"));
@@ -36,7 +42,12 @@ TEST_SUITE("parse")
         auto check = [](std::string_view input, Type expected_type, auto expected_value) {
             Value v = parse(input);
             CHECK(v.type() == expected_type);
-            CHECK(v.get<decltype(expected_value)>() == expected_value);
+            if constexpr (std::is_same_v<decltype(expected_value), double>) {
+                CHECK(v.get<double>() - expected_value < std::numeric_limits<double>::epsilon());
+            }
+            else {
+                CHECK(v.get<decltype(expected_value)>() == expected_value);
+            }
         };
 
         check("-12", Type::signed_number, -12);
@@ -47,9 +58,20 @@ TEST_SUITE("parse")
         check("16.0", Type::floating_point, 16.0);
         check("16.005", Type::floating_point, 16.005);
         check("-14.0", Type::floating_point, -14.0);
-        // check("1e20", Type::floating_point, 1e20);
-        // check("-123e+20", Type::floating_point, -123e20);
-        // check("1.23E-20", Type::floating_point, 1.23e-20);
+        check("1e9", Type::unsigned_number, static_cast<unsigned long long>(1e9));
+        check("-123e+10", Type::signed_number, static_cast<long long>(-123e10));
+        check("1.23E-10", Type::floating_point, 1.23e-10);
+    }
+
+    TEST_CASE("number_overflow")
+    {
+        CHECK(parse("127").get<char>() == 127);
+        CHECK_THROWS(parse("128").get<char>());
+        CHECK(parse("-128").get<char>() == -128);
+        CHECK_THROWS(parse("-129").get<char>());
+
+        CHECK(parse("-1").get<int>() == -1);
+        CHECK_THROWS(parse("-1").get<unsigned>());
     }
 
     TEST_CASE("string")
