@@ -68,11 +68,45 @@ std::string parse_string(utils::ParsingContext& ctx)
 
 Value parse_number(utils::ParsingContext& ctx)
 {
-    while (!ctx.ended() && (ctx.peek() == '-' || (ctx.peek() >= '0' && ctx.peek() <= '9'))) {
-        ctx.consume();
+    auto parse_digits = [&] {
+        if (!(ctx.peek() >= '0' && ctx.peek() <= '9'))
+            throw MAKE_EXCEPTION("expected a digit, got '{}'", ctx.peek());
+
+        unsigned long long r = 0;
+        do {
+            unsigned long long new_r = r * 10 + ctx.consume() - '0';
+            if (new_r < r)
+                throw MAKE_EXCEPTION("overflow triggered when parsing a number");
+            r = new_r;
+        } while (!ctx.ended() && ctx.peek() >= '0' && ctx.peek() <= '9');
+
+        return r;
+    };
+
+    bool negative = ctx.try_consume('-');
+    if (ctx.ended())
+        throw MAKE_EXCEPTION("end of input after a dash");
+
+    unsigned long long integral = 0;
+    if (!ctx.try_consume('0')) {
+        integral = parse_digits();
     }
 
-    return 0;
+    if (ctx.try_consume('.')) {
+        return 0.0;
+    }
+    else if (ctx.try_consume('e') || ctx.try_consume('E')) {
+        return 0;
+    }
+    else {
+        if (negative) {
+            if (integral > static_cast<unsigned long long>(-std::numeric_limits<long long>::min()))
+                throw MAKE_EXCEPTION("overflow triggered when applying sign to number");
+            return static_cast<long long>(-integral);
+        }
+        else
+            return integral;
+    }
 }
 
 }  // namespace
@@ -129,7 +163,7 @@ void parse(std::string_view input,
 
     std::vector<Type> stack;
 
-    while (true) {
+    do {
         skip_ws();
         if (ctx.ended())
             throw MAKE_EXCEPTION("input ended unexpectedly");
@@ -194,10 +228,7 @@ void parse(std::string_view input,
 
         skip_ws();
         ctx.try_consume(',');
-
-        if (stack.empty())
-            break;
-    }
+    } while (!stack.empty());
 
     skip_ws();
     if (!ctx.ended())
