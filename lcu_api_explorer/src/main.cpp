@@ -9,8 +9,6 @@
 #include "http/request.h"
 #include "http/response.h"
 #include "json/dump.h"
-#include "json/parse.h"
-#include "json/value.h"
 #include "utils/lockfile.h"
 
 int main(int argc, char** argv)
@@ -70,18 +68,5 @@ int main(int argc, char** argv)
         fmt::print(" > {}: {}\n", hdr.name, hdr.value);
     }
     std::string_view data{reinterpret_cast<const char*>(res.body.data()), res.body.size()};
-    fmt::print("\n{}\n", data);
-
-
-    json::Value v = json::Object{};
-    v.as<json::Object>()["key"] = true;
-
-    static_assert(std::is_move_constructible_v<json::Value>);
-    static_assert(std::is_nothrow_move_constructible_v<json::Value>);
-    static_assert(std::is_move_assignable_v<json::Value>);
-    static_assert(std::is_nothrow_move_assignable_v<json::Value>);
-    static_assert(std::is_copy_constructible_v<json::Value>);
-    static_assert(std::is_copy_assignable_v<json::Value>);
-
-    logger(kae::LogLevel::none, json::dump(json::parse(data)));
+    fmt::print("\n{}", json::format(data, 2));
 }
