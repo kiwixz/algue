@@ -2,14 +2,84 @@
 
 #include <kae/exception.h>
 
+#include "utils/parsing_context.h"
+
 namespace algue::json {
 
-Value parse(std::string_view src)
+namespace {
+
+std::string parse_string(utils::ParsingContext& ctx)
+{
+    if (!ctx.try_consume("\""))
+        throw MAKE_EXCEPTION("expected quote for string, got '{}'", ctx.peek());
+
+    std::string r;
+    while (!ctx.ended()) {
+        if (ctx.try_consume("\""))
+            return r;
+
+        if (ctx.try_consume("\\")) {
+            if (ctx.ended())
+                throw MAKE_EXCEPTION("end of input after a backslash");
+
+            if (ctx.try_consume("\"")) {
+                r.push_back('\"');
+            }
+            else if (ctx.try_consume("\\")) {
+                r.push_back('\\');
+            }
+            else if (ctx.try_consume("/")) {
+                r.push_back('/');
+            }
+            else if (ctx.try_consume("b")) {
+                r.push_back('\b');
+            }
+            else if (ctx.try_consume("f")) {
+                r.push_back('\f');
+            }
+            else if (ctx.try_consume("n")) {
+                r.push_back('\n');
+            }
+            else if (ctx.try_consume("r")) {
+                r.push_back('\r');
+            }
+            else if (ctx.try_consume("t")) {
+                r.push_back('\t');
+            }
+            else if (ctx.try_consume("u"))
+                throw MAKE_EXCEPTION("unicode-escaping is not implemented");
+            else
+                throw MAKE_EXCEPTION("blackslash followed by invalid escape char '{}'", ctx.peek());
+
+            continue;
+        }
+
+        char c = ctx.consume();
+        if (c < ' ')
+            throw MAKE_EXCEPTION("got control char {:#x} during parsing of string", c);
+        r.push_back(c);
+    }
+
+    throw MAKE_EXCEPTION("end of input during the parsing of a string");
+}
+
+Value parse_number(utils::ParsingContext& ctx)
+{
+    while (!ctx.ended() && (ctx.peek() == '-' || (ctx.peek() >= '0' && ctx.peek() <= '9'))) {
+        ctx.consume();
+    }
+
+    return 0;
+}
+
+}  // namespace
+
+Value parse(std::string_view input)
 {
     Value root;
     std::vector<Value*> path;
 
-    parse(src, [&](ParseEvent event, std::string key, Value value) {
+    parse(input, [&](ParseEvent event, std::string key, Value value) {
         if (event == ParseEvent::end_object || event == ParseEvent::end_array) {
             path.pop_back();
             return ParseOperation::parse;
@@ -44,92 +114,30 @@ Value parse(std::string_view src)
     return root;
 }
 
-void parse(std::string_view src,
+void parse(std::string_view input,
            kae::FunctionRef<ParseOperation(ParseEvent event, std::string key, Value value)>
                    callback)
 {
-    std::string_view rem = src;
-
-    auto try_consume = [&](std::string_view token) {
-        if (rem.substr(0, token.size()) != token)
-            return false;
-
-        rem.remove_prefix(token.size());
-        return true;
-    };
+    utils::ParsingContext ctx{input};
 
     auto skip_ws = [&] {
-        rem.remove_prefix(std::min(rem.find_first_not_of(" \r\n\t"), rem.size()));
+        return ctx.skip(" \r\n\t");
     };
-
-    auto parse_string = [&] {
-        if (!try_consume("\""))
-            throw MAKE_EXCEPTION("expected quote for string, got '{}'", rem[0]);
-
-        std::string r;
-        while (!rem.empty()) {
-            if (try_consume("\""))
-                return r;
-
-            if (try_consume("\\")) {
-                if (rem.empty())
-                    throw MAKE_EXCEPTION("end of input after a backslash");
-
-                if (try_consume("\"")) {
-                    r.push_back('\"');
-                }
-                else if (try_consume("\\")) {
-                    r.push_back('\\');
-                }
-                else if (try_consume("/")) {
-                    r.push_back('/');
-                }
-                else if (try_consume("b")) {
-                    r.push_back('\b');
-                }
-                else if (try_consume("f")) {
-                    r.push_back('\f');
-                }
-                else if (try_consume("n")) {
-                    r.push_back('\n');
-                }
-                else if (try_consume("r")) {
-                    r.push_back('\r');
-                }
-                else if (try_consume("t")) {
-                    r.push_back('\t');
-                }
-                else if (try_consume("u"))
-                    throw MAKE_EXCEPTION("unicode-escaping is not implemented");
-                else
-                    throw MAKE_EXCEPTION("blackslash followed by invalid escape char '{}'", rem[0]);
-
-                continue;
-            }
-
-            char c = rem[0];
-            rem.remove_prefix(1);
-
-            if (c < ' ')
-                throw MAKE_EXCEPTION("got control char {:#x} during parsing of string", c);
-
-            r.push_back(c);
-        }
-
-        throw MAKE_EXCEPTION("end of input during the parsing of a string");
-    };
-
 
     std::vector<Type> stack;
 
     while (true) {
-        if (try_consume("]")) {
+        skip_ws();
+        if (ctx.ended())
+            throw MAKE_EXCEPTION("input ended unexpectedly");
+
+        if (ctx.try_consume(']')) {
             if (stack.back() != Type::array)
                 throw MAKE_EXCEPTION("mismatched '[' and ']'");
             stack.pop_back();
             callback(ParseEvent::end_array, {}, {});
         }
-        else if (try_consume("}")) {
+        else if (ctx.try_consume('}')) {
             if (stack.back() != Type::object)
                 throw MAKE_EXCEPTION("mismatched '[' and ']'");
             stack.pop_back();
@@ -139,58 +147,57 @@ void parse(std::string_view src,
             std::string key;
             if (!stack.empty() && stack.back() == Type::object) {
                 skip_ws();
-                if (rem.empty())
+                if (ctx.ended())
                     throw MAKE_EXCEPTION("expected key but input ended");
-                key = parse_string();
+                key = parse_string(ctx);
 
                 skip_ws();
-                if (rem.empty())
+                if (ctx.ended())
                     throw MAKE_EXCEPTION("expected colon but input ended");
-                else if (!try_consume(":"))
-                    throw MAKE_EXCEPTION("expected colon, got '{}'", rem[0]);
+                else if (!ctx.try_consume(":"))
+                    throw MAKE_EXCEPTION("expected colon, got '{}'", ctx.peek());
             }
 
             skip_ws();
-            if (rem.empty())
+            if (ctx.ended())
                 throw MAKE_EXCEPTION("expected value but input ended");
 
-            if (try_consume("[")) {
+            if (ctx.try_consume('[')) {
                 callback(ParseEvent::begin_array, key, Array{});
                 stack.push_back(Type::array);
             }
-            else if (try_consume("{")) {
+            else if (ctx.try_consume('{')) {
                 callback(ParseEvent::begin_object, key, Object{});
                 stack.push_back(Type::object);
             }
-            else if (try_consume("null"))
+            else if (ctx.try_consume("null")) {
                 callback(ParseEvent::value, key, null);
-            else if (try_consume("true"))
+            }
+            else if (ctx.try_consume("true")) {
                 callback(ParseEvent::value, key, true);
-            else if (try_consume("false"))
+            }
+            else if (ctx.try_consume("false")) {
                 callback(ParseEvent::value, key, false);
-            else if (rem[0] == '-' || (rem[0] >= '0' && rem[0] <= '9')) {
-                while (!rem.empty() && (rem[0] == '-' || (rem[0] >= '0' && rem[0] <= '9'))) {
-                    rem.remove_prefix(1);
-                }
-                callback(ParseEvent::value, key, 0);
             }
-            else if (rem[0] == '"') {
-                callback(ParseEvent::value, key, parse_string());
+            else if (ctx.peek() == '-' || (ctx.peek() >= '0' && ctx.peek() <= '9')) {
+                callback(ParseEvent::value, key, parse_number(ctx));
             }
-            else {
+            else if (ctx.peek() == '"') {
+                callback(ParseEvent::value, key, parse_string(ctx));
+            }
+            else
                 throw MAKE_EXCEPTION("could not parse value");
-            }
         }
 
         skip_ws();
-        try_consume(",");
+        ctx.try_consume(',');
 
         if (stack.empty())
             break;
     }
 
     skip_ws();
-    if (!rem.empty())
+    if (!ctx.ended())
         throw MAKE_EXCEPTION("finished parsing but got extra input");
 }
 
