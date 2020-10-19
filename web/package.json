@@ -5,11 +5,13 @@
   "license": "MIT",
   "repository": {},
   "scripts": {
-    "dev": "webpack s",
-    "prod": "webpack"
+    "dev": "webpack --mode=development s",
+    "build": "webpack"
   },
   "devDependencies": {
+    "clean-webpack-plugin": "3.0.0",
     "css-loader": "5.0.0",
+    "html-webpack-plugin": "4.5.0",
     "sass-loader": "10.0.3",
     "style-loader": "2.0.0",
     "vue-loader": "15.9.3",

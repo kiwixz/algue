@@ -1,7 +1,36 @@
+const path = require("path");
+
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 module.exports = {
-  plugins: [new VueLoaderPlugin()],
+  entry: {
+    home: "./home/index.js",
+    live: "./live/index.js",
+  },
+  output: {
+    filename: "[name]/[contenthash].js",
+    path: path.resolve(__dirname, "dist"),
+  },
+  devServer: {
+    compress: false,
+    contentBase: false,
+    hot: true,
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
+    new VueLoaderPlugin(),
+    new HtmlWebpackPlugin({
+      template: "common/index.html",
+      chunks: ["home"],
+    }),
+    new HtmlWebpackPlugin({
+      template: "common/index.html",
+      filename: "live/index.html",
+      chunks: ["live"],
+    }),
+  ],
   module: {
     rules: [
       {
@@ -17,8 +46,5 @@ module.exports = {
         use: ["style-loader", "css-loader", "sass-loader"],
       },
     ],
-  },
-  devServer: {
-    contentBase: "src",
   },
 };
