@@ -29,8 +29,7 @@ jobs:
         run: |
           echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
           apt update
-          apt -y full-upgrade
-          apt -y --no-install-recommends install  \
+          apt -y --no-install-recommends full-upgrade  \
               git ca-certificates  \
               cmake ninja-build python3  \
               clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION  \
@@ -162,3 +161,50 @@ jobs:
           ) else (
             ctest --verbose -E "clang_.*"
           )
+
+  web:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bullseye-slim
+    steps:
+      - name: Install system dependencies
+        run: |
+          echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
+          apt update
+          apt -y --no-install-recommends full-upgrade  \
+              git ca-certificates  \
+              npm
+
+      - name: Dump packages versions
+        run: |
+          apt list --installed
+
+      - name: Checkout
+        run: |
+          git clone "https://github.com/${{ github.repository }}" "./"
+          git checkout "${{ github.sha }}"
+
+      - name: Register problem matchers
+        run: |
+          echo "::add-matcher::.github/problem_matchers.json"
+
+      - name: Install npm dependencies
+        run: |
+          cd "web"
+          npm install
+
+      - name: Run webpack
+        run: |
+          cd "web"
+          npm run build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: web
+          path: dist
+
+      - name: Lint
+        run: |
+          cd "web"
+          npx eslint "."
