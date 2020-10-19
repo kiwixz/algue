@@ -1,6 +1,6 @@
-.clang-format
-.clang-tidy
-format_all.py
+/.clang-format
+/.clang-tidy
+/format_all.py
 
 /build/
 
