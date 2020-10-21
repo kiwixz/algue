@@ -6,6 +6,7 @@
 #include <asio/write.hpp>
 
 #include "http/header_fields.h"
+#include "utils/self_path.h"
 
 namespace algue::http {
 
@@ -16,7 +17,7 @@ Client::Client(std::string host) :
                          | asio::ssl::context::no_sslv3
                          | asio::ssl::context::no_tlsv1
                          | asio::ssl::context::no_tlsv1_1);
-    ssl_ctx_.set_default_verify_paths();
+    ssl_ctx_.load_verify_file((utils::get_self_path() / "../../data/cacert.pem").string());
     ssl_ctx_.set_verify_mode(asio::ssl::verify_peer | asio::ssl::verify_fail_if_no_peer_cert);
     ssl_ctx_.set_verify_callback(asio::ssl::host_name_verification{host_});
 

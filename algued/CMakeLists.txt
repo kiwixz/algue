@@ -7,8 +7,8 @@ add_library("${target}_" STATIC ${src})
 target_include_directories("${target}_" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 if (ALGUE_TESTS)
-   file(GLOB_RECURSE test_src CONFIGURE_DEPENDS "test/*.cpp")
-   cpp_test("${target}_" ${test_src})
+    file(GLOB_RECURSE test_src CONFIGURE_DEPENDS "test/*.cpp")
+    cpp_test("${target}_" ${test_src})
 endif ()
 
 add_executable("${target}" "src/main.cpp")

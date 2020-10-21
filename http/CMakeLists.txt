@@ -12,6 +12,8 @@ if (ALGUE_TESTS)
    cpp_test("${target}" ${test_src})
 endif ()
 
+file(DOWNLOAD "https://curl.haxx.se/ca/cacert.pem" "${CMAKE_BINARY_DIR}/data/cacert.pem")
+
 
 target_link_libraries("${target}" PUBLIC
     "kae::kae"

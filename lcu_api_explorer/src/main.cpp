@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
     std::set_terminate(&kae::terminate);
     kae::set_thread_name("MainThread");
-    std::filesystem::current_path(utils::get_self_path().parent_path().parent_path() / "data");
+    std::filesystem::current_path(utils::get_self_path() / "../../data");
 
     kae::Logger logger{"Explorer"};
 
