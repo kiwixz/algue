@@ -3,7 +3,7 @@ include(FetchContent)
 
 FetchContent_Declare("kae"
     GIT_REPOSITORY "https://github.com/kiwixz/kae"
-    GIT_TAG "8c2bc698cf2a35ea93a39d03b6f26caaf2a33b9b"
+    GIT_TAG "9f4022c060b45d8caa320702f2b257965a51db44"
 )
 
 FetchContent_GetProperties("kae")
