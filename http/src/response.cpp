@@ -7,8 +7,15 @@
 #include <kae/logger.h>
 
 #include "http/header_fields.h"
+#include "utils/iequal.h"
 
 namespace algue::http {
+
+bool Response::has_header(std::string_view name) const
+{
+    return std::any_of(headers.begin(), headers.end(),
+                       [&](const Header& h) { return utils::iequal(h.name, name); });
+}
 
 void Response::deserialize(kae::FunctionRef<size_t(std::span<std::byte> buffer)> read)
 {
@@ -83,12 +90,11 @@ void Response::deserialize(kae::FunctionRef<size_t(std::span<std::byte> buffer)>
         headers.push_back(std::move(h));
     }
 
-    if (std::any_of(headers.begin(), headers.end(),
-                    [](const Header& h) { return h.name == header_fields::transfer_encoding; }))
-        throw MAKE_EXCEPTION("transfer-encoding is not implementeds");
+    if (has_header(header_fields::transfer_encoding))
+        throw MAKE_EXCEPTION("transfer-encoding is not implemented");
 
     auto it = std::find_if(headers.begin(), headers.end(),
-                           [](const Header& h) { return h.name == header_fields::content_length; });
+                           [](const Header& h) { return utils::iequal(h.name, header_fields::content_length); });
     if (it == headers.end())  // no body
         return;
 

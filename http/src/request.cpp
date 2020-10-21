@@ -8,13 +8,14 @@
 
 #include "http/header_fields.h"
 #include "http/methods.h"
+#include "utils/iequal.h"
 
 namespace algue::http {
 
 bool Request::has_header(std::string_view name) const
 {
     return std::any_of(headers.begin(), headers.end(),
-                       [&](const Header& h) { return h.name == name; });
+                       [&](const Header& h) { return utils::iequal(h.name, name); });
 }
 
 std::vector<std::byte> Request::serialize()
@@ -23,8 +24,8 @@ std::vector<std::byte> Request::serialize()
 
     if (!body.empty()
         && !std::any_of(headers.begin(), headers.end(),
-                        [](const Header& h) { return h.name == header_fields::content_length
-                                                     || h.name == header_fields::transfer_encoding; })
+                        [](const Header& h) { return utils::iequal(h.name, header_fields::content_length)
+                                                     || utils::iequal(h.name, header_fields::transfer_encoding); })
         && method != methods::trace) {
         headers.push_back({std::string{header_fields::content_length}, fmt::format("{}", body.size())});
     }
