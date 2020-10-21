@@ -56,6 +56,17 @@ if (ALGUE_TESTS)
     endif ()
 endif ()
 
+file(GLOB_RECURSE data RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/data" CONFIGURE_DEPENDS "data/*")
+foreach (file IN LISTS data)
+    add_custom_command(OUTPUT "${CMAKE_BINARY_DIR}/data/${file}"
+        COMMAND cmake -E copy "${CMAKE_CURRENT_SOURCE_DIR}/data/${file}" "${CMAKE_BINARY_DIR}/data/"
+        DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/data/${file}"
+        COMMENT "Copying data/${file}..."
+        VERBATIM
+    )
+    add_custom_target("data_${file}" ALL DEPENDS "${CMAKE_BINARY_DIR}/data/${file}")
+endforeach ()
+
 
 add_kae()
 add_subdirectory("third_party/libressl")

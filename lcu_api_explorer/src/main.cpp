@@ -1,3 +1,5 @@
+#include <filesystem>
+
 #include <asio/ip/tcp.hpp>
 #include <asio/ssl/stream.hpp>
 #include <asio/write.hpp>
@@ -10,6 +12,7 @@
 #include "http/response.h"
 #include "json/dump.h"
 #include "utils/lockfile.h"
+#include "utils/self_path.h"
 
 int main(int argc, char** argv)
 {
@@ -17,6 +20,7 @@ int main(int argc, char** argv)
 
     std::set_terminate(&kae::terminate);
     kae::set_thread_name("MainThread");
+    std::filesystem::current_path(utils::get_self_path().parent_path().parent_path() / "data");
 
     kae::Logger logger{"Explorer"};
 
