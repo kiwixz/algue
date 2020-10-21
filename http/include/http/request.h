@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "http/header.h"
@@ -13,6 +14,7 @@ struct Request {
     std::vector<Header> headers;
     std::vector<std::byte> body;
 
+    bool has_header(std::string_view name) const;
     std::vector<std::byte> serialize();
 };
 

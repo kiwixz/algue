@@ -54,13 +54,12 @@ int main(int argc, char** argv)
     asio::write(s, asio::buffer(req.serialize()));
 
     http::Response res;
-    res.request = std::move(req);
     res.deserialize([&](std::span<std::byte> buffer) {
         return s.read_some(asio::buffer(buffer.data(), buffer.size()));
     });
 
-    fmt::print(" < {} {}\n", res.request.method, res.request.path);
-    for (const http::Header& hdr : res.request.headers) {
+    fmt::print(" < {} {}\n", req.method, req.path);
+    for (const http::Header& hdr : req.headers) {
         fmt::print(" < {}: {}\n", hdr.name, hdr.value);
     }
     fmt::print("\n > {} {}\n", res.status_code, res.status_message);

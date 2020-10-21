@@ -11,10 +11,15 @@
 
 namespace algue::http {
 
+bool Request::has_header(std::string_view name) const
+{
+    return std::any_of(headers.begin(), headers.end(),
+                       [&](const Header& h) { return h.name == name; });
+}
+
 std::vector<std::byte> Request::serialize()
 {
-    ASSERT(std::any_of(headers.begin(), headers.end(),
-                       [](const Header& h) { return h.name == header_fields::host; }));
+    ASSERT(has_header(header_fields::host));
 
     if (!body.empty()
         && !std::any_of(headers.begin(), headers.end(),
