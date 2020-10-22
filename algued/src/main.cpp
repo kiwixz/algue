@@ -2,15 +2,13 @@
 #include <kae/exception.h>
 #include <kae/os.h>
 
-#include "http/client.h"
-#include "http/methods.h"
-#include "http/request.h"
-#include "http/response.h"
+#include "algued/riot_api_client.h"
 #include "json/dump.h"
 
 int main(int argc, char** argv)
 {
     using namespace algue;
+    using namespace algued;
 
     std::set_terminate(&kae::terminate);
     kae::set_thread_name("MainThread");
@@ -25,19 +23,6 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    http::Request req;
-    req.method = http::methods::get;
-    req.path = "/lol/summoner/v4/summoners/by-name/shen";
-    http::Response res = http::Client{"euw1.api.riotgames.com"}.request(req);
-
-    fmt::print(" < {} {}\n", req.method, req.path);
-    for (const http::Header& hdr : req.headers) {
-        fmt::print(" < {}: {}\n", hdr.name, hdr.value);
-    }
-    fmt::print("\n > {} {}\n", res.status_code, res.status_message);
-    for (const http::Header& hdr : res.headers) {
-        fmt::print(" > {}: {}\n", hdr.name, hdr.value);
-    }
-    std::string_view data{reinterpret_cast<const char*>(res.body.data()), res.body.size()};
-    fmt::print("\n{}", json::format(data, 2));
+    RiotApiClient client{cfg.get_raw("riot_api_key")};
+    printf("%s", json::dump(client.get("/lol/summoner/v4/summoners/by-name/shen"), 2).c_str());
 }
