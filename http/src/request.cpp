@@ -20,14 +20,19 @@ bool Request::has_header(std::string_view name) const
 
 std::vector<std::byte> Request::serialize()
 {
+    ASSERT(!has_header(header_fields::transfer_encoding));
     ASSERT(has_header(header_fields::host));
 
-    if (!body.empty()
-        && !std::any_of(headers.begin(), headers.end(),
-                        [](const Header& h) { return utils::iequal(h.name, header_fields::content_length)
-                                                     || utils::iequal(h.name, header_fields::transfer_encoding); })
-        && method != methods::trace) {
-        headers.push_back({std::string{header_fields::content_length}, fmt::format("{}", body.size())});
+    if (!body.empty()) {
+        auto it = std::find_if(headers.begin(), headers.end(), [](const Header& h) {
+            return utils::iequal(h.name, header_fields::content_length);
+        });
+        if (it == headers.end()) {
+            headers.push_back({std::string{header_fields::content_length}, fmt::format("{}", body.size())});
+        }
+        else {
+            it->value = fmt::format("{}", body.size());
+        }
     }
 
     std::vector<std::byte> r;
