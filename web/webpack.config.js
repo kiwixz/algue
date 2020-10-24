@@ -6,8 +6,8 @@ const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 module.exports = {
   entry: {
-    home: "./home/index.js",
-    live: "./live/index.js",
+    home: "./home/index.ts",
+    live: "./live/index.ts",
   },
   output: {
     filename: "[name]/[contenthash].js",
@@ -27,13 +27,13 @@ module.exports = {
     new CleanWebpackPlugin(),
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
-      template: "common/index.html",
       chunks: ["home"],
+      template: "common/index.html",
     }),
     new HtmlWebpackPlugin({
+      chunks: ["live"],
       template: "common/index.html",
       filename: "live/index.html",
-      chunks: ["live"],
     }),
   ],
   module: {
@@ -41,6 +41,13 @@ module.exports = {
       {
         test: /\.vue$/,
         use: "vue-loader",
+      },
+      {
+        test: /\.ts$/,
+        loader: "ts-loader",
+        options: {
+          appendTsSuffixTo: [/\.vue$/],
+        },
       },
       {
         test: /\.css$/,

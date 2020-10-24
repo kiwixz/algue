@@ -1,16 +1,22 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
+    es2020: true,
   },
   extends: ["plugin:vue/essential", "airbnb-base", "prettier"],
   plugins: ["vue", "prettier"],
+  parser: "vue-eslint-parser",
   parserOptions: {
-    ecmaVersion: 12,
+    parser: "@typescript-eslint/parser",
+    ecmaVersion: 2020,
     sourceType: "module",
+    ecmaFeatures: {
+      impliedStrict: true,
+    },
   },
   rules: {
     "prettier/prettier": "warn",
+    "class-methods-use-this": "off",
     "no-console": "off",
     "no-new": "off",
   },
