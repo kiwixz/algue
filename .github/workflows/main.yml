@@ -31,7 +31,6 @@ jobs:
           apt -y --no-install-recommends full-upgrade  \
               git ca-certificates  \
               cmake ninja-build python3  \
-              clang-format-$LLVM_VERSION clang-tidy-$LLVM_VERSION  \
               ${{ matrix.cxx_packages }}
 
       - name: Dump packages versions
@@ -315,7 +314,12 @@ jobs:
           name: web
           path: dist
 
-      - name: Lint
+      - name: prettier
+        run: |
+          cd "web"
+          npx prettier -c "."
+
+      - name: eslint
         run: |
           cd "web"
           npx eslint "."
