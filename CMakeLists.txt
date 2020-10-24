@@ -71,6 +71,7 @@ endforeach ()
 add_kae()
 add_subdirectory("third_party/libressl")
 add_subdirectory("third_party/asio")
+add_subdirectory("third_party/sqlite")
 
 add_subdirectory("http")
 add_subdirectory("json")

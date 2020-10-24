@@ -18,6 +18,7 @@ target_link_libraries("${target}" PUBLIC "${target}_")
 target_link_libraries("${target}_" PUBLIC
     "kae::kae"
     "asio::asio"
+    "sqlite::sqlite"
 
     "http"
     "json"
