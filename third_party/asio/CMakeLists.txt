@@ -12,6 +12,9 @@ add_library("asio" EXCLUDE_FROM_ALL
 )
 add_library("asio::asio" ALIAS "asio")
 
-target_compile_definitions("asio" PUBLIC "ASIO_SEPARATE_COMPILATION")
+target_compile_definitions("asio" PUBLIC
+    "ASIO_NO_DEPRECATED"
+    "ASIO_SEPARATE_COMPILATION"
+)
 target_include_directories("asio" SYSTEM PUBLIC "${asio_SOURCE_DIR}/asio/include")
 target_link_libraries("asio" PUBLIC "LibreSSL::SSL")
