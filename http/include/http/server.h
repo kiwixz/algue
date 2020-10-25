@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -25,12 +26,18 @@ struct Server {
     void stop();
 
 private:
-    struct Session {
+    struct Session : std::enable_shared_from_this<Session> {
         Session(asio::ip::tcp::socket socket);
 
+        void start();
+
+    private:
+        kae::Logger logger_{"HttpServerSession"};
+        std::vector<std::byte> buffer_;
+        RequestParser request_parser_;
         asio::ip::tcp::socket socket_;
 
-        void start();
+        void queue_read();
     };
 
     kae::Logger logger_{"HttpServer"};
