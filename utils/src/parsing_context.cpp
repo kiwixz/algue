@@ -42,12 +42,38 @@ bool ParsingContext::try_consume(std::string_view prefix)
     return true;
 }
 
+std::optional<std::string_view> ParsingContext::try_consume_until(char sentinel)
+{
+    size_t i = remaining_.find(sentinel);
+    if (i == std::string_view::npos)
+        return {};
+
+    return consume(i + 1);
+}
+
+std::optional<std::string_view> ParsingContext::try_consume_until(std::string_view sentinel)
+{
+    size_t i = remaining_.find(sentinel);
+    if (i == std::string_view::npos)
+        return {};
+
+    return consume(i + sentinel.size());
+}
+
 char ParsingContext::consume()
 {
     ASSERT(!remaining_.empty());
     char c = remaining_[0];
     remaining_.remove_prefix(1);
     return c;
+}
+
+std::string_view ParsingContext::consume(size_t length)
+{
+    ASSERT(remaining_.size() >= length);
+    std::string_view r = remaining_.substr(0, length);
+    remaining_.remove_prefix(length);
+    return r;
 }
 
 size_t ParsingContext::skip(char c)

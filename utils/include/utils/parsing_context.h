@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string_view>
 
 #include <kae/function_ref.h>
@@ -15,7 +16,10 @@ struct ParsingContext {
 
     bool try_consume(char c);
     bool try_consume(std::string_view prefix);
+    std::optional<std::string_view> try_consume_until(char sentinel);
+    std::optional<std::string_view> try_consume_until(std::string_view sentinel);
     char consume();
+    std::string_view consume(size_t length);
 
     size_t skip(char c);
     size_t skip(std::string_view chars);
