@@ -24,8 +24,6 @@ private:
     asio::io_context io_;
     asio::ssl::context ssl_ctx_;
     asio::ip::tcp::resolver::results_type endpoints_;
-
-    void reconnect_socket();
 };
 
 }  // namespace algue::http
