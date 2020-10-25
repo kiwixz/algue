@@ -62,7 +62,11 @@ void Server::Session::queue_read()
 {
     asio::mutable_buffer buf = asio::buffer(buffer_.data() + buffer_.size() - read_size, read_size);
     socket_.async_read_some(buf, [this, self = shared_from_this()](std::error_code ec, size_t size) {
-        if (ec) {
+        if (ec == asio::error::eof) {
+            logger_(kae::LogLevel::info, "peer disconnected");
+            return;
+        }
+        else if (ec) {
             logger_(kae::LogLevel::error, "error while reading: {}", ec.message());
             return;
         }

@@ -30,6 +30,8 @@ int main(int argc, char** argv)
     printf("%s", json::dump(client.get("/lol/summoner/v4/summoners/by-name/shen"), 2).c_str());
 
     http::Server server{cfg.get<int>("web_port"), [&](http::Request req) {
+                            (void)req;
+
                             json::Value summoner = client.get("/lol/summoner/v4/summoners/by-name/shen");
                             bool in_game = true;
                             try {
