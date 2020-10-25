@@ -4,6 +4,26 @@
 
 namespace algue::json {
 
+const json::Value& Value::operator[](size_t index) const
+{
+    return as<Array>()[index];
+}
+
+json::Value& Value::operator[](size_t index)
+{
+    return as<Array>()[index];
+}
+
+const json::Value& Value::operator[](const std::string& key) const
+{
+    return as<Object>().at(key);
+}
+
+json::Value& Value::operator[](const std::string& key)
+{
+    return as<Object>().at(key);
+}
+
 Type Value::type() const
 {
     if (data_.valueless_by_exception())

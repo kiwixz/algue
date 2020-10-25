@@ -35,6 +35,8 @@ void Server::queue_accept()
 {
     acceptor_.async_accept([this](std::error_code ec, asio::ip::tcp::socket socket) {
         if (!ec) {
+            logger_(kae::LogLevel::info, "new connection from {}:{}",
+                    socket.remote_endpoint().address().to_string(), socket.remote_endpoint().port());
             std::make_shared<Session>(std::move(socket), this)->start();
         }
         else {

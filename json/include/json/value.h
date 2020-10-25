@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <variant>
 
 #include <kae/exception.h>
@@ -41,6 +42,11 @@ struct Value {
     }
 
     bool operator==(const Value&) const = default;
+
+    const json::Value& operator[](size_t index) const;
+    json::Value& operator[](size_t index);
+    const json::Value& operator[](const std::string& key) const;
+    json::Value& operator[](const std::string& key);
 
     Type type() const;
 
