@@ -82,9 +82,10 @@ void Server::Session::queue_read()
 
         std::optional<Request> req = request_parser_.get();
         if (req) {
-            logger_(kae::LogLevel::info, "request {} {}", req->method, req->path);
-            server_->dispatcher_(std::move(*req));
             request_parser_ = {};
+            logger_(kae::LogLevel::info, "request {} {}", req->method, req->path);
+            std::vector<std::byte> res = server_->dispatcher_(std::move(*req)).serialize();
+            asio::write(socket_, asio::buffer(res));
         }
 
         queue_read();

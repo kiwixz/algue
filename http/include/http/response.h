@@ -17,6 +17,7 @@ struct Response {
 
     bool has_header(std::string_view name) const;
     void deserialize(kae::FunctionRef<size_t(std::span<std::byte> buffer)> read);
+    std::vector<std::byte> serialize();
 };
 
 }  // namespace algue::http
