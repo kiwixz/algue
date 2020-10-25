@@ -48,7 +48,9 @@ std::optional<std::string_view> ParsingContext::try_consume_until(char sentinel)
     if (i == std::string_view::npos)
         return {};
 
-    return consume(i + 1);
+    std::string_view r = consume(i);
+    remaining_.remove_prefix(1);
+    return r;
 }
 
 std::optional<std::string_view> ParsingContext::try_consume_until(std::string_view sentinel)
@@ -57,7 +59,9 @@ std::optional<std::string_view> ParsingContext::try_consume_until(std::string_vi
     if (i == std::string_view::npos)
         return {};
 
-    return consume(i + sentinel.size());
+    std::string_view r = consume(i);
+    remaining_.remove_prefix(sentinel.size());
+    return r;
 }
 
 char ParsingContext::consume()

@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
 #include <asio/io_context.hpp>
@@ -16,23 +15,22 @@
 namespace algue::http {
 
 struct Server {
-    using Handler = kae::UniqueFunction<Response(Request request)>;
+    using Dispatch = kae::UniqueFunction<Response(Request request)>;
 
-    Server(int port);
-
-    void add_handler(std::string path, Handler handler);
+    Server(int port, Dispatch dispatcher);
 
     void run();
     void stop();
 
 private:
     struct Session : std::enable_shared_from_this<Session> {
-        Session(asio::ip::tcp::socket socket);
+        Session(asio::ip::tcp::socket socket, Server* server);
 
         void start();
 
     private:
         kae::Logger logger_{"HttpServerSession"};
+        Server* server_;
         std::vector<std::byte> buffer_;
         RequestParser request_parser_;
         asio::ip::tcp::socket socket_;
@@ -41,7 +39,7 @@ private:
     };
 
     kae::Logger logger_{"HttpServer"};
-    std::unordered_map<std::string, Handler> handlers_;
+    Dispatch dispatcher_;
     asio::io_context io_;
     asio::ip::tcp::acceptor acceptor_;
 

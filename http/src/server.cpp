@@ -14,16 +14,11 @@ constexpr int read_size = 4096;
 
 }
 
-Server::Server(int port) :
+Server::Server(int port, Dispatch dispatcher) :
+    dispatcher_{std::move(dispatcher)},
     acceptor_{io_, {asio::ip::tcp::v4(), static_cast<uint16_t>(port)}}
 {
     queue_accept();
-}
-
-void Server::add_handler(std::string path, Handler handler)
-{
-    if (!handlers_.try_emplace(std::move(path), std::move(handler)).second)
-        throw MAKE_EXCEPTION("duplicate handler path");
 }
 
 void Server::run()
@@ -40,7 +35,7 @@ void Server::queue_accept()
 {
     acceptor_.async_accept([this](std::error_code ec, asio::ip::tcp::socket socket) {
         if (!ec) {
-            std::make_shared<Session>(std::move(socket))->start();
+            std::make_shared<Session>(std::move(socket), this)->start();
         }
         else {
             logger_(kae::LogLevel::warning, "error while accepting connection: {}", ec.message());
@@ -50,7 +45,8 @@ void Server::queue_accept()
     });
 }
 
-Server::Session::Session(asio::ip::tcp::socket socket) :
+Server::Session::Session(asio::ip::tcp::socket socket, Server* server) :
+    server_{server},
     socket_{std::move(socket)}
 {}
 
@@ -86,9 +82,8 @@ void Server::Session::queue_read()
 
         std::optional<Request> req = request_parser_.get();
         if (req) {
-            // TODO callback server ?
-            logger_(kae::LogLevel::none, "request: {} {}", req->method, req->path);
-
+            logger_(kae::LogLevel::info, "request {} {}", req->method, req->path);
+            server_->dispatcher_(std::move(*req));
             request_parser_ = {};
         }
 
