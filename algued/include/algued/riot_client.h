@@ -8,8 +8,8 @@
 
 namespace algue::algued {
 
-struct RiotApiClient {
-    RiotApiClient(std::string api_key);
+struct RiotClient {
+    RiotClient(std::string api_key);
 
     json::Value get(std::string_view path);
 

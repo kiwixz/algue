@@ -1,4 +1,4 @@
-#include "algued/riot_api_client.h"
+#include "algued/riot_client.h"
 
 #include "http/methods.h"
 #include "http/request.h"
@@ -8,11 +8,11 @@
 
 namespace algue::algued {
 
-RiotApiClient::RiotApiClient(std::string api_key) :
+RiotClient::RiotClient(std::string api_key) :
     api_key_{std::move(api_key)}, http_{"euw1.api.riotgames.com"}
 {}
 
-json::Value RiotApiClient::get(std::string_view path)
+json::Value RiotClient::get(std::string_view path)
 {
     http::Request req;
     req.method = http::methods::get;
