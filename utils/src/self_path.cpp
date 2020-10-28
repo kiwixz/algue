@@ -12,7 +12,7 @@ namespace algue::utils {
 
 std::filesystem::path get_self_path()
 {
-#if _WIN32
+#ifdef _WIN32
     int block_size = 4096;
 
     std::string buf;
