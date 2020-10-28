@@ -182,6 +182,8 @@ jobs:
 
       - name: Configure
         run: |
+          export CC="clang-$LLVM_VERSION"
+          export CXX="clang++-$LLVM_VERSION"
           cmake -G Ninja -B "build"
 
       - name: clang-format
@@ -223,6 +225,8 @@ jobs:
 
       - name: Configure
         run: |
+          export CC="clang-$LLVM_VERSION"
+          export CXX="clang++-$LLVM_VERSION"
           cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
 
       - name: clang-tidy
