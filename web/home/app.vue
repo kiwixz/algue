@@ -2,7 +2,20 @@
   <input type="text" v-model="summoner_name" v-on:keyup.enter="go" placeholder="summoner name" autofocus />
 </template>
 
-<style>
+<style lang="scss">
+  input {
+    width: 40%;
+    position: absolute;
+    top: 50% - 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    padding: 0.4% 0.8% 0.5%;
+    font-size: 2em;
+    border: 0;
+    border-radius: 0.2em;
+    text-align: center;
+  }
 </style>
 
 <script lang="ts">
