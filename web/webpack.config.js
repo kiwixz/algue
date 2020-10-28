@@ -12,6 +12,7 @@ module.exports = {
   output: {
     filename: "[name].[contenthash].js",
     path: path.resolve(__dirname, "dist"),
+    publicPath: "/",
   },
   optimization: {
     splitChunks: {
@@ -29,7 +30,7 @@ module.exports = {
       },
       "/live": {
         target: "http://localhost:8080",
-        pathRewrite: { "^/live/.*$": "/live" },
+        pathRewrite: { "^/live/.*$": "/live.html" },
       },
     },
   },
@@ -43,7 +44,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       chunks: ["live"],
       template: "common/index.html",
-      filename: "live/index.html",
+      filename: "live.html",
     }),
   ],
   module: {
