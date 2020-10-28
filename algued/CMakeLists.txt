@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.12)
 set(target "algued")
 
 file(GLOB_RECURSE src CONFIGURE_DEPENDS "src/*.cpp")
+list(FILTER src EXCLUDE REGEX "/main\.cpp$")
 add_library("${target}_" STATIC ${src})
 target_include_directories("${target}_" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
