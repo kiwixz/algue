@@ -2,7 +2,7 @@ on: [pull_request, push]
 
 env:
   GCC_VERSION: 10
-  LLVM_VERSION: 11
+  LLVM_VERSION: 10
 
 jobs:
   build_debian:
