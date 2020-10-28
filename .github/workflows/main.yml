@@ -150,6 +150,7 @@ jobs:
 
       - name: Test
         run: |
+          call "%VCVARS%"
           cd "build"
           ctest -V -E "clang_.*"
 
@@ -276,6 +277,7 @@ jobs:
       - name: clang_tidy
         run: |
           call "%VCVARS%"
+          set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
           cd build
           ctest -V -R "clang_tidy"
 
