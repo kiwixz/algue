@@ -13,6 +13,8 @@ struct Dispatcher {
 
 private:
     RiotClient riot_client_;
+
+    json::Value is_live(const json::Value& input);
 };
 
 }  // namespace algue::algued

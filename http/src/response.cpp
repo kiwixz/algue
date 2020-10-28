@@ -119,7 +119,7 @@ std::vector<std::byte> Response::serialize()
         return utils::iequal(h.name, header_fields::content_length);
     });
     if (it == headers.end()) {
-        headers.push_back({std::string{header_fields::content_length}, fmt::format("{}", body.size())});
+        headers.push_back({header_fields::content_length, fmt::format("{}", body.size())});
     }
     else {
         it->value = fmt::format("{}", body.size());
