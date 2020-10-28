@@ -165,7 +165,7 @@ jobs:
           apt -y --no-install-recommends full-upgrade  \
               git ca-certificates  \
               cmake ninja-build python3  \
-              clang-format-$LLVM_VERSION
+              clang-$LLVM_VERSION clang-format-$LLVM_VERSION
 
       - name: Dump packages versions
         run: |
