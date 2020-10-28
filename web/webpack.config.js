@@ -10,7 +10,7 @@ module.exports = {
     live: "./live/index.ts",
   },
   output: {
-    filename: "[name]/[contenthash].js",
+    filename: "[name].[contenthash].js",
     path: path.resolve(__dirname, "dist"),
   },
   optimization: {
