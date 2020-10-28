@@ -206,7 +206,7 @@ jobs:
           apt -y --no-install-recommends full-upgrade  \
               git ca-certificates  \
               cmake ninja-build python3  \
-              libstdc++-$GCC_VERSION-dev clang-tidy-$LLVM_VERSION
+              clang-$LLVM_VERSION libstdc++-$GCC_VERSION-dev clang-tidy-$LLVM_VERSION
 
       - name: Dump packages versions
         run: |
@@ -249,6 +249,7 @@ jobs:
 
       - name: Dump tools versions
         run: |
+          call "%VCVARS%"
           git --version
           cmake --version
           ninja --version
@@ -264,11 +265,13 @@ jobs:
 
       - name: Configure
         run: |
+          call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
           cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
 
       - name: clang_tidy
         run: |
+          call "%VCVARS%"
           cd build
           ctest -V -R "clang_tidy"
 
