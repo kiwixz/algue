@@ -1,31 +1,30 @@
 <template>
-  <div>this is home, <a href="live">go to live</a></div>
+  <input type="text" v-model="summoner_name" v-on:keyup.enter="go" placeholder="summoner name" autofocus />
 </template>
 
 <style>
-  div {
-    color: red;
-  }
 </style>
 
 <script lang="ts">
   import Vue from "vue";
   import Component from "vue-class-component";
-  import { Watch } from "vue-property-decorator";
 
   @Component
   export default class extends Vue {
-    msg = "Hello";
+    summoner_name = "";
 
-    mounted() {
-      console.debug("hello home!");
-      console.debug(this.msg);
-      this.msg = "yo";
-    }
+    async go() {
+      // console.debug(
+      //   await (
+      //     await fetch("/api/is_live", {
+      //       method: "POST",
+      //       headers: { "content-type": "application/json" },
+      //       body: JSON.stringify({ summoner: this.summoner_name }),
+      //     })
+      //   ).json()
+      // );
 
-    @Watch("msg")
-    onMsg() {
-      console.debug("watch!");
+      window.location.href = `/live/${this.summoner_name}`;
     }
   }
 </script>

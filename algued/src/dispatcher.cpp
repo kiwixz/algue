@@ -16,10 +16,10 @@ Dispatcher::Dispatcher(std::string riot_api_key) :
 
 http::Response Dispatcher::operator()(const http::Request& request)
 {
-    if (request.method != http::methods::get) {
+    if (request.method != http::methods::post) {
         http::Response res;
         res.status_code = http::Status::method_not_allowed;
-        res.status_message = "only GET is supported";
+        res.status_message = "only POST is supported";
         return res;
     }
 

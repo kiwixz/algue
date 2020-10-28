@@ -22,6 +22,16 @@ module.exports = {
     compress: false,
     contentBase: false,
     hot: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:4444",
+        pathRewrite: { "^/api": "" },
+      },
+      "/live": {
+        target: "http://localhost:8080",
+        pathRewrite: { "^/live/.*$": "/live" },
+      },
+    },
   },
   plugins: [
     new CleanWebpackPlugin(),

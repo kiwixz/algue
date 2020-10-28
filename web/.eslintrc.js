@@ -16,6 +16,7 @@ module.exports = {
   },
   rules: {
     "prettier/prettier": "warn",
+    "camelcase": "off",
     "class-methods-use-this": "off",
     "no-console": "off",
     "no-new": "off",
