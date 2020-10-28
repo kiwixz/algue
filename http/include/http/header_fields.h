@@ -17,7 +17,7 @@ struct HeaderField {
         return name_ == other;
     }
 
-    constexpr bool operator==(const std::string& other) const
+    bool operator==(const std::string& other) const
     {
         return name_ == other;
     }
