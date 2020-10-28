@@ -1,3 +1,13 @@
+@font-face {
+  font-family: "Rubik";
+  src: url("rubik-2.101.woff2");
+}
+
 body {
   background-color: #000;
+  font-family: "Rubik";
+}
+
+input {
+  font-family: inherit;
 }

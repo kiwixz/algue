@@ -11,10 +11,16 @@
     transform: translate(-50%, -50%);
 
     padding: 0.4% 0.8% 0.5%;
-    font-size: 2em;
     border: 0;
     border-radius: 0.2em;
+
+    font-size: 2em;
     text-align: center;
+
+    &::placeholder {
+      color: #ddd;
+      font-size: 1.4em;
+    }
   }
 </style>
 
