@@ -15,6 +15,40 @@ namespace algue::http::test {
 
 TEST_SUITE("parser")
 {
+    TEST_CASE("request")
+    {
+        std::string_view src = "POST /some/file%20name.html?with=parameter&and=another_one HTTP/1.1\r\n"
+                               "host: some.host.name.com\r\n"
+                               "accept: application/json\r\n"
+                               "Custom-Header: custom value\r\n"
+                               "\r\n";
+
+        Parser parser{MessageType::request};
+        size_t offset = 0;
+        size_t next_size = 0;
+        while (!parser.finished()) {
+            std::string_view next_input = src.substr(offset, next_size);
+            size_t size = parser.input({reinterpret_cast<const std::byte*>(next_input.data()), next_input.size()});
+            next_size += 10 - size;
+            offset += size;
+        }
+
+        CHECK(offset == src.size());
+        CHECK_THROWS(parser.response());
+        Request& req = parser.request();
+
+        CHECK(req.method == methods::post);
+        CHECK(req.path == "/some/file%20name.html?with=parameter&and=another_one");
+        CHECK(req.headers.size() == 3);
+        CHECK(req.headers[0].name == header_fields::host);
+        CHECK(req.headers[0].value == "some.host.name.com");
+        CHECK(req.headers[1].name == header_fields::accept);
+        CHECK(req.headers[1].value == "application/json");
+        CHECK(req.headers[2].name == "Custom-Header");
+        CHECK(req.headers[2].value == "custom value");
+        CHECK(req.body.empty());
+    }
+
     TEST_CASE("response")
     {
         std::string_view src = "HTTP/1.1 200 working as expected\r\n"
