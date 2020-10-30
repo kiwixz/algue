@@ -18,6 +18,7 @@ module.exports = {
     "prettier/prettier": "warn",
     "camelcase": "off",
     "class-methods-use-this": "off",
+    "lines-between-class-members": ["error", "always", { exceptAfterSingleLine: true }],
     "no-console": "off",
     "no-new": "off",
   },

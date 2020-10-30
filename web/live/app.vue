@@ -1,5 +1,8 @@
 <template>
-  <div>this is live, <a href="/">go back to home</a></div>
+  <div>
+    this is live, <a href="/">go back to home</a>
+    {{ game }}
+  </div>
 </template>
 
 <style>
@@ -14,8 +17,19 @@
 
   @Component
   export default class extends Vue {
-    mounted() {
-      console.debug("hello live!");
+    summoner_name;
+    game;
+
+    async mounted() {
+      const path = window.location.pathname;
+      this.summoner_name = path.substring(path.lastIndexOf("/") + 1);
+      this.game = await (
+        await fetch("/api/live_game", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ summoner: this.summoner_name }),
+        })
+      ).json();
     }
   }
 </script>
