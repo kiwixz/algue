@@ -80,7 +80,11 @@ TEST_SUITE("parse")
         CHECK_THROWS(parse(R"("unfinished)"));
         CHECK_THROWS(parse("\"\r\""));
         CHECK_THROWS(parse("\"\n\""));
+#ifdef _MSC_VER
+        CHECK_THROWS(parse("(\"\\\")"));  // msvc has difficulties parsing the raw string
+#else
         CHECK_THROWS(parse(R"("\")"));
+#endif
         CHECK_THROWS(parse(R"("\a")"));
         CHECK_THROWS(parse(R"("\\"bad)"));
         CHECK_THROWS(parse(R"("\\\\"bad)"));
