@@ -58,7 +58,7 @@ std::string parse_string(utils::ParsingContext& ctx)
         }
 
         char c = ctx.consume();
-        if (c < ' ')
+        if (static_cast<unsigned>(c) < ' ')
             throw MAKE_EXCEPTION("got control char {:#x} during parsing of string", c);
         r.push_back(c);
     }

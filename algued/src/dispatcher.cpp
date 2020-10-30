@@ -95,7 +95,7 @@ json::Value Dispatcher::live_game(const json::Value& input)
     o["mode"] = riot_game["gameMode"];
     o["type"] = riot_game["gameType"];
     o["map"] = riot_game["mapId"];
-    o["start_time"] = riot_game["gameStartTime"];
+    o["start_time"] = riot_game["gameStartTime"].get<unsigned long long>() / 1000;
     o["queue_type"] = riot_game["gameQueueConfigId"];
 
     json::Array& riot_bans = riot_game["bannedChampions"].as<json::Array>();
@@ -110,20 +110,22 @@ json::Value Dispatcher::live_game(const json::Value& input)
     json::Array& riot_players = riot_game["participants"].as<json::Array>();
     json::Object& players = o.try_emplace("players", json::Object{}).first->second.as<json::Object>();
     for (json::Value& p : riot_players) {
-        json::Object& r = players.try_emplace(team(p["teamId"].get<int>()), json::Object{}).first->second.as<json::Object>();
+        json::Array& team_players = players.try_emplace(team(p["teamId"].get<int>()), json::Array{}).first->second.as<json::Array>();
+        json::Object& r = team_players.emplace_back(json::Object{}).as<json::Object>();
         r["is_bot"] = p["bot"];
         r["summoner_name"] = p["summonerName"];
         r["profile_icon"] = p["profileIconId"];
         r["champion"] = p["championId"];
 
-        json::Array& spells = o.try_emplace("spells", json::Array{}).first->second.as<json::Array>();
-        spells[0] = p["spell1Id"];
-        spells[1] = p["spell2Id"];
+        json::Array& spells = r.try_emplace("spells", json::Array{}).first->second.as<json::Array>();
+        spells.push_back(p["spell1Id"]);
+        spells.push_back(p["spell2Id"]);
 
-        json::Object& runes = o.try_emplace("runes", json::Object{}).first->second.as<json::Object>();
-        runes["primary"] = p["perkStyle"];
-        runes["secondary"] = p["perkSubStyle"];
-        runes["ids"] = p["perkIds"];
+        json::Value& riot_runes = p["perks"];
+        json::Object& runes = r.try_emplace("runes", json::Object{}).first->second.as<json::Object>();
+        runes["primary"] = riot_runes["perkStyle"];
+        runes["secondary"] = riot_runes["perkSubStyle"];
+        runes["ids"] = riot_runes["perkIds"];
     }
 
     return o;
