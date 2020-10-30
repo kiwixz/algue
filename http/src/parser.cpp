@@ -68,8 +68,9 @@ size_t Parser::input(std::span<const std::byte> data)
 
             h.value = header_line->substr(i, end);
 
-            if (utils::iequal(h.name, header_fields::transfer_encoding))
-                throw MAKE_EXCEPTION("transfer-encoding is not implemented");
+            if (utils::iequal(h.name, header_fields::transfer_encoding)) {
+                chunked_ = (h.value.find("chunked") != std::string::npos);
+            }
             else if (utils::iequal(h.name, header_fields::content_length)) {
                 if (chunk_remaining_size_ != 0)
                     throw MAKE_EXCEPTION("received multiple content-length headers");
@@ -96,7 +97,47 @@ size_t Parser::input(std::span<const std::byte> data)
             break;
         }
 
-        if (chunk_remaining_size_ > 0) {
+
+        if (chunked_) {
+            while (true) {
+                if (chunk_remaining_size_ == 0) {  // not in the middle of a chunk, read next header
+                    std::optional<std::string_view> chunk_header = ctx.try_consume_until("\r\n");
+                    if (!chunk_header)
+                        return data.size() - ctx.remaining().size();
+
+                    if (std::from_chars(chunk_header->data(), chunk_header->data() + chunk_header->size(), chunk_remaining_size_, 16).ptr
+                        != chunk_header->data() + chunk_header->size())
+                        throw MAKE_EXCEPTION("invalid chunk size '{}'", *chunk_header);
+
+                    if (chunk_remaining_size_ == 0) {  // empty chunk is the end marker
+                        if (!ctx.try_consume("\r\n"))
+                            throw MAKE_EXCEPTION("empty chunk is not empty");
+                        break;
+                    }
+                }
+
+                if (ctx.ended())
+                    return data.size();
+
+                size_t append_size = std::min(chunk_remaining_size_, ctx.remaining().size());
+
+                // dont consume a whole chunk without the trailing sentinel,
+                // as we currently only try to consume the sentinel after a copy
+                if (ctx.remaining().size() - chunk_remaining_size_ < 2) {
+                    --append_size;
+                }
+
+                std::span<const std::byte> body_data{reinterpret_cast<const std::byte*>(ctx.consume(append_size).data()), append_size};
+                std::copy(body_data.begin(), body_data.end(), std::back_inserter(*body));
+                chunk_remaining_size_ -= append_size;
+
+                if (chunk_remaining_size_ > 0)
+                    return data.size() - ctx.remaining().size();
+                else if (!ctx.try_consume("\r\n"))
+                    throw MAKE_EXCEPTION("chunk is longer than expected");
+            }
+        }
+        else if (chunk_remaining_size_ > 0) {
             size_t append_size = std::min(chunk_remaining_size_, ctx.remaining().size());
             std::span<const std::byte> body_data{reinterpret_cast<const std::byte*>(ctx.consume(append_size).data()), append_size};
             std::copy(body_data.begin(), body_data.end(), std::back_inserter(*body));

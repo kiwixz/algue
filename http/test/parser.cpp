@@ -21,7 +21,8 @@ TEST_SUITE("parser")
                                "host: some.host.name.com\r\n"
                                "accept: application/json\r\n"
                                "Custom-Header: custom value\r\n"
-                               "\r\n";
+                               "\r\n"
+                               "      ";
 
         Parser parser{MessageType::request};
         size_t offset = 0;
@@ -33,7 +34,7 @@ TEST_SUITE("parser")
             offset += size;
         }
 
-        CHECK(offset == src.size());
+        CHECK(offset == src.size() - 6);
         CHECK_THROWS(parser.response());
         Request& req = parser.request();
 
@@ -57,7 +58,8 @@ TEST_SUITE("parser")
                                "content-length: 12\r\n"
                                "Custom-Header: custom value\r\n"
                                "\r\n"
-                               "hello world!";
+                               "hello world!"
+                               "      ";
 
         Parser parser{MessageType::response};
         size_t offset = 0;
@@ -69,7 +71,7 @@ TEST_SUITE("parser")
             offset += size;
         }
 
-        CHECK(offset == src.size());
+        CHECK(offset == src.size() - 6);
         CHECK_THROWS(parser.request());
         Response& res = parser.response();
 
@@ -85,6 +87,42 @@ TEST_SUITE("parser")
         CHECK(res.headers[3].name == "Custom-Header");
         CHECK(res.headers[3].value == "custom value");
         CHECK(std::string_view{reinterpret_cast<const char*>(res.body.data()), res.body.size()} == "hello world!");
+    }
+
+    TEST_CASE("chunked")
+    {
+        std::string_view src = "HTTP/1.1 299 chuchu\r\n"
+                               "Transfer-Encoding: chunked\r\n"
+                               "\r\n"
+                               "5\r\n"
+                               "hello\r\n"
+                               "8\r\n"
+                               " world! \r\n"
+                               "1a\r\n"
+                               "aaaaaaaaaaaaaaaaaaaaaaaaaa\r\n"
+                               "0\r\n\r\n"
+                               "      ";
+
+        Parser parser{MessageType::response};
+        size_t offset = 0;
+        size_t next_size = 0;
+        while (!parser.finished()) {
+            std::string_view next_input = src.substr(offset, next_size);
+            size_t size = parser.input({reinterpret_cast<const std::byte*>(next_input.data()), next_input.size()});
+            next_size += 3 - size;
+            offset += size;
+        }
+
+        CHECK(offset == src.size() - 6);
+        CHECK_THROWS(parser.request());
+        Response& res = parser.response();
+
+        CHECK(res.status_code == 299);
+        CHECK(res.status_message == "chuchu");
+        CHECK(res.headers.size() == 1);
+        CHECK(res.headers[0].name == "Transfer-Encoding");
+        CHECK(res.headers[0].value == "chunked");
+        CHECK(std::string_view{reinterpret_cast<const char*>(res.body.data()), res.body.size()} == "hello world! aaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
 }
 
