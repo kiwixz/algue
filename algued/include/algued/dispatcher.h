@@ -1,5 +1,7 @@
 #pragma once
 
+#include <kae/logger.h>
+
 #include "algued/riot_client.h"
 #include "http/request.h"
 #include "http/response.h"
@@ -12,6 +14,7 @@ struct Dispatcher {
     http::Response operator()(const http::Request& request);
 
 private:
+    kae::Logger logger_{"Dispatcher"};
     RiotClient riot_client_;
 
     json::Value is_live(const json::Value& input);

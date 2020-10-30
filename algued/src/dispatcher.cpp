@@ -17,6 +17,7 @@ Dispatcher::Dispatcher(std::string riot_api_key) :
 http::Response Dispatcher::operator()(const http::Request& request)
 {
     if (request.method != http::methods::post) {
+        logger_(kae::LogLevel::error, "unsupported method '{}'", request.method);
         http::Response res;
         res.status_code = http::Status::method_not_allowed;
         res.status_message = "only POST is supported";
@@ -45,6 +46,7 @@ http::Response Dispatcher::operator()(const http::Request& request)
         }
     }
     catch (const std::exception& ex) {
+        logger_(kae::LogLevel::error, "caught exception: {}", ex.what());
         http::Response res;
         res.status_code = http::Status::internal_server_error;
         res.status_message = "error";
