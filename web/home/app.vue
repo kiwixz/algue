@@ -4,7 +4,7 @@
 
 <style lang="scss">
   input {
-    width: 40%;
+    width: clamp(40vw, 800px, 90vw);
     position: absolute;
     top: 50% - 10%;
     left: 50%;
@@ -14,7 +14,7 @@
     border: 0;
     border-radius: 0.2em;
 
-    font-size: 2em;
+    font-size: min(2em, 5vw);
     text-align: center;
 
     &::placeholder {
