@@ -9,6 +9,7 @@
 #include <kae/function.h>
 #include <kae/logger.h>
 
+#include "http/parser.h"
 #include "http/request.h"
 #include "http/response.h"
 
@@ -32,7 +33,7 @@ private:
         kae::Logger logger_{"HttpServerSession"};
         Server* server_;
         std::vector<std::byte> buffer_;
-        RequestParser request_parser_;
+        Parser request_parser_;
         asio::ip::tcp::socket socket_;
 
         void queue_read();

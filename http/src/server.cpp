@@ -49,6 +49,7 @@ void Server::queue_accept()
 
 Server::Session::Session(asio::ip::tcp::socket socket, Server* server) :
     server_{server},
+    request_parser_{MessageType::request},
     socket_{std::move(socket)}
 {}
 
@@ -86,12 +87,12 @@ void Server::Session::queue_read()
             return;
         }
 
-        std::optional<Request> req = request_parser_.get();
-        if (req) {
-            request_parser_ = {};
-            logger_(kae::LogLevel::info, "request {} {}", req->method, req->path);
-            std::vector<std::byte> res = server_->dispatcher_(std::move(*req)).serialize();
+        if (request_parser_.finished()) {
+            Request& req = request_parser_.request();
+            logger_(kae::LogLevel::info, "request {} {}", req.method, req.path);
+            std::vector<std::byte> res = server_->dispatcher_(std::move(req)).serialize();
             asio::write(socket_, asio::buffer(res));
+            request_parser_ = Parser{MessageType::request};
         }
 
         queue_read();

@@ -16,7 +16,7 @@ enum class MessageType {
 
 
 struct Parser {
-    Parser(MessageType type);
+    explicit Parser(MessageType type);
 
     bool finished() const;
 
