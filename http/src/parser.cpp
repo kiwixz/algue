@@ -134,6 +134,7 @@ void Parser::parse_first_line(std::string_view first_line)
 
     switch (type_) {
     case MessageType::request: {
+        result_ = Request{};
         Request& r = std::get<Request>(result_);
 
         std::optional<std::string_view> method = ctx.try_consume_until(' ');
@@ -151,6 +152,7 @@ void Parser::parse_first_line(std::string_view first_line)
             throw MAKE_EXCEPTION("unsupported HTTP version: '{}'", version);
     } break;
     case MessageType::response: {
+        result_ = Response{};
         Response& r = std::get<Response>(result_);
 
         std::optional<std::string_view> version = ctx.try_consume_until(' ');
