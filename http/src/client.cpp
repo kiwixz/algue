@@ -6,6 +6,7 @@
 #include <asio/write.hpp>
 
 #include "http/header_fields.h"
+#include "http/parser.h"
 #include "utils/self_path.h"
 
 namespace algue::http {
@@ -41,12 +42,26 @@ http::Response Client::request(http::Request& request)
     s.handshake(asio::ssl::stream_base::client);
     asio::write(s, asio::buffer(request.serialize()));
 
-    http::Response res;
-    res.deserialize([&](std::span<std::byte> buffer) {
-        return s.read_some(asio::buffer(buffer.data(), buffer.size()));
-    });
-    s.shutdown();
-    return res;
+    http::Parser parser{MessageType::response};
+    int read_size = 4096;
+    std::vector<std::byte> buf;
+    buf.resize(read_size);
+    while (!parser.finished()) {
+        size_t size = s.read_some(asio::buffer(buf.data() + buf.size() - read_size, read_size));
+        buf.resize(buf.size() - read_size + size);
+        size_t keep = parser.input(buf);
+        if (keep > 0 && keep < buf.size()) {
+            std::copy(buf.end() - keep, buf.end(), buf.begin());
+        }
+        buf.resize(keep + read_size);
+    }
+
+    try {
+        s.shutdown();
+    }
+    catch (const std::system_error& /*ex*/) {
+    }
+    return std::move(parser.response());
 }
 
 }  // namespace algue::http

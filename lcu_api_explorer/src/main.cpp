@@ -8,6 +8,7 @@
 #include <kae/os.h>
 
 #include "http/methods.h"
+#include "http/parser.h"
 #include "http/request.h"
 #include "http/response.h"
 #include "json/dump.h"
@@ -44,9 +45,7 @@ int main(int argc, char** argv)
     ssl_context.load_verify_file("riotgames.pem");
 
     asio::ssl::stream<asio::ip::tcp::socket> s{io_context, ssl_context};
-
     s.lowest_layer().connect({asio::ip::make_address_v4("127.0.0.1"), static_cast<uint16_t>(lockfile.port)});
-
     logger(kae::LogLevel::info, "TLS handshake");
     s.handshake(asio::ssl::stream_base::client);
 
@@ -54,13 +53,28 @@ int main(int argc, char** argv)
     cfg.get_to("method", req.method);
     req.path = path;
     req.headers = lockfile_to_headers(lockfile);
-
     asio::write(s, asio::buffer(req.serialize()));
 
-    http::Response res;
-    res.deserialize([&](std::span<std::byte> buffer) {
-        return s.read_some(asio::buffer(buffer.data(), buffer.size()));
-    });
+    http::Parser parser{http::MessageType::response};
+    int read_size = 4096;
+    std::vector<std::byte> buf;
+    buf.resize(read_size);
+    while (!parser.finished()) {
+        size_t size = s.read_some(asio::buffer(buf.data() + buf.size() - read_size, read_size));
+        buf.resize(buf.size() - read_size + size);
+        size_t keep = parser.input(buf);
+        if (keep > 0 && keep < buf.size()) {
+            std::copy(buf.end() - keep, buf.end(), buf.begin());
+        }
+        buf.resize(keep + read_size);
+    }
+
+    try {
+        s.shutdown();
+    }
+    catch (const std::system_error& /*ex*/) {
+    }
+    http::Response& res = parser.response();
 
     fmt::print(" < {} {}\n", req.method, req.path);
     for (const http::Header& hdr : req.headers) {
