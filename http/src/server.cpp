@@ -75,7 +75,7 @@ void Server::Session::queue_read()
         buffer_.resize(buffer_.size() - read_size + size);
 
         try {
-            size_t keep = request_parser_.input(buffer_);
+            size_t keep = buffer_.size() - request_parser_.input(buffer_);
 
             if (keep > 0 && keep < buffer_.size()) {
                 std::copy(buffer_.end() - keep, buffer_.end(), buffer_.begin());

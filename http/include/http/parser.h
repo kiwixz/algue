@@ -20,7 +20,7 @@ struct Parser {
 
     bool finished() const;
 
-    /// Returns the number of "unparsed" bytes to keep.
+    /// Returns the number of consumed bytes.
     size_t input(std::span<const std::byte> data);
 
     Request& request();

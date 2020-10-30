@@ -49,7 +49,7 @@ http::Response Client::request(http::Request& request)
     while (!parser.finished()) {
         size_t size = s.read_some(asio::buffer(buf.data() + buf.size() - read_size, read_size));
         buf.resize(buf.size() - read_size + size);
-        size_t keep = parser.input(buf);
+        size_t keep = buf.size() - parser.input(buf);
         if (keep > 0 && keep < buf.size()) {
             std::copy(buf.end() - keep, buf.end(), buf.begin());
         }

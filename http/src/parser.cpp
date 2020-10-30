@@ -32,7 +32,8 @@ size_t Parser::input(std::span<const std::byte> data)
     case Step::first_line: {
         std::optional<std::string_view> first_line = ctx.try_consume_until("\r\n");
         if (!first_line)
-            return ctx.remaining().size();
+            return data.size() - ctx.remaining().size();
+
         parse_first_line(*first_line);
         step_ = Step::headers;
     }
@@ -52,7 +53,7 @@ size_t Parser::input(std::span<const std::byte> data)
         while (!ctx.try_consume("\r\n")) {
             std::optional<std::string_view> header_line = ctx.try_consume_until("\r\n");
             if (!header_line)
-                return ctx.remaining().size();
+                return data.size() - ctx.remaining().size();
 
             Header h;
             size_t i = header_line->find(':');
@@ -102,11 +103,11 @@ size_t Parser::input(std::span<const std::byte> data)
             chunk_remaining_size_ -= append_size;
 
             if (chunk_remaining_size_ > 0)
-                return 0;
+                return data.size();
         }
 
         step_ = Step::finished;
-        return ctx.remaining().size();
+        return data.size() - ctx.remaining().size();
     }
 
     case Step::finished:
