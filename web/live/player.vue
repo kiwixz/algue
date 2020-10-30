@@ -1,10 +1,19 @@
 <template>
-  <div>
-    {{ JSON.stringify(player) }}
+  <div class="player">
+    <div class="player-name">
+      {{ player.summoner_name }}
+    </div>
   </div>
 </template>
 
-<style></style>
+<style>
+  .player {
+    padding: 10px;
+    border-radius: 4px;
+
+    background-color: #222;
+  }
+</style>
 
 <script lang="ts">
   import Vue from "vue";

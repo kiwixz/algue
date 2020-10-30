@@ -1,10 +1,21 @@
 <template>
-  <div>
-    <Player v-for="p in players" :key="p.summoner_name" :player="p"></Player>
+  <div class="team">
+    <Player v-for="p in players" :key="p.summoner_name" class="player" :player="p"></Player>
   </div>
 </template>
 
-<style></style>
+<style>
+  .team {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .player {
+    margin: 20px;
+  }
+</style>
 
 <script lang="ts">
   import Vue from "vue";
