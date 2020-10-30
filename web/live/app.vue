@@ -1,26 +1,31 @@
 <template>
   <div>
-    this is live, <a href="/">go back to home</a>
-    {{ game }}
+    <div v-if="game">
+      <Team :players="game.players['blue']"></Team>
+      <Team :players="game.players['red']"></Team>
+    </div>
+    <div v-else>loading...</div>
   </div>
 </template>
 
-<style>
-  div {
-    color: green;
-  }
-</style>
+<style></style>
 
 <script lang="ts">
   import Vue from "vue";
   import Component from "vue-class-component";
 
-  @Component
-  export default class extends Vue {
-    summoner_name;
-    game;
+  import Team from "./team.vue";
 
-    async mounted() {
+  @Component({
+    components: {
+      Team,
+    },
+  })
+  export default class extends Vue {
+    summoner_name = null;
+    game = null;
+
+    async created() {
       const path = window.location.pathname;
       this.summoner_name = path.substring(path.lastIndexOf("/") + 1);
       this.game = await (
