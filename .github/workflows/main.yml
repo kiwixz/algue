@@ -2,7 +2,7 @@ on: [pull_request, push]
 
 env:
   GCC_VERSION: 10
-  LLVM_VERSION: 10
+  LLVM_VERSION: 11
 
 jobs:
   build_debian:
@@ -22,7 +22,7 @@ jobs:
             cxx_packages: g++-$GCC_VERSION
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye-slim
+      image: debian:sid-slim
     steps:
       - name: Install system dependencies
         run: |
@@ -157,7 +157,7 @@ jobs:
   clang_format:
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye-slim
+      image: debian:sid-slim
     steps:
       - name: Install system dependencies
         run: |
@@ -200,7 +200,7 @@ jobs:
         build_type: [Debug, Release]
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye-slim
+      image: debian:sid-slim
     steps:
       - name: Install system dependencies
         run: |
@@ -284,7 +284,7 @@ jobs:
   web:
     runs-on: ubuntu-latest
     container:
-      image: debian:bullseye-slim
+      image: debian:sid-slim
     steps:
       - name: Install system dependencies
         run: |
