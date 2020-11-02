@@ -284,7 +284,7 @@ jobs:
   web:
     runs-on: ubuntu-latest
     container:
-      image: debian:sid-slim
+      image: debian:buster-slim
     steps:
       - name: Install system dependencies
         run: |
