@@ -177,15 +177,15 @@ jobs:
           git clone "https://github.com/${{ github.repository }}" "./"
           git checkout "${{ github.sha }}"
 
-      - name: Register problem matchers
-        run: |
-          echo "::add-matcher::.github/problem_matchers.json"
-
       - name: Configure
         run: |
           export CC="clang-$LLVM_VERSION"
           export CXX="clang++-$LLVM_VERSION"
           cmake -G Ninja -B "build"
+
+      - name: Register problem matchers
+        run: |
+          echo "::add-matcher::.github/problem_matchers.json"
 
       - name: clang-format
         run: |
@@ -220,15 +220,15 @@ jobs:
           git clone "https://github.com/${{ github.repository }}" "./"
           git checkout "${{ github.sha }}"
 
-      - name: Register problem matchers
-        run: |
-          echo "::add-matcher::.github/problem_matchers.json"
-
       - name: Configure
         run: |
           export CC="clang-$LLVM_VERSION"
           export CXX="clang++-$LLVM_VERSION"
           cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
+
+      - name: Register problem matchers
+        run: |
+          echo "::add-matcher::.github/problem_matchers.json"
 
       - name: clang-tidy
         run: |
@@ -264,15 +264,15 @@ jobs:
           git clone "https://github.com/${{ github.repository }}" "."
           git checkout "${{ github.sha }}"
 
-      - name: Register problem matchers
-        run: |
-          echo ::add-matcher::.github/problem_matchers.json
-
       - name: Configure
         run: |
           call "%VCVARS%"
           set "PATH=C:\\Program Files\\LLVM\\bin;%PATH%"
           cmake -G Ninja -D "CMAKE_BUILD_TYPE=${{ matrix.build_type }}" -B "build"
+
+      - name: Register problem matchers
+        run: |
+          echo ::add-matcher::.github/problem_matchers.json
 
       - name: clang_tidy
         run: |
