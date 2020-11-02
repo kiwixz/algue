@@ -30,6 +30,6 @@
     },
   })
   export default class extends Vue {
-    @Prop() readonly players;
+    @Prop() readonly players: object | undefined;
   }
 </script>

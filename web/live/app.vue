@@ -22,8 +22,8 @@
     },
   })
   export default class extends Vue {
-    summoner_name = null;
-    game = null;
+    summoner_name = "";
+    game = {};
 
     async created() {
       const path = window.location.pathname;

@@ -22,6 +22,6 @@
 
   @Component
   export default class extends Vue {
-    @Prop() readonly player;
+    @Prop() readonly player: object | undefined;
   }
 </script>
