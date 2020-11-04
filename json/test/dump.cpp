@@ -15,9 +15,9 @@ TEST_SUITE("dump")
         CHECK(dump(-12) == "-12");
         CHECK(dump(0) == "0");
         CHECK(dump(12) == "12");
-        CHECK(dump(16.0) == "16.0");
+        CHECK(dump(16.0) == "16");
+        CHECK(dump(-14.0) == "-14");
         CHECK(dump(16.005) == "16.005");
-        CHECK(dump(-14.0) == "-14.0");
         CHECK(dump(1e20) == "1e+20");
         CHECK(dump(1e-20) == "1e-20");
         CHECK(dump("") == R"("")");
