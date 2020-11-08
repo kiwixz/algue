@@ -292,7 +292,7 @@ jobs:
           apt update
           apt -y --no-install-recommends full-upgrade  \
               git ca-certificates  \
-              npm
+              npm python3
 
       - name: Dump packages versions
         run: |
