@@ -1,7 +1,7 @@
 <template>
   <div class="player">
     <div class="player-section player-name">{{ player.summoner_name }}</div>
-    <div class="player-section">champion</div>
+    <div class="player-section player-champion"><img :src="champion.image" />{{ champion.name }}</div>
     <div class="player-section">role</div>
     <div class="player-section">ranked</div>
     <div class="player-section">history</div>
@@ -39,8 +39,14 @@
   import Component from "vue-class-component";
   import { Prop } from "vue-property-decorator";
 
+  import Champions from "Riot/champions";
+
   @Component
   export default class extends Vue {
-    @Prop() readonly player: object | undefined;
+    @Prop() readonly player: any;
+
+    get champion() {
+      return Champions[this.player.champion];
+    }
   }
 </script>
