@@ -79,15 +79,6 @@ json::Value Dispatcher::is_live(const json::Value& input)
 
 json::Value Dispatcher::live_game(const json::Value& input)
 {
-    auto team = [](int team_id) -> std::string {
-        if (team_id == 100)
-            return "blue";
-        else if (team_id == 200)
-            return "red";
-        else
-            return fmt::format("{}", team_id);
-    };
-
     json::Value riot_summoner = riot_client_.get(fmt::format("/lol/summoner/v4/summoners/by-name/{}", input["summoner"].as<std::string>()));
     json::Value riot_game = riot_client_.get("/lol/spectator/v4/active-games/by-summoner/" + riot_summoner["id"].as<std::string>());
 
@@ -102,7 +93,7 @@ json::Value Dispatcher::live_game(const json::Value& input)
     json::Array& bans = o.try_emplace("bans", json::Array{}).first->second.as<json::Array>();
     std::transform(riot_bans.begin(), riot_bans.end(), std::back_inserter(bans), [&](const json::Value& b) {
         json::Object r;
-        r["team"] = team(b["teamId"].get<int>());
+        r["team"] = b["teamId"].get<int>();
         r["champion"] = b["championId"];
         return r;
     });
@@ -110,7 +101,9 @@ json::Value Dispatcher::live_game(const json::Value& input)
     json::Array& riot_players = riot_game["participants"].as<json::Array>();
     json::Object& players = o.try_emplace("players", json::Object{}).first->second.as<json::Object>();
     for (json::Value& p : riot_players) {
-        json::Array& team_players = players.try_emplace(team(p["teamId"].get<int>()), json::Array{}).first->second.as<json::Array>();
+        json::Array& team_players = players.try_emplace(fmt::format("{}", p["teamId"].get<int>()),
+                                                        json::Array{})
+                                            .first->second.as<json::Array>();
         json::Object& r = team_players.emplace_back(json::Object{}).as<json::Object>();
         r["is_bot"] = p["bot"];
         r["summoner_name"] = p["summonerName"];
