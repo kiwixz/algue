@@ -20,6 +20,7 @@ module.exports = {
     },
   },
   resolve: {
+    extensions: [".ts", ".js"],
     alias: {
       Common: path.resolve(__dirname, "common"),
       Riot: path.resolve(__dirname, "riot/build/include"),

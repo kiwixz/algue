@@ -13,8 +13,8 @@
 
     "baseUrl": ".",
     "paths": {
-      "Common": ["common"],
-      "Riot": ["riot/build/include"]
+      "Common/*": ["common/*"],
+      "Riot/*": ["riot/build/include/*"]
     }
   }
 }

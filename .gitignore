@@ -7,3 +7,7 @@
 .cache/
 .vscode/
 __pycache__/
+
+
+# this should only be in web, but vetur does not currently support setting the path
+/tsconfig.json
