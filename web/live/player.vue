@@ -1,11 +1,14 @@
 <template>
-  <div class="player">
-    <div class="player-section player-name">{{ player.summoner_name }}</div>
-    <div class="player-section player-champion"><img :src="champion.image" />{{ champion.name }}</div>
-    <div class="player-section">role</div>
-    <div class="player-section">ranked</div>
-    <div class="player-section">history</div>
-    <div class="player-section">tips</div>
+  <div>
+    <div class="section name">{{ player.summoner_name }}</div>
+    <div class="section champion">
+      <img :src="champion.image" />
+      <div class="champion-name">{{ champion.name }}</div>
+    </div>
+    <div class="section">role</div>
+    <div class="section">ranked</div>
+    <div class="section">history</div>
+    <div class="section">tips</div>
   </div>
 </template>
 
@@ -17,26 +20,36 @@
     flex-flow: column wrap;
 
     background-color: #222;
-  }
 
-  .player-section {
-    margin: 1px 0px;
-    padding: 4px;
+    .section {
+      margin: 1px 0px;
+      padding: 4px;
 
-    background-color: #444;
-  }
+      background-color: #444;
+    }
 
-  .player-name {
-    width: 14em;
+    .name {
+      width: 14em;
 
-    background-color: #222;
-    font-weight: 500;
-    text-align: center;
-  }
+      background-color: #222;
+      font-size: 1.1em;
+      font-weight: 500;
+      text-align: center;
+    }
 
-  .player-champion {
-    img {
-      width: 60px;
+    .champion {
+      display: flex;
+
+      img {
+        display: block;
+        width: 60px;
+
+        border-radius: 3px;
+      }
+
+      .champion-name {
+        margin: 0.2em 0px 0px 0.5em;
+      }
     }
   }
 </style>
