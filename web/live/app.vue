@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="game">
-      <Team :players="game.players[Teams.find(e => e.name == 'blue')]"></Team>
-      <Team :players="game.players[Teams.find(e => e.name == 'red')]"></Team>
+      <Team :players="game.players[riot_teams.find(e => e.name == 'blue').id]"></Team>
+      <Team :players="game.players[riot_teams.find(e => e.name == 'red').id]"></Team>
     </div>
     <div v-else>loading...</div>
   </div>
@@ -14,6 +14,8 @@
   import Vue from "vue";
   import Component from "vue-class-component";
 
+  import RiotTeams from "Riot/teams";
+
   import Team from "./team.vue";
 
   @Component({
@@ -23,7 +25,11 @@
   })
   export default class extends Vue {
     summoner_name = "";
-    game = {};
+    game: any = null;
+
+    get riot_teams() {
+      return RiotTeams;
+    }
 
     async created() {
       const path = window.location.pathname;
