@@ -1,7 +1,7 @@
 import Vue from "vue";
 import App from "./app.vue";
 
-import "../common/global.scss";
+import "Common/global.scss";
 
 new Vue({
   el: "#app",

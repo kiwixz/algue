@@ -5,6 +5,9 @@ module.exports = {
   },
   extends: ["plugin:vue/essential", "airbnb-base", "prettier"],
   plugins: ["vue", "prettier"],
+  settings: {
+    "import/resolver": "webpack",
+  },
   parser: "vue-eslint-parser",
   parserOptions: {
     parser: "@typescript-eslint/parser",

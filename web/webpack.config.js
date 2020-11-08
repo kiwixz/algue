@@ -19,6 +19,12 @@ module.exports = {
       chunks: "all",
     },
   },
+  resolve: {
+    alias: {
+      Common: path.resolve(__dirname, "common"),
+      Riot: path.resolve(__dirname, "riot/include"),
+    },
+  },
   devServer: {
     compress: false,
     contentBase: false,
