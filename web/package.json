@@ -6,7 +6,7 @@
   "repository": {},
   "scripts": {
     "dev": "webpack --mode=development s",
-    "build": "webpack"
+    "build": "cd riot && make.py && cd .. && webpack"
   },
   "devDependencies": {
     "@typescript-eslint/parser": "4.6.1",
