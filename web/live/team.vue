@@ -13,7 +13,7 @@
   }
 
   .player {
-    margin: 20px;
+    margin: 10px;
   }
 </style>
 
