@@ -41,6 +41,7 @@
           body: JSON.stringify({ summoner: this.summoner_name }),
         })
       ).json();
+      document.title = `algue / live / ${this.summoner_name}`;
     }
   }
 </script>
