@@ -1,8 +1,8 @@
 <template>
   <div>
     <div v-if="game">
-      <Team :players="game.players['blue']"></Team>
-      <Team :players="game.players['red']"></Team>
+      <Team :players="game.players[Teams.find(e => e.name == 'blue')]"></Team>
+      <Team :players="game.players[Teams.find(e => e.name == 'red')]"></Team>
     </div>
     <div v-else>loading...</div>
   </div>
