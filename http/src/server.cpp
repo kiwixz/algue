@@ -3,6 +3,7 @@
 #include <asio/write.hpp>
 #include <kae/exception.h>
 
+#include "http/fmt_endpoint.h"
 #include "http/header_fields.h"
 #include "utils/self_path.h"
 
@@ -21,8 +22,14 @@ Server::Server(int port, Dispatch dispatcher) :
     queue_accept();
 }
 
+asio::ip::tcp::endpoint Server::endpoint() const
+{
+    return acceptor_.local_endpoint();
+}
+
 void Server::run()
 {
+    logger_(kae::LogLevel::info, "listening on {}", acceptor_.local_endpoint());
     io_.run();
 }
 
@@ -46,6 +53,7 @@ void Server::queue_accept()
         queue_accept();
     });
 }
+
 
 Server::Session::Session(asio::ip::tcp::socket socket, Server* server) :
     server_{server},

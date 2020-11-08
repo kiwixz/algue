@@ -20,6 +20,8 @@ struct Server {
 
     Server(int port, Dispatch dispatcher);
 
+    asio::ip::tcp::endpoint endpoint() const;
+
     void run();
     void stop();
 
