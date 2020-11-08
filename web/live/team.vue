@@ -4,7 +4,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
   .team {
     display: flex;
     align-items: flex-start;

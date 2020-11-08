@@ -9,7 +9,7 @@
   </div>
 </template>
 
-<style>
+<style lang="scss">
   .player {
     border-radius: 4px;
 
@@ -29,8 +29,15 @@
   .player-name {
     width: 14em;
 
-    text-align: center;
     background-color: #222;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .player-champion {
+    img {
+      width: 60px;
+    }
   }
 </style>
 
