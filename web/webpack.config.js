@@ -22,7 +22,7 @@ module.exports = {
   resolve: {
     alias: {
       Common: path.resolve(__dirname, "common"),
-      Riot: path.resolve(__dirname, "riot/include"),
+      Riot: path.resolve(__dirname, "riot/build/include"),
     },
   },
   devServer: {
@@ -75,7 +75,7 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.woff2$/,
+        test: /\.(woff2|png)$/,
         use: [
           {
             loader: "file-loader",
