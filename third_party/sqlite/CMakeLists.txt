@@ -23,5 +23,7 @@ target_compile_definitions("sqlite" PRIVATE
     "SQLITE_OMIT_SHARED_CACHE"
     "SQLITE_USE_ALLOCA"
     "SQLITE_OMIT_AUTOINIT"
+
+    "__PRFCHWINTRIN_H"  # clang march=native workaround (https://lists.llvm.org/pipermail/llvm-dev/2020-June/142227.html)
 )
 target_include_directories("sqlite" SYSTEM PUBLIC "${sqlite_SOURCE_DIR}")
