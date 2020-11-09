@@ -4,7 +4,7 @@
 
 <style lang="scss">
   .header {
-    padding: 8px;
+    padding: 10px;
 
     background-color: #054;
   }

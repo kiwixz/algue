@@ -1,4 +1,7 @@
-export default [
-  { id: 100, name: "blue" },
-  { id: 200, name: "red" },
-];
+export default {
+  blue: 100,
+  red: 200,
+
+  100: "blue",
+  200: "red",
+};

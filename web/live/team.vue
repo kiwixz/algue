@@ -12,7 +12,7 @@
     justify-content: center;
 
     .player {
-      margin: 10px;
+      margin: 30px 10px 0px;
     }
   }
 </style>

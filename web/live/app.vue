@@ -4,8 +4,8 @@
     <div class="container">
       <div>
         <GameInfo :game="game"></GameInfo>
-        <Team :players="game.players[riot_teams.find(e => e.name == 'blue').id]"></Team>
-        <Team :players="game.players[riot_teams.find(e => e.name == 'red').id]"></Team>
+        <Team :players="game.players[riot_teams.red]"></Team>
+        <Team :players="game.players[riot_teams.blue]"></Team>
       </div>
     </div>
   </div>
@@ -29,8 +29,8 @@
 
   import RiotTeams from "Riot/teams";
 
-  import Header from "./header.vue";
   import GameInfo from "./game_info.vue";
+  import Header from "./header.vue";
   import Team from "./team.vue";
 
   @Component({
