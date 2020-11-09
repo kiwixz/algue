@@ -1,6 +1,7 @@
 @font-face {
   font-family: "Rubik";
   src: url("rubik-2.101.woff2");
+  font-display: swap;
 }
 
 body {
@@ -8,7 +9,7 @@ body {
 
   background-color: #000;
   color: #fff;
-  font-family: "Rubik";
+  font-family: "Rubik", sans-serif;
 }
 
 input {
