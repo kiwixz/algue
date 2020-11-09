@@ -5,13 +5,13 @@
     </div>
     <div class="bans">
       <div class="blue_bans">
-        <div v-for="b in blue_bans" :key="b" class="ban">
+        <div v-for="(b, i) in blue_bans" :key="i" class="ban">
           <img v-if="b" :src="b.image" />
         </div>
       </div>
 
       <div class="red_bans">
-        <div v-for="b in red_bans" :key="b" class="ban">
+        <div v-for="(b, i) in red_bans" :key="i" class="ban">
           <img v-if="b" :src="b.image" />
         </div>
       </div>
