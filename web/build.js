@@ -4,4 +4,4 @@ const path = require("path"); // eslint-disable-line import/no-extraneous-depend
 const { execSync } = require("child_process");
 
 execSync(path.join("riot", "make.py"), { stdio: "inherit" });
-execSync("webpack", { stdio: "inherit" });
+execSync("webpack  --mode=production", { stdio: "inherit" });
