@@ -1,14 +1,27 @@
 <template>
-  <div>
-    <div v-if="game">
-      <Team :players="game.players[riot_teams.find(e => e.name == 'blue').id]"></Team>
-      <Team :players="game.players[riot_teams.find(e => e.name == 'red').id]"></Team>
+  <div v-if="game" class="app">
+    <Header :summoner_name="summoner_name"></Header>
+    <div class="container">
+      <div>
+        <GameInfo :game="game"></GameInfo>
+        <Team :players="game.players[riot_teams.find(e => e.name == 'blue').id]"></Team>
+        <Team :players="game.players[riot_teams.find(e => e.name == 'red').id]"></Team>
+      </div>
     </div>
-    <div v-else>loading...</div>
   </div>
+  <div v-else>loading...</div>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+  .app {
+    .container {
+      margin-top: 20px;
+
+      display: flex;
+      justify-content: center;
+    }
+  }
+</style>
 
 <script lang="ts">
   import Vue from "vue";
@@ -16,10 +29,14 @@
 
   import RiotTeams from "Riot/teams";
 
+  import Header from "./header.vue";
+  import GameInfo from "./game_info.vue";
   import Team from "./team.vue";
 
   @Component({
     components: {
+      Header,
+      GameInfo,
       Team,
     },
   })

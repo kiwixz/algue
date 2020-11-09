@@ -1,6 +1,6 @@
 <template>
   <div class="team">
-    <Player v-for="p in players" :key="p.summoner_name" class="player" :player="p"></Player>
+    <Player v-for="p in players" :key="p.summoner_name" :player="p"></Player>
   </div>
 </template>
 
@@ -10,10 +10,10 @@
     align-items: flex-start;
     flex-wrap: wrap;
     justify-content: center;
-  }
 
-  .player {
-    margin: 10px;
+    .player {
+      margin: 10px;
+    }
   }
 </style>
 

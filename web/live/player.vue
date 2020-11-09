@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="player">
     <div class="section name">{{ player.summoner_name }}</div>
     <div class="section champion">
       <img :src="champion.image" />
@@ -15,10 +15,6 @@
 <style lang="scss">
   .player {
     border-radius: 4px;
-
-    display: flex;
-    flex-flow: column wrap;
-
     background-color: #222;
 
     .section {

@@ -9,11 +9,10 @@
     top: 50% - 10%;
     left: 50%;
     transform: translate(-50%, -50%);
-
     padding: 0.4% 0.8% 0.5%;
+
     border: 0;
     border-radius: 0.2em;
-
     font-size: min(2em, 5vw);
     text-align: center;
 
