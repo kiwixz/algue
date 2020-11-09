@@ -20,6 +20,7 @@ endif ()
 option(ALGUE_TESTS "Build tests" ${IS_ROOT_LIST})
 option(ALGUE_AUTO_COMPILERS "Automatically override compilers" ${IS_ROOT_LIST})
 option(ALGUE_AUTO_FLAGS "Automatically override flags" ${IS_ROOT_LIST})
+set(ALGUE_ARCH "native" CACHE STRING "Machine architecture")
 
 if (IS_ROOT_LIST)
     set_default(CMAKE_BUILD_TYPE "Debug" STRING)
@@ -45,7 +46,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if (ALGUE_AUTO_FLAGS)
-    cpp_flags_auto()
+    cpp_flags_auto("${ALGUE_ARCH}")
     cpp_warnings_auto()
 endif ()
 
