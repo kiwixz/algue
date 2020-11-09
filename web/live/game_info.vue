@@ -1,6 +1,8 @@
 <template>
   <div class="game_info">
-    <div>game type</div>
+    <div>
+      {{ queue_type.name }}<span class="map">({{ queue_type.map }})</span>
+    </div>
     <div>bans</div>
   </div>
 </template>
@@ -10,6 +12,12 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+
+    .map {
+      margin-left: 1em;
+
+      color: #555;
+    }
   }
 </style>
 
@@ -18,8 +26,14 @@
   import Component from "vue-class-component";
   import { Prop } from "vue-property-decorator";
 
+  import Queues from "Riot/queues";
+
   @Component
   export default class extends Vue {
-    @Prop() readonly game: object | undefined;
+    @Prop() readonly game: any;
+
+    get queue_type() {
+      return Queues[this.game.queue_type];
+    }
   }
 </script>

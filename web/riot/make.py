@@ -8,6 +8,18 @@ from pathlib import Path
 from tarfile import TarFile
 
 
+def get_json_file(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def get_json_url(url):
+    res = urllib.request.urlopen(url)
+    if res.status != 200:
+        raise RuntimeError(f"http error {res.status} ({res.reason})")
+    return json.load(res)
+
+
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     build = Path("build")
@@ -16,10 +28,8 @@ def main():
 
     shutil.copy("teams.ts", include)
 
-    versions_res = urllib.request.urlopen("https://ddragon.leagueoflegends.com/api/versions.json")
-    if versions_res.status != 200:
-        raise RuntimeError(f"http error {versions_res.status} ({versions_res.reason})")
-    latest = json.load(versions_res)[0]
+    versions = get_json_url("https://ddragon.leagueoflegends.com/api/versions.json")
+    latest = versions[0]
     print(f"lastest version: {latest}")
 
     ddragon = build / f"ddragon-{latest}"
@@ -41,8 +51,7 @@ def main():
     ddragon_data = ddragon / latest / "data/en_US"
     ddragon_img = ddragon / latest / "img"
 
-    with open(ddragon_data / "champion.json", encoding="utf-8") as f:
-        champions = json.load(f)
+    champions = get_json_file(ddragon_data / "champion.json")
     with open(include / "champions.ts", "w", newline="\n") as f:
         for c in champions["data"]:
             f.write(
@@ -50,8 +59,18 @@ def main():
             )
         f.write("\nexport default {\n")
         for c in champions["data"].values():
-            f.write(c["key"] + ': { name: "' + c["name"] + '", image: ' + c["id"] + "Img },\n")
-        f.write("}\n")
+            f.write("  " + c["key"] + ': { name: "' + c["name"] + '", image: ' + c["id"] + "Img },\n")
+        f.write("};\n")
+
+    queues = get_json_url("http://static.developer.riotgames.com/docs/lol/queues.json")
+    with open(include / "queues.ts", "w", newline="\n") as f:
+        f.write("export default {\n")
+        for q in queues:
+            name = "Custom" if q["queueId"] == 0 else q["description"]
+            if name.endswith(" games"):
+                name = name[: -len(" games")]
+            f.write("  " + str(q["queueId"]) + ': { name: "' + name + '", map: "' + q["map"] + '" },\n')
+        f.write("};\n")
 
 
 if __name__ == "__main__":

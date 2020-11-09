@@ -83,11 +83,9 @@ json::Value Dispatcher::live_game(const json::Value& input)
     json::Value riot_game = riot_client_.get("/lol/spectator/v4/active-games/by-summoner/" + riot_summoner["id"].as<std::string>());
 
     json::Object o;
-    o["mode"] = riot_game["gameMode"];
-    o["type"] = riot_game["gameType"];
+    o["queue_type"] = riot_game["gameQueueConfigId"];
     o["map"] = riot_game["mapId"];
     o["start_time"] = riot_game["gameStartTime"].get<unsigned long long>() / 1000;
-    o["queue_type"] = riot_game["gameQueueConfigId"];
 
     json::Array& riot_bans = riot_game["bannedChampions"].as<json::Array>();
     json::Array& bans = o.try_emplace("bans", json::Array{}).first->second.as<json::Array>();
