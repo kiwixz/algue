@@ -50,7 +50,7 @@ module.exports = (_, argv) => {
       },
     },
     plugins: [
-      new CleanWebpackPlugin(),
+      dev ? false : new CleanWebpackPlugin(),
       new VueLoaderPlugin(),
       new HtmlWebpackPlugin({
         chunks: ["home"],
@@ -91,12 +91,36 @@ module.exports = (_, argv) => {
           use: ["style-loader", "css-loader"],
         },
         {
-          test: /\.(woff2|png)$/,
+          test: /\.png$/i,
           use: [
             {
               loader: "file-loader",
               options: {
-                name: "[name].[contenthash].[ext]",
+                name: "i/[name].[contenthash].webp",
+              },
+            },
+            {
+              loader: "image-webpack-loader",
+              options: {
+                disable: dev,
+                optipng: { enabled: false },
+                pngquant: { enabled: false },
+                webp: {
+                  lossless: true,
+                  method: 6,
+                  quality: 100,
+                },
+              },
+            },
+          ],
+        },
+        {
+          test: /\.woff2$/,
+          use: [
+            {
+              loader: "file-loader",
+              options: {
+                name: "a/[name].[contenthash].[ext]",
               },
             },
           ],
