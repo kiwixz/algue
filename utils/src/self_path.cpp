@@ -26,7 +26,7 @@ std::filesystem::path get_self_path()
 
     return buf;
 #else
-    std::terminate();
+    return std::filesystem::read_symlink("/proc/self/exe");
 #endif
 }
 
