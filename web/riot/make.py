@@ -48,6 +48,7 @@ def main():
             raise RuntimeError("suspicious path in ddragon archive")
         ddragon_tar.extractall(ddragon)
 
+    print("making includes")
     ddragon_data = ddragon / latest / "data/en_US"
     ddragon_img = ddragon / latest / "img"
 
