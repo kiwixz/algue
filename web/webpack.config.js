@@ -19,6 +19,9 @@ module.exports = {
       chunks: "all",
     },
   },
+  performance: {
+    hints: false,
+  },
   resolve: {
     extensions: [".ts", ".js"],
     alias: {
