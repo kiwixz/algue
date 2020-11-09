@@ -23,7 +23,7 @@ Client::Client(std::string host) :
     ssl_ctx_.set_verify_callback(asio::ssl::host_name_verification{host_});
 
     asio::ip::tcp::resolver resolver{io_};
-    endpoints_ = resolver.resolve(host_, "https");
+    endpoints_ = resolver.resolve(host_, "443");
 }
 
 http::Response Client::request(http::Request& request)
