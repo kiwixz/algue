@@ -1,6 +1,8 @@
 const path = require("path");
+const { gzip } = require("@gfx/zopfli");
 
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const CompressionPlugin = require("compression-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
@@ -55,6 +57,11 @@ module.exports = {
       chunks: ["live"],
       template: "common/index.html",
       filename: "live.html",
+    }),
+    new CompressionPlugin({
+      test: /\.(html|js)$/,
+      minRatio: 1.0,
+      algorithm: gzip,
     }),
   ],
   module: {

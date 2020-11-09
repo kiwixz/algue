@@ -9,8 +9,10 @@
     "build": "node build.js"
   },
   "devDependencies": {
+    "@gfx/zopfli": "1.0.15",
     "@typescript-eslint/parser": "4.6.1",
     "clean-webpack-plugin": "3.0.0",
+    "compression-webpack-plugin": "6.1.0",
     "css-loader": "5.0.1",
     "eslint": "7.13.0",
     "eslint-config-airbnb-base": "14.2.1",
