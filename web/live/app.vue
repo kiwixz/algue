@@ -50,7 +50,7 @@
 
     async created() {
       const path = window.location.pathname;
-      this.summoner_name = path.substring(path.lastIndexOf("/") + 1);
+      this.summoner_name = decodeURI(path.substring(path.lastIndexOf("/") + 1));
       this.game = await (
         await fetch("/api/live_game", {
           method: "POST",

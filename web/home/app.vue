@@ -42,7 +42,7 @@
       //   ).json()
       // );
 
-      window.location.href = `/live/${this.summoner_name}`;
+      window.location.href = `/live/${encodeURI(this.summoner_name)}`;
     }
   }
 </script>
