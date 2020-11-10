@@ -103,8 +103,12 @@ module.exports = (_, argv) => {
               loader: "image-webpack-loader",
               options: {
                 disable: dev,
+
+                gifsicle: { enabled: false },
+                mozjpeg: { enabled: false },
                 optipng: { enabled: false },
                 pngquant: { enabled: false },
+                svgo: { enabled: false },
                 webp: {
                   lossless: true,
                   method: 6,
