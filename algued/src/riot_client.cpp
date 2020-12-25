@@ -1,5 +1,6 @@
 #include "algued/riot_client.h"
 
+#include "algued/riot_client_fake.h"
 #include "http/methods.h"
 #include "http/request.h"
 #include "http/response.h"
@@ -14,6 +15,12 @@ RiotClient::RiotClient(std::string api_key) :
 
 json::Value RiotClient::get(std::string_view path)
 {
+#if DEBUG
+    std::optional<std::string_view> fake_response = get_riot_client_fake(path);
+    if (fake_response)
+        return json::parse(*fake_response);
+#endif
+
     http::Request req;
     req.method = http::methods::get;
     req.path = path;
