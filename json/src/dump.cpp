@@ -89,12 +89,14 @@ std::string sax_dump(kae::FunctionRef<DumpIteration()> callback, int spacing)
         if (it.event == ParseEvent::end_array) {
             --depth;
             indent();
+            comma = true;
             r += ']';
             continue;
         }
         else if (it.event == ParseEvent::end_object) {
             --depth;
             indent();
+            comma = true;
             r += '}';
             continue;
         }

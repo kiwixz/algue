@@ -34,7 +34,7 @@ TEST_SUITE("dump")
         a.push_back("hello");
         a.push_back(a);
         a.push_back(Array{});
-        CHECK(dump(a) == R"([[],12,"hello",[12,"hello"],[]])");
+        CHECK(dump(a) == R"([[],12,"hello",[[],12,"hello"],[]])");
 
         Object o;
         o["a"] = 12;
