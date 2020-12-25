@@ -22,15 +22,19 @@ TEST_SUITE("dump")
         CHECK(dump(1e-20) == "1e-20");
         CHECK(dump("") == R"("")");
         CHECK(dump("hello") == R"("hello")");
+        CHECK(dump(Array{}) == "[]");
+        CHECK(dump(Object{}) == "{}");
 
         CHECK_THROWS(dump(std::numeric_limits<float>::quiet_NaN()));
         CHECK_THROWS(dump(std::numeric_limits<double>::infinity()));
 
         Array a;
+        a.push_back(Array{});
         a.push_back(12);
         a.push_back("hello");
         a.push_back(a);
-        CHECK(dump(a) == R"([12,"hello",[12,"hello"]])");
+        a.push_back(Array{});
+        CHECK(dump(a) == R"([[],12,"hello",[12,"hello"],[]])");
 
         Object o;
         o["a"] = 12;

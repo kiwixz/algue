@@ -111,6 +111,7 @@ TEST_SUITE("parse")
         CHECK_THROWS(parse("["));
         CHECK_THROWS(parse("]"));
         CHECK_THROWS(parse("[0,1,2,3"));
+        CHECK(parse("[]").as<Array>().empty());
         CHECK(parse("[1,2,3,null,true,]").as<Array>() == Array{{1u, 2u, 3u, null, true}});
         CHECK(parse("[1,2,3,[null,false,],]").as<Array>() == Array{{1u, 2u, 3u, Array{{null, false}}}});
     }
@@ -123,6 +124,8 @@ TEST_SUITE("parse")
         CHECK_THROWS(parse(R"({"a":0,"b"})"));
         CHECK_THROWS(parse(R"({"a":0,"b":})"));
         CHECK_THROWS(parse(R"({"a":0,"b":1)"));
+
+        CHECK(parse("{}").as<Object>().empty());
 
         Object o;
         o["a"] = 0u;
