@@ -9,5 +9,6 @@
 __pycache__/
 
 
-# this should only be in web, but vetur does not currently support setting the path
+# this are in /web, but it can help editors to link them in the root
 /tsconfig.json
+/package.json
