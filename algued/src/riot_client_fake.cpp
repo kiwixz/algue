@@ -112,7 +112,7 @@ std::optional<std::string_view> get_riot_client_fake(std::string_view url)
                         "profileIconId": 3553,
                         "summonerName": "fake",
                         "bot": false,
-                        "summonerId": "fake_id",
+                        "summonerId": "6BvVObGAfiv3rtN1NaQKVt2myz230Id7IATvdaSrnmS3UYk",
                         "gameCustomizationObjects": [],
                         "perks": {
                             "perkIds": [

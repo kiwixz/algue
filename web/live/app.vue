@@ -4,8 +4,8 @@
     <div class="container">
       <div>
         <GameInfo :game="game"></GameInfo>
-        <Team :players="game.players[riot_teams.red]"></Team>
-        <Team :players="game.players[riot_teams.blue]"></Team>
+        <Team class="red_team" :players="game.players[riot_teams.red]"></Team>
+        <Team class="blue_team" :players="game.players[riot_teams.blue]"></Team>
       </div>
     </div>
   </div>
@@ -19,6 +19,14 @@
 
       display: flex;
       justify-content: center;
+
+      .red_team .player {
+        background-color: #422;
+      }
+
+      .blue_team .player {
+        background-color: #224;
+      }
     }
   }
 </style>

@@ -14,20 +14,21 @@
 
 <style lang="scss">
   .player {
+    $darker: #0006;
+
     border-radius: 4px;
     background-color: #222;
 
     .section {
-      margin: 1px 0px;
+      border: 1px solid $darker;
       padding: 4px;
-
-      background-color: #444;
     }
 
     .name {
       width: 14em;
 
-      background-color: #222;
+      background-color: $darker;
+      border: none;
       font-size: 1.1em;
       font-weight: 500;
       text-align: center;
