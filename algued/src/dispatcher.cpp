@@ -103,20 +103,20 @@ json::Value Dispatcher::live_game(const json::Value& input)
                                                         json::Array{})
                                             .first->second.as<json::Array>();
         json::Object& r = team_players.emplace_back(json::Object{}).as<json::Object>();
-        r["is_bot"] = p["bot"];
+        //r["is_bot"] = p["bot"];
         r["summoner_name"] = p["summonerName"];
-        r["profile_icon"] = p["profileIconId"];
+        //r["profile_icon"] = p["profileIconId"];
         r["champion"] = p["championId"];
 
-        json::Array& spells = r.try_emplace("spells", json::Array{}).first->second.as<json::Array>();
-        spells.push_back(p["spell1Id"]);
-        spells.push_back(p["spell2Id"]);
+        // json::Array& spells = r.try_emplace("spells", json::Array{}).first->second.as<json::Array>();
+        // spells.push_back(p["spell1Id"]);
+        // spells.push_back(p["spell2Id"]);
 
-        json::Value& riot_runes = p["perks"];
-        json::Object& runes = r.try_emplace("runes", json::Object{}).first->second.as<json::Object>();
-        runes["primary"] = riot_runes["perkStyle"];
-        runes["secondary"] = riot_runes["perkSubStyle"];
-        runes["ids"] = riot_runes["perkIds"];
+        // json::Value& riot_runes = p["perks"];
+        // json::Object& runes = r.try_emplace("runes", json::Object{}).first->second.as<json::Object>();
+        // runes["primary"] = riot_runes["perkStyle"];
+        // runes["secondary"] = riot_runes["perkSubStyle"];
+        // runes["ids"] = riot_runes["perkIds"];
     }
 
     return o;
