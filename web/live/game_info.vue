@@ -1,7 +1,9 @@
 <template>
   <div class="game_info">
     <div>
-      {{ queue_type.name }}<span class="map">({{ queue_type.map }})</span>
+      <span class="queue">{{ queue_type.name }}</span> started
+      <span class="time">{{ Math.trunc((Date.now() / 1000 - game.start_time) / 60) }}</span> minutes ago on
+      <span class="map">{{ queue_type.map }}</span>
     </div>
     <div class="bans">
       <div class="blue_bans">
@@ -23,20 +25,18 @@
   .game_info {
     display: flex;
     align-items: center;
+    color: #555;
     flex-wrap: wrap;
     justify-content: space-between;
 
-    .map {
-      margin-left: 1em;
-
-      color: #555;
+    .queue, .time, .map {
+      color: #fff;
     }
 
     .bans {
       display: flex;
 
-      .blue_bans,
-      .red_bans {
+      .blue_bans, .red_bans {
         margin: 0px 14px;
 
         display: flex;
