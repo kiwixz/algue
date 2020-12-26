@@ -15,7 +15,7 @@ RiotClient::RiotClient(std::string api_key) :
 
 json::Value RiotClient::get(std::string_view path)
 {
-#if DEBUG
+#ifdef DEBUG
     std::optional<std::string_view> fake_response = get_riot_client_fake(path);
     if (fake_response)
         return json::parse(*fake_response);
