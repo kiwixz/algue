@@ -23,6 +23,8 @@
 
 <style lang="scss">
   .game_info {
+    margin: 0px 15px;
+
     display: flex;
     align-items: center;
     color: #555;
@@ -35,11 +37,11 @@
 
     .bans {
       display: flex;
+      gap: 12px;
 
       .blue_bans, .red_bans {
-        margin: 0px 14px;
-
         display: flex;
+        flex-wrap: wrap;
 
         .ban {
           width: 45px;
