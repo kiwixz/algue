@@ -49,6 +49,9 @@ def main():
         ddragon_tar.extractall(ddragon)
 
     print("making includes")
+    with open(include / "info.ts", "w", newline="\n") as f:
+        f.write("export default {\n" + f'  version: "{latest}",\n' + "};\n")
+
     ddragon_data = ddragon / latest / "data/en_US"
     ddragon_img = ddragon / latest / "img"
 

@@ -1,15 +1,18 @@
 <template>
-  <div v-if="game" class="app">
-    <Header :summoner_name="summoner_name"></Header>
-    <div class="container">
-      <div>
-        <GameInfo :game="game"></GameInfo>
-        <Team class="red_team" :players="game.players[riot_teams.red]"></Team>
-        <Team class="blue_team" :players="game.players[riot_teams.blue]"></Team>
+  <div class="app">
+    <div v-if="game">
+      <Header :summoner_name="summoner_name"></Header>
+      <div class="container">
+        <div>
+          <GameInfo :game="game"></GameInfo>
+          <Team class="red_team" :players="game.players[riot_teams.red]"></Team>
+          <Team class="blue_team" :players="game.players[riot_teams.blue]"></Team>
+        </div>
       </div>
     </div>
+    <div v-else>loading...</div>
+    <Footer></Footer>
   </div>
-  <div v-else>loading...</div>
 </template>
 
 <style lang="scss">
@@ -35,6 +38,7 @@
   import Vue from "vue";
   import Component from "vue-class-component";
 
+  import Footer from "Common/footer.vue";
   import RiotTeams from "Riot/teams";
 
   import GameInfo from "./game_info.vue";
@@ -43,8 +47,9 @@
 
   @Component({
     components: {
-      Header,
+      Footer,
       GameInfo,
+      Header,
       Team,
     },
   })
