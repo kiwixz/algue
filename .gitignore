@@ -9,6 +9,6 @@
 __pycache__/
 
 
-# this are in /web, but it can help editors to link them in the root
+# they are in /web, but it can help editors to link them in the root
 /tsconfig.json
 /package.json
