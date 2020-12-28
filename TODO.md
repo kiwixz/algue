@@ -58,9 +58,13 @@
     - global
     - per champion
 
+## riot data
+- do not download the full archive
+
 
 # daemon
 - riot client add method with returns status_code instead of throwing
+- async http client
 - riot client async response
 - riot client api rate limit (global and per endpoint, via headers)
 - cache api results in sqlite db
@@ -69,6 +73,8 @@
     - index by input parameters of the api (ex: summoner name) and timestamp
     - store json response as string
     - occasional cleanup
+- http client reuse socket
+- http client multiple socket
 
 ## global stats sniffing
 - analyze plat+ matchs to db
@@ -82,11 +88,8 @@
 - add websocket support
 - listen to events
 - open/refresh website on lobby/party changes
-
-
-# misc
-- bytes vector child class, with char_begin, char_end, as_string_view
 - autolobby: accept match, preselect champ, ban, pick
-- async http client
-- http client reuse socket
-- http client multiple socket
+
+
+# utils
+- bytes vector child class, with char_begin, char_end, as_string_view
