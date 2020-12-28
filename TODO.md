@@ -9,7 +9,12 @@
 - search bar to change player
 - swap two players to consider different roles
 - previous encounters (number of times played with and against)
-    - draw some lines when there is something between two players
+    - show a little icons next to name
+    - colored icon for same team premades
+        - yellow then green for red team
+        - green then yellow for blue team
+    - magenta icon when there is inter-team relations
+    - hovering it shows detailed informations
 - summoner spells
 - runes
 - ranks
