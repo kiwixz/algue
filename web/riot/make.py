@@ -22,7 +22,7 @@ def get_json_url(url):
 
 def main():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    build = Path("build")
+    build = Path("../build/riot")
     include = build / "include"
     include.mkdir(parents=True, exist_ok=True)
 

@@ -15,7 +15,8 @@
     "baseUrl": ".",
     "paths": {
       "Common/*": ["common/*"],
-      "Riot/*": ["riot/build/include/*"]
+      "Generated/*": ["build/include/*"],
+      "Riot/*": ["build/riot/include/*"]
     }
   }
 }

@@ -2,8 +2,8 @@
   <div class="footer">
     <div class="spacing"></div>
     <div class="bottom">
-      LoL version {{ riot_version }}.
-      Source on <a href="https://github.com/kiwixz/algue">github</a>.
+      algue version {{ version }} for League of Legends {{ riot_version }}
+      (source on <a href="https://github.com/kiwixz/algue">github</a>)
     </div>
   </div>
 </template>
@@ -35,10 +35,15 @@
   import Vue from "vue";
   import Component from "vue-class-component";
 
+  import Info from "Generated/info";
   import RiotInfo from "Riot/info";
 
   @Component
   export default class extends Vue {
+    get version() {
+      return Info.version;
+    }
+
     get riot_version() {
       return RiotInfo.version;
     }

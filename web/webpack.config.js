@@ -31,7 +31,8 @@ module.exports = (_, argv) => {
       extensions: [".ts", ".js"],
       alias: {
         Common: path.resolve(__dirname, "common"),
-        Riot: path.resolve(__dirname, "riot/build/include"),
+        Generated: path.resolve(__dirname, "build/include"),
+        Riot: path.resolve(__dirname, "build/riot/include"),
       },
     },
     devServer: {
