@@ -12,7 +12,7 @@
     - show a little icons next to name
     - colored icon for same team premades
         - yellow then green for red team
-        - green then yellow for blue team
+        - cyan then green for blue team
     - magenta icon when there is inter-team relations
     - hovering it shows detailed informations
 - summoner spells
