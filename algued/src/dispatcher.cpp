@@ -50,8 +50,9 @@ http::Response Dispatcher::operator()(const http::Request& request)
         http::Response res;
         res.status_code = http::Status::internal_server_error;
         res.status_message = "error";
-        std::string_view reason = ex.what();
-        std::transform(reason.begin(), reason.end(), std::back_inserter(res.body), [](char c) { return static_cast<std::byte>(c); });
+        res.headers.push_back({http::header_fields::content_type, "application/json"});
+        std::string body = json::dump(json::Object{{{"message", ex.what()}}});
+        std::transform(body.begin(), body.end(), std::back_inserter(res.body), [](char c) { return static_cast<std::byte>(c); });
         return res;
     }
 
