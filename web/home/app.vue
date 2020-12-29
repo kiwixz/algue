@@ -45,6 +45,9 @@
     summoner_name = "";
 
     async go() {
+      if (!this.summoner_name)
+        return;
+
       // console.debug(
       //   await (
       //     await fetch("/api/is_live", {

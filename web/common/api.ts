@@ -11,7 +11,7 @@ export default {
     });
 
     if (!res.ok) {
-      if (res.headers.get("content-type") == "application/json") {
+      if (res.headers.get("content-type") === "application/json") {
         let message = (await res.json()).message;
         throw new Error(`Backend API error: ${message}`);
       } else {
