@@ -40,6 +40,7 @@
 
   import Footer from "Common/footer.vue";
   import RiotTeams from "Riot/teams";
+  import "Common/error_toasts";
 
   import GameInfo from "./game_info.vue";
   import Header from "./header.vue";
