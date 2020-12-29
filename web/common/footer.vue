@@ -2,8 +2,8 @@
   <div class="footer">
     <div class="spacing"></div>
     <div class="bottom">
-      algue version {{ version }} for League of Legends {{ riot_version }}
-      (source on <a href="https://github.com/kiwixz/algue">github</a>)
+      algue version {{ version }} for League of Legends {{ riot_version }} (source on
+      <a href="https://github.com/kiwixz/algue">github</a>)
     </div>
   </div>
 </template>

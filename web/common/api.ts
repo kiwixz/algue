@@ -2,7 +2,7 @@ export default {
   async live_game(summoner: string) {
     return this.get("live_game", { summoner });
   },
-  
+
   async get(url: string, params: object) {
     let res = await fetch(`/api/${url}`, {
       method: "POST",
