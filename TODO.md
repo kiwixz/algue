@@ -59,7 +59,9 @@
     - per champion
 
 ## riot data
+- faster webpack imagemin (or do it only once)
 - do not download the full archive
+- switch to avif when firefox supports it
 
 
 # daemon
