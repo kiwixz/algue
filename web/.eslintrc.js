@@ -24,5 +24,6 @@ module.exports = {
     "lines-between-class-members": ["error", "always", { exceptAfterSingleLine: true }],
     "no-console": "off",
     "no-new": "off",
+    "no-useless-concat": "off",
   },
 };
