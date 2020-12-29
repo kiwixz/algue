@@ -34,6 +34,8 @@
 
   import Footer from "Common/footer.vue";
 
+  import "Common/error_toasts";
+
   @Component({
     components: {
       Footer,

@@ -38,13 +38,15 @@
   import Vue from "vue";
   import Component from "vue-class-component";
 
+  import Api from "Common/api";
   import Footer from "Common/footer.vue";
   import RiotTeams from "Riot/teams";
-  import "Common/error_toasts";
 
   import GameInfo from "./game_info.vue";
   import Header from "./header.vue";
   import Team from "./team.vue";
+
+  import "Common/error_toasts";
 
   @Component({
     components: {
@@ -65,14 +67,8 @@
     async created() {
       const path = window.location.pathname;
       this.summoner_name = decodeURI(path.substring(path.lastIndexOf("/") + 1));
-      this.game = await (
-        await fetch("/api/live_game", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ summoner: this.summoner_name }),
-        })
-      ).json();
       document.title = `algue / live / ${this.summoner_name}`;
+      this.game = await Api.live_game(this.summoner_name);
     }
   }
 </script>
