@@ -59,9 +59,11 @@
     - per champion
 
 ## riot data
-- faster webpack imagemin (or do it only once)
+- custom image conversion after download
+    - jpeg output (is it better than webp ?)
+    - webp
+    - avif
 - do not download the full archive
-- switch to avif when firefox supports it
 
 
 # daemon
