@@ -60,8 +60,7 @@
 
 ## riot data
 - custom image conversion after download
-    - jpeg output (is it better than webp ?)
-    - webp
+    - jpeg output
     - avif
 - do not download the full archive
 
