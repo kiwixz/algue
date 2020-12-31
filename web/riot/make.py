@@ -3,9 +3,11 @@
 import json
 import os
 import shutil
+import subprocess
 import urllib.request
 from pathlib import Path
 from tarfile import TarFile
+from zipfile import ZipFile
 
 
 def get_json_file(path):
@@ -75,6 +77,29 @@ def main():
                 name = name[: -len(" games")]
             f.write("  " + str(q["queueId"]) + ': { name: "' + name + '", map: "' + q["map"] + '" },\n')
         f.write("};\n")
+
+    imagemagick_version = "7.0.10-53"
+    imagemagick = build / f"imagemagick-{imagemagick_version}"
+    if not imagemagick.exists():
+        imagemagick_zip_path = build / f"imagemagick-{imagemagick_version}.zip"
+        if not imagemagick_zip_path.exists():
+            print(f"downloading imagemagick {imagemagick_version}")
+            with open(imagemagick_zip_path, "wb") as f:
+                shutil.copyfileobj(
+                    urllib.request.urlopen(
+                        f"https://imagemagick.org/download/binaries/ImageMagick-{imagemagick_version}-portable-Q16-HDRI-x64.zip"
+                    ),
+                    f,
+                )
+
+        print(f"extracting imagemagick {imagemagick_version}")
+        imagemagick_zip = ZipFile(imagemagick_zip_path)
+        if any(imagemagick not in (imagemagick / n).parents for n in imagemagick_zip.namelist()):
+            raise RuntimeError("suspicious path in imagemagick archive")
+        imagemagick_zip.extractall(imagemagick)
+
+    convert = imagemagick / "convert"
+    # ImageMagick-7.0.10-53-portable-Q16-HDRI-x64\convert.exe corpus\Aatrox.png -strip -interlace jpeg -quality 90 aa.jpg
 
 
 if __name__ == "__main__":
