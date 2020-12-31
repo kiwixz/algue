@@ -67,6 +67,7 @@
 
 # daemon
 - riot client add method with returns status_code instead of throwing
+- http use new bytes vector child class from utils
 - async http client
 - riot client async response
 - riot client api rate limit (global and per endpoint, via headers)

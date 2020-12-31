@@ -32,6 +32,7 @@
   import Vue from "vue";
   import Component from "vue-class-component";
 
+  import Api from "Common/api";
   import Footer from "Common/footer.vue";
 
   import "Common/error_toasts";
@@ -48,17 +49,16 @@
       if (!this.summoner_name)
         return;
 
-      // console.debug(
-      //   await (
-      //     await fetch("/api/is_live", {
-      //       method: "POST",
-      //       headers: { "content-type": "application/json" },
-      //       body: JSON.stringify({ summoner: this.summoner_name }),
-      //     })
-      //   ).json()
-      // );
+      const is_live = await Api.is_live(this.summoner_name);
+      if (!is_live.exists) {
+        Vue.$toast.error(`summoner ${this.summoner_name} does not exist`);
+        return;
+      }
 
-      window.location.href = `/live/${encodeURI(this.summoner_name)}`;
+      if (is_live.in_game)
+        window.location.href = `/live/${encodeURI(this.summoner_name)}`;
+      else
+        Vue.$toast.error(`summoner ${this.summoner_name} is not in-game`);
     }
   }
 </script>

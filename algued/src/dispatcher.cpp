@@ -64,18 +64,11 @@ http::Response Dispatcher::operator()(const http::Request& request)
 
 json::Value Dispatcher::is_live(const json::Value& input)
 {
-    json::Value riot_summoner = riot_client_.get_data(fmt::format("/lol/summoner/v4/summoners/by-name/{}", input["summoner"].as<std::string>()));
-    bool in_game = true;
-    try {
-        riot_client_.get_data("/lol/spectator/v4/active-games/by-summoner/" + riot_summoner["id"].as<std::string>());
-    }
-    catch (const std::runtime_error& /*ex*/) {
-        in_game = false;
-    }
-
-    json::Object o;
-    o["in_game"] = in_game;
-    return o;
+    RiotResponse riot_summoner = riot_client_.get(fmt::format("/lol/summoner/v4/summoners/by-name/{}", input["summoner"].as<std::string>()));
+    if (riot_summoner.status_code != http::Status::ok)
+        return json::Object{{{"exists", false}}};
+    RiotResponse riot_game = riot_client_.get("/lol/spectator/v4/active-games/by-summoner/" + riot_summoner.data["id"].as<std::string>());
+    return json::Object{{{"exists", true}, {"in_game", riot_game.status_code == http::Status::ok}}};
 }
 
 json::Value Dispatcher::live_game(const json::Value& input)
