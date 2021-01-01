@@ -1,7 +1,6 @@
 # web
 
 ## home
-- handle summoners that dont exist
 - smart selection to go /live or /history depending if is currently in-game
 
 ## /live
@@ -66,7 +65,6 @@
 
 
 # daemon
-- riot client add method with returns status_code instead of throwing
 - http use new bytes vector child class from utils
 - async http client
 - riot client async response
