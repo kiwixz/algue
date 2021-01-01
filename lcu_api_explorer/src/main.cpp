@@ -53,11 +53,11 @@ int main(int argc, char** argv)
     cfg.get_to("method", req.method);
     req.path = path;
     req.headers = lockfile_to_headers(lockfile);
-    asio::write(s, asio::buffer(req.serialize()));
+    asio::write(s, asio::buffer(req.serialize().as_chars()));
 
     http::Parser parser{http::MessageType::response};
     int read_size = 4096;
-    std::vector<std::byte> buf;
+    utils::Bytes buf;
     buf.resize(read_size);
     while (!parser.finished()) {
         size_t size = s.read_some(asio::buffer(buf.data() + buf.size() - read_size, read_size));

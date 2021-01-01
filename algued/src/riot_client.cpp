@@ -26,7 +26,7 @@ RiotResponse RiotClient::get(std::string_view path)
     req.path = path;
     req.headers.push_back({"x-riot-token", api_key_});
     http::Response res = http_.request(req);
-    return {res.status_code, json::parse({reinterpret_cast<const char*>(res.body.data()), res.body.size()})};
+    return {res.status_code, json::parse(res.body.as_chars())};
 }
 
 json::Value RiotClient::get_data(std::string_view path)

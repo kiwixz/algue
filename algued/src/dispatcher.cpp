@@ -27,23 +27,24 @@ http::Response Dispatcher::operator()(const http::Request& request)
     try
     {
         http::Response res;
+
+        if (request.path == "/is_live") {
+            res.body += json::dump(is_live(json::parse(request.body.as_chars())));
+        }
+        else if (request.path == "/live_game") {
+            res.body += json::dump(live_game(json::parse(request.body.as_chars())));
+        }
+        else {
+            logger_(kae::LogLevel::error, "unknown path '{}'", request.path);
+            res.status_code = http::Status::not_found;
+            res.status_message = "unknown path";
+            return res;
+        }
+
         res.status_code = http::Status::ok;
         res.status_message = "ok";
         res.headers.push_back({http::header_fields::content_type, "application/json"});
-
-        if (request.path == "/is_live") {
-            std::string_view input{reinterpret_cast<const char*>(request.body.data()), request.body.size()};
-            std::string output = json::dump(is_live(json::parse(input)));
-            std::transform(output.begin(), output.end(), std::back_inserter(res.body), [](char c) { return static_cast<std::byte>(c); });
-            return res;
-        }
-
-        if (request.path == "/live_game") {
-            std::string_view input{reinterpret_cast<const char*>(request.body.data()), request.body.size()};
-            std::string output = json::dump(live_game(json::parse(input)));
-            std::transform(output.begin(), output.end(), std::back_inserter(res.body), [](char c) { return static_cast<std::byte>(c); });
-            return res;
-        }
+        return res;
     }
     catch (const std::exception& ex) {
         logger_(kae::LogLevel::error, "caught exception: {}", ex.what());
@@ -51,15 +52,9 @@ http::Response Dispatcher::operator()(const http::Request& request)
         res.status_code = http::Status::internal_server_error;
         res.status_message = "error";
         res.headers.push_back({http::header_fields::content_type, "application/json"});
-        std::string body = json::dump(json::Object{{{"message", ex.what()}}});
-        std::transform(body.begin(), body.end(), std::back_inserter(res.body), [](char c) { return static_cast<std::byte>(c); });
+        res.body += json::dump(json::Object{{{"message", ex.what()}}});
         return res;
     }
-
-    http::Response res;
-    res.status_code = http::Status::not_found;
-    res.status_message = "unknown path";
-    return res;
 }
 
 json::Value Dispatcher::is_live(const json::Value& input)

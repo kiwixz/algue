@@ -65,7 +65,6 @@
 
 
 # daemon
-- http use new bytes vector child class from utils
 - async http client
 - riot client async response
 - riot client api rate limit (global and per endpoint, via headers)
@@ -91,7 +90,3 @@
 - listen to events
 - open/refresh website on lobby/party changes
 - autolobby: accept match, preselect champ, ban, pick
-
-
-# utils
-- bytes vector child class, with char_begin, char_end, as_string_view

@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <string_view>
-#include <vector>
 
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
@@ -12,6 +11,7 @@
 #include "http/parser.h"
 #include "http/request.h"
 #include "http/response.h"
+#include "utils/bytes.h"
 
 namespace algue::http {
 
@@ -34,7 +34,7 @@ private:
     private:
         kae::Logger logger_{"HttpServerSession"};
         Server* server_;
-        std::vector<std::byte> buffer_;
+        utils::Bytes buffer_;
         Parser request_parser_;
         asio::ip::tcp::socket socket_;
 

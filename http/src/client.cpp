@@ -7,6 +7,7 @@
 
 #include "http/header_fields.h"
 #include "http/parser.h"
+#include "utils/bytes.h"
 #include "utils/self_path.h"
 
 namespace algue::http {
@@ -40,11 +41,11 @@ http::Response Client::request(http::Request& request)
         logger_(kae::LogLevel::warning, "TLS SNI is not supported");
     }
     s.handshake(asio::ssl::stream_base::client);
-    asio::write(s, asio::buffer(request.serialize()));
+    asio::write(s, asio::buffer(request.serialize().as_chars()));
 
     http::Parser parser{MessageType::response};
     int read_size = 4096;
-    std::vector<std::byte> buf;
+    utils::Bytes buf;
     buf.resize(read_size);
     while (!parser.finished()) {
         size_t size = s.read_some(asio::buffer(buf.data() + buf.size() - read_size, read_size));

@@ -22,13 +22,12 @@ TEST_SUITE("request")
         req.headers.push_back({header_fields::accept, "application/json"});
         req.headers.push_back({"Custom-Header", "custom value"});
 
-        std::vector<std::byte> v = req.serialize();
-        CHECK(std::string_view{reinterpret_cast<const char*>(v.data()), v.size()}
-              == "POST /some/file%20name.html?with=parameter&and=another_one HTTP/1.1\r\n"
-                 "host: some.host.name.com\r\n"
-                 "accept: application/json\r\n"
-                 "Custom-Header: custom value\r\n"
-                 "\r\n");
+        utils::Bytes v = req.serialize();
+        CHECK(v.as_chars() == "POST /some/file%20name.html?with=parameter&and=another_one HTTP/1.1\r\n"
+                              "host: some.host.name.com\r\n"
+                              "accept: application/json\r\n"
+                              "Custom-Header: custom value\r\n"
+                              "\r\n");
     }
 }
 

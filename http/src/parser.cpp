@@ -10,6 +10,7 @@
 
 #include "http/header_fields.h"
 #include "http/methods.h"
+#include "utils/bytes.h"
 #include "utils/iequal.h"
 #include "utils/parsing_context.h"
 
@@ -87,7 +88,7 @@ size_t Parser::input(std::span<const std::byte> data)
         [[fallthrough]];
 
     case Step::body: {
-        std::vector<std::byte>* body;
+        utils::Bytes* body;
         switch (type_) {
         case MessageType::request:
             body = &std::get<Request>(result_).body;
@@ -127,10 +128,8 @@ size_t Parser::input(std::span<const std::byte> data)
                     --append_size;
                 }
 
-                std::span<const std::byte> body_data{reinterpret_cast<const std::byte*>(ctx.consume(append_size).data()), append_size};
-                std::copy(body_data.begin(), body_data.end(), std::back_inserter(*body));
+                *body += ctx.consume(append_size);
                 chunk_remaining_size_ -= append_size;
-
                 if (chunk_remaining_size_ > 0)
                     return data.size() - ctx.remaining().size();
                 else if (!ctx.try_consume("\r\n"))
@@ -139,10 +138,8 @@ size_t Parser::input(std::span<const std::byte> data)
         }
         else if (chunk_remaining_size_ > 0) {
             size_t append_size = std::min(chunk_remaining_size_, ctx.remaining().size());
-            std::span<const std::byte> body_data{reinterpret_cast<const std::byte*>(ctx.consume(append_size).data()), append_size};
-            std::copy(body_data.begin(), body_data.end(), std::back_inserter(*body));
+            *body += ctx.consume(append_size);
             chunk_remaining_size_ -= append_size;
-
             if (chunk_remaining_size_ > 0)
                 return data.size();
         }

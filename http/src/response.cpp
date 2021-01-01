@@ -17,7 +17,7 @@ bool Response::has_header(std::string_view name) const
                        [&](const Header& h) { return utils::iequal(h.name, name); });
 }
 
-std::vector<std::byte> Response::serialize()
+utils::Bytes Response::serialize()
 {
     ASSERT(!has_header(header_fields::transfer_encoding));
 
@@ -31,35 +31,23 @@ std::vector<std::byte> Response::serialize()
         it->value = fmt::format("{}", body.size());
     }
 
-    std::vector<std::byte> r;
-    r.reserve(4096);
+    utils::Bytes r;
 
-    auto append = [&](const auto& c) {
-        if constexpr (std::is_same_v<std::decay_t<decltype(c)>, const char*>) {
-            std::string_view str = c;
-            std::transform(str.begin(), str.end(), std::back_inserter(r),
-                           [](auto b) { return static_cast<std::byte>(b); });
-        }
-        else {
-            std::transform(c.begin(), c.end(), std::back_inserter(r),
-                           [](auto b) { return static_cast<std::byte>(b); });
-        }
-    };
+    r += "HTTP/1.1 ";
+    r += fmt::format("{}", status_code);
+    r += " ";
+    r += status_message;
+    r += "\r\n";
 
-    append("HTTP/1.1 ");
-    append(fmt::format("{}", status_code));
-    append(" ");
-    append(status_message);
-    append("\r\n");
     for (const Header& h : headers) {
-        append(h.name);
-        append(": ");
-        append(h.value);
-        append("\r\n");
+        r += h.name;
+        r += ": ";
+        r += h.value;
+        r += "\r\n";
     }
-    append("\r\n");
-    append(body);
+    r += "\r\n";
 
+    r += body;
     return r;
 }
 

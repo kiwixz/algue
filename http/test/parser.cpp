@@ -86,7 +86,7 @@ TEST_SUITE("parser")
         CHECK(res.headers[2].value == "12");
         CHECK(res.headers[3].name == "Custom-Header");
         CHECK(res.headers[3].value == "custom value");
-        CHECK(std::string_view{reinterpret_cast<const char*>(res.body.data()), res.body.size()} == "hello world!");
+        CHECK(res.body.as_chars() == "hello world!");
     }
 
     TEST_CASE("chunked")
@@ -122,7 +122,7 @@ TEST_SUITE("parser")
         CHECK(res.headers.size() == 1);
         CHECK(res.headers[0].name == "Transfer-Encoding");
         CHECK(res.headers[0].value == "chunked");
-        CHECK(std::string_view{reinterpret_cast<const char*>(res.body.data()), res.body.size()} == "hello world! aaaaaaaaaaaaaaaaaaaaaaaaaa");
+        CHECK(res.body.as_chars() == "hello world! aaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
 }
 
