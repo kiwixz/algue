@@ -30,7 +30,7 @@ Client::Client(std::string host) :
 http::Response Client::request(http::Request& request)
 {
     if (!request.has_header(header_fields::host)) {
-        request.headers.push_back({std::string{header_fields::host}, host_});
+        request.headers.push_back({header_fields::host, host_});
     }
 
     asio::ssl::stream<asio::ip::tcp::socket> s{io_, ssl_ctx_};
