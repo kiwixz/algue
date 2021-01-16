@@ -1,5 +1,5 @@
 <template>
-  <div class="header">header (summoner is {{ summoner_name }})</div>
+  <div class="header">{{ summoner_name }}</div>
 </template>
 
 <style lang="scss">

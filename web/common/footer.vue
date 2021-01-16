@@ -2,19 +2,19 @@
   <div class="footer">
     <div class="spacing"></div>
     <div class="bottom">
-      algue version {{ version }} for League of Legends {{ riot_version }} (source on
-      <a href="https://github.com/kiwixz/algue">github</a>)
+      <a :href="'https://github.com/kiwixz/algue/tree/' + version">algue version <span class="version">{{ version.substr(0, 8) }}</span></a>
+      for League of Legends <span class="version">{{ riot_version }}</span>
     </div>
   </div>
 </template>
 
 <style lang="scss">
   .footer {
-    color: #242;
+    color: #183018;
     font-size: 0.75em;
 
     .spacing, .bottom {
-      padding: 5px;
+      padding: 10px;
     }
 
     .spacing {
@@ -26,7 +26,11 @@
       position: fixed;
       right: 0;
 
-      background-color: #000d;
+      text-shadow: #000 -1px -1px, #000 1px -1px, #000 -1px 1px, #000 1px 1px;
+
+      .version {
+        font-weight: 500;
+      }
     }
   }
 </style>
