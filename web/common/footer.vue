@@ -2,7 +2,9 @@
   <div class="footer">
     <div class="spacing"></div>
     <div class="bottom">
-      <a :href="'https://github.com/kiwixz/algue/tree/' + version">algue version <span class="version">{{ version.substr(0, 8) }}</span></a>
+      <a :href="'https://github.com/kiwixz/algue/tree/' + version"
+        >algue version <span class="version">{{ version.substr(0, 8) }}</span></a
+      >
       for League of Legends <span class="version">{{ riot_version }}</span>
     </div>
   </div>
