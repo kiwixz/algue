@@ -76,6 +76,7 @@
     - occasional cleanup
 - http client reuse socket
 - http client multiple socket
+- add timeout to http requests
 
 ## global stats sniffing
 - analyze plat+ matchs to db
