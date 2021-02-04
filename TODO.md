@@ -91,3 +91,7 @@
 - listen to events
 - open/refresh website on lobby/party changes
 - autolobby: accept match, preselect champ, ban, pick
+
+
+# misc
+- fix json overflow handling when parsing (current way of casting is probably UB)
