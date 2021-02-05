@@ -59,6 +59,7 @@ std::string dump(const Value& root, int spacing)
             stack.emplace_back(ObjectIt{value->as<Object>().begin(), value->as<Object>().end()});
             return {ParseEvent::begin_object, key, {}};
         }
+        std::abort();
     },
                     spacing);
 }
