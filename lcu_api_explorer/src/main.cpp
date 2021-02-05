@@ -12,7 +12,7 @@
 #include "http/request.h"
 #include "http/response.h"
 #include "json/dump.h"
-#include "utils/lockfile.h"
+#include "lcu_api_explorer/lockfile.h"
 #include "utils/self_path.h"
 
 int main(int argc, char** argv)
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     std::string path = argv[1];
 
     logger(kae::LogLevel::info, "reading lockfile");
-    utils::Lockfile lockfile = utils::read_lockfile();
+    lcu_api_explorer::Lockfile lockfile = lcu_api_explorer::read_lockfile();
 
     logger(kae::LogLevel::info, "connecting to 127.0.0.1:{} (token {})", lockfile.port, lockfile.token);
     asio::io_context io_context;

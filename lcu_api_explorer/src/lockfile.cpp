@@ -1,4 +1,4 @@
-#include "utils/lockfile.h"
+#include "lcu_api_explorer/lockfile.h"
 
 #include <charconv>
 #include <fstream>
@@ -8,7 +8,7 @@
 
 #include "utils/base64.h"
 
-namespace algue::utils {
+namespace algue::lcu_api_explorer {
 
 Lockfile read_lockfile()
 {
@@ -51,4 +51,4 @@ std::vector<http::Header> lockfile_to_headers(const Lockfile& lockfile)
     };
 }
 
-}  // namespace algue::utils
+}  // namespace algue::lcu_api_explorer
