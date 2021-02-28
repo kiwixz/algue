@@ -288,20 +288,18 @@ jobs:
   web:
     runs-on: ubuntu-latest
     container:
-      image: debian:buster-slim
+      image: fedora:33
     steps:
       - name: Install system dependencies
         run: |
-          echo "Dpkg::Use-Pty 0;" > "/etc/apt/apt.conf.d/no_pty"
-          apt update
-          apt -y --no-install-recommends install  \
-              git ca-certificates  \
+          dnf -y --setopt=install_weak_deps=0 install  \
+              git  \
               npm python3  \
-              libxi6 libxxf86vm1 libgl1
+              libglvnd-glx libXi
 
       - name: Dump packages versions
         run: |
-          apt list --installed
+          dnf list installed
 
       - name: Checkout
         run: |
