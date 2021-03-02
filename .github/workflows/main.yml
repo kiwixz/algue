@@ -41,7 +41,7 @@ jobs:
 
       - name: Dump packages versions
         run: |
-          microdnf list installed
+          rpm -qa
 
       - name: Checkout
         run: |
@@ -179,7 +179,7 @@ jobs:
 
       - name: Dump packages versions
         run: |
-          microdnf list installed
+          rpm -qa
 
       - name: Checkout
         run: |
@@ -217,7 +217,7 @@ jobs:
 
       - name: Dump packages versions
         run: |
-          microdnf list installed
+          rpm -qa
 
       - name: Checkout
         run: |
@@ -297,7 +297,7 @@ jobs:
 
       - name: Dump packages versions
         run: |
-          microdnf list installed
+          rpm -qa
 
       - name: Checkout
         run: |
