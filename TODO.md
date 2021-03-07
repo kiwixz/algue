@@ -28,6 +28,7 @@
 ### lobby preview (with list of players)
 - access with /live/mainplayer,player2,player3
 - wait/refresh to see when original player is in-game
+- add a landing page for lobby preview where you can input names
 
 ## /history
 - redirect to home on error
