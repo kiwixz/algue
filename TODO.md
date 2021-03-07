@@ -4,9 +4,7 @@
 - smart selection to go /live or /history depending if is currently in-game
 
 ## /live
-- wait/refresh when summoner not yet in-game
-- search bar to change player
-- swap two players to consider different roles
+- ranks
 - previous encounters (number of times played with and against)
     - show a little icons next to name
     - colored icon for same team premades
@@ -14,17 +12,18 @@
         - cyan then green for blue team
     - magenta icon when there is inter-team relations
     - hovering it shows detailed informations
-- summoner spells
-- runes
-- ranks
-- match history
-- average kda on current champion
+- wait/refresh when summoner not yet in-game
+- search bar to change player
+- swap two players to consider different roles
 - mastery points and level on current champion
+- average kda on current champion
+- runes
+- match history
+- summoner spells
 - usual champions
 - usual roles
 - current role estimation
 - add remarks
-- when not in-game, add input for lobby chat messages which opens lobby preview
 
 ### lobby preview (with list of players)
 - access with /live/mainplayer,player2,player3
