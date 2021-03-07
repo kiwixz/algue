@@ -20,6 +20,10 @@
       font-size: min(2em, 5vw);
       text-align: center;
 
+      &:focus {
+        outline: unset;
+      }
+
       &::placeholder {
         color: #ddd;
         font-size: 1.4em;
