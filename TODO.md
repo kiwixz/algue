@@ -96,3 +96,4 @@
 # misc
 - fix json overflow handling when parsing (current way of casting is probably UB)
 - use pmr containers for json parsing
+- abort on ubsan error in unittest
