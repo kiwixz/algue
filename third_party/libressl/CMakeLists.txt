@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-include("kae/third_party")
+include("algue/third_party")
 
 set(LIBRESSL_SKIP_INSTALL ON CACHE BOOL "")
 set(LIBRESSL_APPS OFF CACHE BOOL "")

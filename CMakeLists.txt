@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-include("kae")
-
-include("kae/add_clang_tests")
-include("kae/cpp_compiler")
-include("kae/cpp_flags")
-include("kae/cpp_warnings")
-include("kae/set_default")
+include("algue/add_clang_tests")
+include("algue/cpp_compiler")
+include("algue/cpp_flags")
+include("algue/cpp_warnings")
+include("algue/set_default")
 
 
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -77,10 +75,14 @@ foreach (file IN LISTS data)
 endforeach ()
 
 
-add_kae()
+add_subdirectory("third_party/doctest")
+add_subdirectory("third_party/fmt")
 add_subdirectory("third_party/libressl")
-add_subdirectory("third_party/asio")
 add_subdirectory("third_party/sqlite")
+add_subdirectory("third_party/asio")
+
+set(KAE_TESTS ${ALGUE_TESTS})
+add_subdirectory("kae")
 
 add_subdirectory("http")
 add_subdirectory("json")

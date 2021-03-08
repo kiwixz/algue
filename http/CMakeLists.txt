@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-include("kae/cpp_test")
+include("algue/cpp_test")
 
 set(target "http")
 

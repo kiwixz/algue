@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12)
-include("kae/third_party")
+include("algue/third_party")
 
 set(version "3330000")  # 3.33.0
 third_party("sqlite" URL "https://www.sqlite.org/2020/sqlite-amalgamation-${version}.zip" DONT_RUN_CMAKE)
