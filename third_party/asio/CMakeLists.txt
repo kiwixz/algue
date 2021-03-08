@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.13)
 include("algue/third_party")
 
 third_party("asio" REPO "chriskohlhoff/asio" TAG "asio-1-18-0" DONT_RUN_CMAKE)
